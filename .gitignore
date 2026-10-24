@@ -13,3 +13,7 @@ api/tmp/
 
 # Compose settings, including the database password
 .env
+
+# Python bytecode (Mac relay tests)
+__pycache__/
+*.pyc

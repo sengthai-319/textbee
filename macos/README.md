@@ -12,7 +12,7 @@ The dashboard, bulk sends, CSV uploads, scheduling and the REST API work as they
 |---|---|---|
 | How it gets messages | Push (Firebase) | Polls the server every few seconds |
 | Status reports | sent, delivered, failed | sent, failed (Messages can't report delivery) |
-| Receiving SMS | ✅ | ❌ not yet |
+| Receiving SMS | ✅ | ✅ replies to your iPhone, read from Messages on the Mac (needs Full Disk Access) |
 | Needs | An Android phone with a SIM | A Mac with Messages, plus an iPhone on the same Apple Account |
 
 ## Requirements
@@ -54,6 +54,29 @@ The relay needs a CrossHub server. Follow [docs/SETUP.md](../docs/SETUP.md) step
    ```
    The agent runs under `caffeinate -i`, so the Mac doesn't sleep while the relay is running.
 
+## Receiving replies
+
+Texts sent to your iPhone also reach Messages on the Mac through Text Message Forwarding. The relay reads new ones from Messages' history and forwards them to CrossHub. They then appear under **Messaging › History › Received**, count as *SMS received*, and trigger your `sms.received` webhooks.
+
+1. **Give it Full Disk Access.** macOS keeps Messages' history private. Open `System Settings` › `Privacy & Security` › `Full Disk Access`, then:
+   - When you run the relay yourself, turn on **Terminal** (or iTerm, if that's what you use).
+   - For the login agent from `install-agent`, click **+**, press `⌘⇧G`, and add the Python the relay runs with. The relay's log names it in its permission message, or run `python3 -c 'import sys; print(sys.executable)'`.
+2. **Check it:**
+   ```bash
+   python3 textbee_mac.py inbox
+   ```
+   It should say *Messages history is readable* and list your latest incoming messages. It only reads and sends nothing.
+3. **Restart the relay** (`run`, or `uninstall-agent` then `install-agent`). On its first start it notes where Messages' history ends. Only texts that arrive after that are forwarded; older conversations are never uploaded.
+
+What's forwarded is set by `receive` in the config, or `setup --receive`:
+- `sms` (default): SMS, and RCS from Android phones
+- `all`: also iMessage
+- `off`: nothing
+
+Reactions, edits and your own messages are never forwarded. If the server is unreachable, the relay retries the same text on the next poll, and the server ignores an exact duplicate.
+
+Without Full Disk Access, sending still works. The relay logs the permission message and tries again every 10 minutes.
+
 ## Commands
 
 | Command | What it does |
@@ -62,6 +85,7 @@ The relay needs a CrossHub server. Follow [docs/SETUP.md](../docs/SETUP.md) step
 | `test` | Sends one message through Messages without the server (`--to`, `--message`) |
 | `run` | Relays messages until stopped (`--once` polls one time and exits) |
 | `status` | Shows the server, the device ID and the sent and failed counts |
+| `inbox` | Checks that incoming texts can be read, and lists the latest (`--count`) |
 | `install-agent` / `uninstall-agent` | Starts the relay at login, or stops doing so |
 
 ## Settings
@@ -72,6 +96,7 @@ The config is stored in `~/Library/Application Support/textbee-mac/config.json`,
 - `poll_seconds` (default `5`): how often to check for new messages.
 - `heartbeat_minutes` (default `15`): how often to report that the device is online.
 - `service`: `sms` (green bubbles through the iPhone) or `imessage`.
+- `receive`: which incoming messages to forward: `sms` (default), `all` or `off`. See [Receiving replies](#receiving-replies).
 
 ## Duplicate protection
 

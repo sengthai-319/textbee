@@ -11,4 +11,4 @@ Key rules:
 - Keep bundled email senders in `api/src/mail/email-templates/defaults.json` empty.
 - Security rules this fork adds (keep them on upstream merges): Google sign-in fails closed without `GOOGLE_CLIENT_ID`; API keys can't manage API keys (`SessionOnly`); failed logins capped per account; DB/Redis never published in `docker-compose.yaml`. See docs/MAINTAINING.md › Security hardening.
 - Single sign-on: docs/SSO.md. Settings live in the top-level `.env` and reach both containers.
-- Before merging: `cd api && pnpm test`; `cd web && pnpm typecheck && pnpm lint && pnpm test && pnpm test:e2e`.
+- Before merging: `cd api && pnpm test`; `cd web && pnpm typecheck && pnpm lint && pnpm test && pnpm test:e2e`; for `macos/`, `python3 -m unittest macos/test_textbee_mac.py`.

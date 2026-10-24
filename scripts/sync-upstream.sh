@@ -99,6 +99,7 @@ echo
 echo "== Checks =="
 (cd api && pnpm install --frozen-lockfile && pnpm build && pnpm test --silent)
 (cd web && pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test)
+python3 -m unittest macos/test_textbee_mac.py
 
 echo
 if [ $status -ne 0 ]; then
