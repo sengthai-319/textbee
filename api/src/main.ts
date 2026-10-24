@@ -72,9 +72,17 @@ async function bootstrap() {
     clientC509CertUrl: process.env.FIREBASE_CLIENT_C509_CERT_URL,
   }
 
-  firebase.initializeApp({
-    credential: firebase.credential.cert(firebaseConfig),
-  })
+  // Only push devices (the Android app) need Firebase; a server whose devices
+  // are all pull devices, such as the macOS client, runs without it
+  if (process.env.FIREBASE_PROJECT_ID) {
+    firebase.initializeApp({
+      credential: firebase.credential.cert(firebaseConfig),
+    })
+  } else {
+    console.warn(
+      'FIREBASE_PROJECT_ID is not set: push devices (the Android app) will not receive messages. Pull devices such as the macOS client still work.',
+    )
+  }
 
   app.use(
     '/api/v1/billing/webhook/polar',

@@ -1,4 +1,5 @@
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger'
+import { DEVICE_TRANSPORTS } from './pull-transport'
 import { SMSType } from './sms-type.enum'
 import { SIM_SELECTIONS } from './sim-report'
 
@@ -154,6 +155,16 @@ export class RegisterDeviceInputDTO {
 
   @ApiProperty({
     type: String,
+    enum: ['fcm', 'pull'],
+    required: false,
+    default: 'fcm',
+    description:
+      "How the device gets its messages. 'pull' devices (such as the macOS client) receive no push and claim their messages from the pending-messages endpoint.",
+  })
+  transport?: 'fcm' | 'pull'
+
+  @ApiProperty({
+    type: String,
     required: false,
     description: 'Device brand.',
     example: 'google',
@@ -280,6 +291,7 @@ const DEVICE_WRITABLE_FIELDS = [
   'appVersionName',
   'appVersionCode',
   'simInfo',
+  'transport',
 ] as const
 
 export function pickDeviceWritableFields(
@@ -288,6 +300,10 @@ export function pickDeviceWritableFields(
   const picked: any = {}
   for (const field of DEVICE_WRITABLE_FIELDS) {
     if (input?.[field] !== undefined) picked[field] = input[field]
+  }
+  // Updates skip schema validation, so an unknown transport is dropped here
+  if (picked.transport !== undefined && !DEVICE_TRANSPORTS.includes(picked.transport)) {
+    delete picked.transport
   }
   return picked
 }

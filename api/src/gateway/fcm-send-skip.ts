@@ -28,13 +28,16 @@ export function shouldSkipFcmSend(userId: unknown, deviceId: unknown): boolean {
   )
 }
 
-export function skippedBatchResponse(count: number): BatchResponse {
+export function skippedBatchResponse(
+  count: number,
+  messageId: string = FCM_SEND_SKIPPED_ERROR_CODE,
+): BatchResponse {
   return {
     successCount: count,
     failureCount: 0,
     responses: Array.from({ length: count }, () => ({
       success: true,
-      messageId: FCM_SEND_SKIPPED_ERROR_CODE,
+      messageId,
     })),
   }
 }

@@ -19,7 +19,7 @@ function envBool(key: string, fallback: boolean): boolean {
   return raw === 'true' || raw === '1'
 }
 
-function envInt(key: string, fallback: number): number {
+export function envInt(key: string, fallback: number): number {
   const parsed = Number.parseInt(process.env[key] ?? '', 10)
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
 }

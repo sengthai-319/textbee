@@ -164,7 +164,8 @@ export function normalizeOsFields(
     patch.osBuildFingerprint = raw
   }
 
-  if (input?.os !== undefined) patch.os = 'Android'
+  // Everything is an Android build except the macOS client, which says so
+  if (input?.os !== undefined) patch.os = raw === 'macOS' ? 'macOS' : 'Android'
 
   return patch
 }

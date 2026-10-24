@@ -370,7 +370,7 @@ The complete guide, with every environment variable explained, is at [textbee.de
 
 - A server with Docker, or with Node.js 22, `pnpm`, `pm2`, MongoDB, and Redis
 - A domain with HTTPS. The phone and your code reach the API over the internet
-- A [Firebase](https://firebase.google.com) project with Cloud Messaging enabled: a service account key for the API and a `google-services.json` for the Android app
+- A [Firebase](https://firebase.google.com) project with Cloud Messaging enabled: a service account key for the API and a `google-services.json` for the Android app. Not needed if you only use [textbee for Mac](macos/README.md)
 - An SMTP account for verification emails and notices
 - Android Studio or the Android SDK to build the app
 
@@ -456,6 +456,10 @@ The app must point at your domain and your Firebase project.
    ```
 
 Install the APK on the phone, then register it from your dashboard the same way as on the hosted service.
+
+### Use an iPhone instead (through a Mac)
+
+No Android phone? Run [textbee for Mac](macos/README.md) instead. It registers a Mac as a pull device and sends each message through the Messages app, and the paired iPhone delivers it as SMS. A server whose devices are all Macs needs no Firebase project: leave the `FIREBASE_*` variables empty. The relevant settings are `PULL_POLL_COOLDOWN_MS` and `PULL_CLAIM_LIMIT` in `api/.env.example`.
 
 ## Architecture
 
