@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { authenticate } from './session'
 import { mockApi } from './mock-api'
 import { mockDevices } from '../test/fixtures'
+import { MOCK_API_BASE_URL } from '../playwright.config'
 
 // The dashboard sections stream behind a loading.tsx boundary, so their HTML
 // can paint before React hydrates. A click landing in that gap hits a button
@@ -232,5 +233,26 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     await expect(page.getByText('Default device updated').first()).toBeVisible()
     await expect(galaxy).toContainText('Default')
     await expect(pixel).not.toContainText('Default')
+  })
+
+  test('an iPhone without a Mac registers for the Shortcut and gets its settings', async ({
+    page,
+    context,
+  }) => {
+    await authenticate(context)
+    await mockApi(page)
+    await gotoDashboard(page)
+
+    await page.getByRole('button', { name: 'Add device' }).first().click()
+    const dialog = page.getByRole('dialog')
+    await dialog.getByRole('tab', { name: 'iPhone only' }).click()
+    await dialog.getByRole('button', { name: 'Register this iPhone' }).click()
+
+    await expect(dialog.getByText('device_shortcut')).toBeVisible()
+    // The server address the Shortcut needs is this dashboard's own API
+    await expect(dialog.getByText(MOCK_API_BASE_URL)).toBeVisible()
+    await expect(
+      dialog.getByRole('link', { name: 'Open the Shortcut guide' })
+    ).toHaveAttribute('href', /SETUP\.md#iphone-with-windows-or-no-mac-shortcut$/)
   })
 })

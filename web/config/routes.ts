@@ -15,4 +15,5 @@ export const Routes = {
   // The anchors match the headings in docs/SETUP.md.
   downloadAndroidApp: `${SETUP_GUIDE_URL}#android-phones`,
   setupIphone: `${SETUP_GUIDE_URL}#iphone-through-a-mac`,
+  setupShortcut: `${SETUP_GUIDE_URL}#iphone-with-windows-or-no-mac-shortcut`,
 }

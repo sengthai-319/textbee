@@ -27,6 +27,11 @@ export async function mockApi(page: Page) {
     const devicesCopy = mockDevices.map((d) => ({ ...d }))
 
     if (path === '/auth/who-am-i') return json(route, { data: mockUser })
+    // Registering a device answers with that one device
+    if (path === '/gateway/devices' && route.request().method() === 'POST')
+      return json(route, {
+        data: { _id: 'device_shortcut', name: 'iPhone (Shortcut)', transport: 'pull' },
+      })
     if (path === '/gateway/devices') return json(route, { data: devicesCopy })
     if (path === '/gateway/stats') return json(route, { data: mockStats })
     if (path === '/webhooks') return json(route, { data: mockWebhooks })

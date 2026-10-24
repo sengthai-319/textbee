@@ -2,12 +2,13 @@
 
 CrossHub turns a phone you own into your own SMS gateway. You run the server on your computer, and texts go out from a phone you own. Then you send texts from the dashboard, upload a contact list for a newsletter, or call the API from your own code.
 
-It works with both kinds of phone:
+It works with Android phones and iPhones, and the server runs on a Mac, Windows or Linux computer:
 
 - **[Android phones](#android-phones)**: the CrossHub app runs on the phone and sends texts from its SIM. It can also receive texts and forward them to you.
-- **[iPhone (through a Mac)](#iphone-through-a-mac)**: iPhones don't let apps send texts by themselves. Instead, a Mac sends each text through the Messages app, and your iPhone delivers it as a regular SMS.
+- **[iPhone (through a Mac)](#iphone-through-a-mac)**: iPhones don't let apps send texts by themselves. Instead, a Mac sends each text through the Messages app, and your iPhone delivers it as a regular SMS. It sends around the clock.
+- **[iPhone with Windows or no Mac (Shortcut)](#iphone-with-windows-or-no-mac-shortcut)**: an Apple Shortcut on the iPhone collects the waiting messages and sends them itself. It runs when you tap it, or at times you schedule.
 
-You can connect several phones of either kind to the same server.
+You can connect several phones of any kind to the same server.
 
 ```
  Dashboard / your code
@@ -15,6 +16,7 @@ You can connect several phones of either kind to the same server.
           ▼
  CrossHub server  ──push──▶  Android app  ──SIM──▶  📱 recipient
   (your computer)    ◀─pull───  Mac relay ─▶ Messages ─▶ iPhone ──▶  📱 recipient
+                     ◀─pull───  iPhone Shortcut ─────────▶ iPhone ──▶  📱 recipient
 ```
 
 ## Contents
@@ -22,7 +24,7 @@ You can connect several phones of either kind to the same server.
 1. [What you need](#1-what-you-need)
 2. [Run the server](#2-run-the-server)
 3. [Create your account and an API key](#3-create-your-account-and-an-api-key)
-4. Connect a phone: [Android phones](#android-phones) or [iPhone (through a Mac)](#iphone-through-a-mac)
+4. Connect a phone: [Android phones](#android-phones), [iPhone (through a Mac)](#iphone-through-a-mac), or [iPhone with Windows or no Mac](#iphone-with-windows-or-no-mac-shortcut)
 5. [Send messages](#5-send-messages)
 6. [Send an SMS newsletter](#6-send-an-sms-newsletter)
 7. [Use it away from home](#7-use-it-away-from-home)
@@ -45,8 +47,9 @@ You can connect several phones of either kind to the same server.
 - A free [Firebase](https://firebase.google.com) project. The server uses it to wake the app when there's a message to send.
 - [Android Studio](https://developer.android.com/studio), to build the app for your own server.
 
-**For iPhone:**
-- A Mac (macOS 12 or later) signed in to the **same Apple Account** as your iPhone. It can be the same computer that runs the server, or a different one.
+**For iPhone, either:**
+- **A Mac** (macOS 12 or later) signed in to the **same Apple Account** as your iPhone. It can be the same computer that runs the server, or a different one. *Or:*
+- **No Mac:** an iPhone on iOS 17 or later, with the built-in **Shortcuts** app. The server can run on Windows.
 
 > 💡 A separate prepaid SIM for sending is a good idea. If a carrier ever flags bulk sending, your personal number isn't the one affected.
 
@@ -70,7 +73,16 @@ On a Mac:
 sed -i '' "s|^JWT_SECRET=.*|JWT_SECRET=$(openssl rand -hex 32)|" api/.env
 sed -i '' "s|^NEXTAUTH_SECRET=.*|NEXTAUTH_SECRET=$(openssl rand -hex 32)|" web/.env
 ```
-On Linux, use `sed -i` instead of `sed -i ''`. On Windows, open both files and paste any long random text after `JWT_SECRET=` and `NEXTAUTH_SECRET=`.
+On Linux, use `sed -i` instead of `sed -i ''`.
+
+On **Windows**, in PowerShell:
+```powershell
+$s1 = [guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N')
+$s2 = [guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N')
+(Get-Content api\.env) -replace '^JWT_SECRET=.*', "JWT_SECRET=$s1" | Set-Content api\.env
+(Get-Content web\.env) -replace '^NEXTAUTH_SECRET=.*', "NEXTAUTH_SECRET=$s2" | Set-Content web\.env
+```
+Docker Desktop on Windows needs WSL 2, which its installer sets up. If `git` isn't installed, get it from [git-scm.com](https://git-scm.com/download/win).
 
 Check them:
 ```bash
@@ -80,7 +92,7 @@ grep -E "^(JWT_SECRET|NEXTAUTH_SECRET)=" api/.env web/.env
 **2.3 Decide how phones and browsers will reach the server.** This step matters for Android phones, and for opening the dashboard from another device.
 
 - **Everything on one computer:** keep the defaults (`localhost`). The iPhone path works this way when the relay runs on the same Mac as the server.
-- **Other devices on your Wi-Fi:** find the computer's network name or address. On a Mac, see System Settings › General › Sharing, where the name looks like `Your-iMac.local`. You can also use the IP address shown under Wi-Fi › Details, such as `192.168.1.20`. Then in **`web/.env`**, set:
+- **Other devices on your Wi-Fi:** find the computer's network name or address. On a Mac, see System Settings › General › Sharing, where the name looks like `Your-iMac.local`. You can also use the IP address shown under Wi-Fi › Details, such as `192.168.1.20`. On **Windows**, run `ipconfig` in PowerShell and use the **IPv4 Address** of your Wi-Fi or Ethernet adapter. Then allow Docker through Windows Defender Firewall for **Private networks** when Windows asks, or under Windows Security › Firewall › Allow an app. Then in **`web/.env`**, set:
   ```
   NEXT_PUBLIC_SITE_URL=http://Your-iMac.local:3000
   NEXT_PUBLIC_API_BASE_URL=http://Your-iMac.local:3001/api/v1
@@ -243,6 +255,72 @@ python3 textbee_mac.py install-agent
 - **Receiving:** incoming texts don't reach CrossHub.
 - **Uptime:** the Mac must stay on and online, and the iPhone needs signal.
 
+
+## iPhone with Windows or no Mac (Shortcut)
+
+Use this route if you don't have a Mac, for example when the server runs on Windows. An Apple **Shortcut** on the iPhone collects the waiting messages from your server and sends each one with the built-in **Send Message** action, then reports it as sent. It needs nothing besides the Shortcuts app.
+
+How it differs from the other routes: iPhones don't let anything run nonstop in the background, so messages go out **when the Shortcut runs**. You can tap it, run it from the Home Screen, or schedule it, for example every morning at 9:00. That fits newsletters and planned sends, not texts that must go out within seconds.
+
+**Before you start:** the iPhone must be able to reach the server. Use your computer's network address from [step 2.3](#2-run-the-server), such as `http://192.168.1.20:3001/api/v1`, with the iPhone on the same Wi-Fi, or [Tailscale](#7-use-it-away-from-home) from anywhere. To check, open `http://192.168.1.20:3001/api/v1/gateway/devices` in Safari on the iPhone. A short error message about authorization means it's reachable.
+
+### S1. Register the iPhone
+
+1. In the dashboard, click **Add device**, choose the **iPhone only** tab, and click **Register this iPhone**.
+2. It shows the **Server** address and the **Device ID**. Keep them handy, along with an API key (**New API key** on the dashboard).
+
+### S2. Build the Shortcut
+
+On the iPhone, open **Shortcuts**, tap **+**, and name the Shortcut **CrossHub Send**. Add these actions in order; search for each one by name. Where a step says *insert*, tap the field and pick the variable from the bar above the keyboard.
+
+**Settings (three values, set once):**
+1. **Text**: paste the Server address, e.g. `http://192.168.1.20:3001/api/v1`.
+2. **Set Variable**: name it `Server` (input: Text).
+3. **Text**: paste your API key.
+4. **Set Variable**: `Key`.
+5. **Text**: paste the Device ID.
+6. **Set Variable**: `Device`.
+
+**The sending loop:**
+
+7. **Repeat** `20` times. Each round sends up to 25 messages, so one run handles up to 500. Inside the Repeat:
+   1. **Text**: *insert* `Server`, type `/gateway/devices/`, *insert* `Device`, type `/messages/pending`.
+   2. **Get Contents of URL** (input: Text). Tap **Show More**: Method **GET**; under **Headers**, add `x-api-key` with value *insert* `Key`.
+   3. **Get Dictionary Value**: Get **Value** for `data` in *Contents of URL*.
+   4. **Count**: Count **Items** in *Dictionary Value*.
+   5. **If** *Count* **is** `0`: add **Stop This Shortcut** inside the If. (Delete the empty **Otherwise**, or leave it empty.)
+   6. **Repeat with Each** item in *Dictionary Value*. Inside it:
+      1. **Get Dictionary Value**: `message` in *Repeat Item*. Then **Set Variable** `Body`.
+      2. **Get Dictionary Value**: `recipients` in *Repeat Item*. Then **Get Item from List**: **First Item**. Then **Set Variable** `To`.
+      3. **Send Message**: message *insert* `Body`, recipients *insert* `To`. Tap the arrow and turn **Show When Run** off, so it sends without asking.
+      4. **Get Dictionary Value**: `smsId` in *Repeat Item*. Then **Set Variable** `SmsId`.
+      5. **Text**: *insert* `Server`, type `/gateway/devices/`, *insert* `Device`, type `/sms-status`.
+      6. **Get Contents of URL** (input: that Text). **Show More**: Method **PATCH**; Headers `x-api-key` = *insert* `Key`; **Request Body** **JSON** with two fields: `smsId` (Text) = *insert* `SmsId`, and `status` (Text) = `sent`.
+   7. After **End Repeat** (the inner one), add **Wait** `6` seconds. The server hands out a new batch at most every 5 seconds.
+
+The last action is the outer **End Repeat**.
+
+### S3. Test it
+
+1. In the dashboard, send one message to your own second number from **Messaging › Send**, choosing **iPhone (Shortcut)** under **Send from**.
+2. Run **CrossHub Send** by tapping it. The first time, iOS asks whether the Shortcut may connect to your server and send messages; choose **Always Allow** for both.
+3. The text goes out from your iPhone, and the dashboard's History shows it as **sent**.
+
+### S4. Run it on a schedule (optional)
+
+1. In Shortcuts, open the **Automation** tab, tap **+**, and choose **Time of Day**.
+2. Pick a time and how often to run it (daily, or on chosen days).
+3. Choose **Run Immediately**, and turn off **Notify When Run**.
+4. Select **CrossHub Send**.
+
+Add more automations for more times of day, or use the **Charger** trigger, which runs it whenever you plug in. To send a newsletter, queue it in the dashboard, then tap the Shortcut, or let the next scheduled run send it.
+
+**Limits of the Shortcut route:**
+- **Timing:** messages wait on the server until the Shortcut runs.
+- **Delivery:** "sent" means Messages accepted the text; delivery reports aren't available, and incoming texts don't reach CrossHub.
+- **Interruptions:** if a run stops partway, for example because the iPhone locked or lost Wi-Fi, just run it again; messages already reported as sent aren't sent again. The one exception: a message sent in the moment before the stop, but not yet reported. About 20 minutes later the server offers it again, and the next run sends it a second time. After an interrupted run, check History for messages still marked *dispatched*: they may already have gone out.
+- **Locked iPhone:** if a scheduled run doesn't send while the iPhone is locked, keep it unlocked or charging at that time, or run the Shortcut by hand.
+
 ---
 
 ## 5. Send messages
@@ -323,6 +401,9 @@ Nothing is exposed to the public internet. If you'd rather put it on a public do
 | iPhone relay: "Can't get participant" | Text Message Forwarding is off, or Messages on the Mac isn't signed in. See [I1](#i1-turn-on-text-message-forwarding). |
 | iPhone relay: "Not authorized to send Apple events" | Turn on Terminal › Messages under System Settings › Privacy & Security › Automation. |
 | iPhone relay exits with 403 | The relay was registered against a different server. Run `setup` again. |
+| Shortcut: "Could not connect to the server" | The iPhone can't reach the server. Use the computer's network address (not `localhost`), keep the iPhone on the same Wi-Fi, and on Windows allow Docker through the firewall for private networks. |
+| Shortcut runs but nothing is sent | Check the three settings at the top of the Shortcut (Server ends with `/api/v1`, the API key, the Device ID from the **iPhone only** tab), and that **Send from** was the iPhone (Shortcut) device. |
+| Shortcut asks before every message | Turn off **Show When Run** in the **Send Message** action. |
 
 Still stuck? [Open an issue](https://github.com/sengthai-319/textbee/issues) with what you ran and what it printed.
 

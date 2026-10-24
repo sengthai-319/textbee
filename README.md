@@ -5,9 +5,9 @@
   </picture>
 </p>
 
-<p align="center">Your own SMS gateway. Send texts from an Android phone, or from an iPhone through a Mac, with a dashboard and an API you host yourself.</p>
+<p align="center">Your own SMS gateway. Send texts from an Android phone or an iPhone, with a dashboard and an API you host yourself on Mac, Windows or Linux.</p>
 
-<p align="center"><a href="docs/SETUP.md"><b>Setup guide</b></a> · <a href="docs/SETUP.md#android-phones">Android</a> · <a href="docs/SETUP.md#iphone-through-a-mac">iPhone</a> · <a href="https://github.com/sengthai-319/textbee/issues">Issues</a></p>
+<p align="center"><a href="docs/SETUP.md"><b>Setup guide</b></a> · <a href="docs/SETUP.md#android-phones">Android</a> · <a href="docs/SETUP.md#iphone-through-a-mac">iPhone + Mac</a> · <a href="docs/SETUP.md#iphone-with-windows-or-no-mac-shortcut">iPhone + Windows</a> · <a href="https://github.com/sengthai-319/textbee/issues">Issues</a></p>
 
 ---
 
@@ -17,7 +17,8 @@
 - **SMS newsletters:** upload a CSV of subscribers and personalize each text with `{{ name }}`. Messages are spaced out to stay friendly with carriers.
 - **Android or iPhone:**
   - **Android:** the app sends from the phone's SIM, and can receive texts and forward them to your webhooks.
-  - **iPhone:** a Mac relay sends through the Messages app, and your iPhone delivers each text as SMS.
+  - **iPhone with a Mac:** a Mac relay sends through the Messages app, and your iPhone delivers each text as SMS, around the clock.
+  - **iPhone with Windows or no Mac:** an Apple Shortcut on the iPhone collects the waiting messages and sends them when it runs (on tap or on a schedule).
 - **History and status** for every message, with failure reasons.
 - **Self-hosted:** your contacts and messages stay in your own database. There are no plans, quotas or third-party SMS fees.
 
@@ -30,6 +31,7 @@
  CrossHub server  ──push──▶  Android app  ──SIM──▶  📱
   (Docker, your computer)
                      ◀─pull───  Mac relay ─▶ Messages ─▶ iPhone ──▶  📱
+                     ◀─pull───  iPhone Shortcut ─────────▶ iPhone ──▶  📱
 ```
 
 | Part | Folder | What it is |
