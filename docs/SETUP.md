@@ -264,9 +264,21 @@ python3 textbee_mac.py install-agent
 ```
 `uninstall-agent` removes it, and `status` shows the message counts. See [macos/README.md](../macos/README.md) for every setting.
 
+### I6. Receive replies (optional)
+
+Replies to your iPhone can show up in **Messaging › History › Received** and trigger webhooks. The relay reads them from Messages on the Mac, which needs one permission:
+
+1. Open **System Settings › Privacy & Security › Full Disk Access** and turn on **Terminal**. If you use `install-agent`, also add the Python it runs with: `python3 -c 'import sys; print(sys.executable)'` prints its path.
+2. Check it:
+   ```bash
+   python3 textbee_mac.py inbox
+   ```
+   It should say *Messages history is readable* and list your latest incoming messages.
+3. Restart the relay. From then on, each new text to your iPhone appears in CrossHub within a few seconds. Older conversations aren't uploaded.
+
 **Limits of the iPhone route:**
 - **Delivery:** "sent" means Messages accepted the text; delivery reports aren't available.
-- **Receiving:** incoming texts don't reach CrossHub.
+- **Receiving:** works through the Mac relay (I6), not the Shortcut.
 - **Uptime:** the Mac must stay on and online, and the iPhone needs signal.
 
 

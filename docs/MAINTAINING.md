@@ -43,7 +43,7 @@ These are the places where our code and textbee's disagree on purpose. They are 
 |---|---|---|
 | Pull transport | `api/src/gateway/pull-transport.ts`, plus `pull` branches in `gateway.service.ts` and `queue/sms-queue.processor.ts` | Devices with `transport: 'pull'` are never pushed to. They claim messages with `GET /gateway/devices/:id/messages/pending` and report with `PATCH /gateway/devices/:id/sms-status`. |
 | `transport`, `os: macOS/iOS` on devices | `gateway.dto.ts`, `os-version.ts` | Without these, textbee treats every device as Android. |
-| Mac relay | `macos/` | One stdlib-only Python file. Its filename and config folder (`textbee_mac.py`, `textbee-mac`) keep the old name so existing installs keep working. |
+| Mac relay | `macos/` | One stdlib-only Python file. Its filename and config folder (`textbee_mac.py`, `textbee-mac`) keep the old name so existing installs keep working. It also forwards incoming texts by reading Messages' `chat.db` (read only, with Full Disk Access) and posting them to `receive-sms`, the endpoint the Android app uses. |
 | iPhone Shortcut | `web/.../devices/iphone-shortcut-panel.tsx`, SETUP.md section S | Registers a pull device from the dashboard. |
 | No Android update prompts for pull devices | `web/.../devices/update-app-helpers.ts` | |
 
@@ -195,7 +195,7 @@ The version is pinned exactly in `web/package.json`. To update it, change both `
 |---|---|---|
 | API (`api/`) | `pnpm start:dev` (needs MongoDB and Redis; `docker compose up -d textbee-db textbee-redis` starts both) | `pnpm test` (Jest) |
 | Dashboard (`web/`) | `pnpm dev` | `pnpm typecheck`, `pnpm lint`, `pnpm test` (Vitest), `pnpm test:e2e` (Playwright, uses a mocked API) |
-| Mac relay (`macos/`) | `python3 textbee_mac.py run` | `python3 textbee_mac.py test --to +1…` sends one real message |
+| Mac relay (`macos/`) | `python3 textbee_mac.py run` | `python3 -m unittest macos/test_textbee_mac.py` (receiving, against a stand-in chat.db); `python3 textbee_mac.py test --to +1…` sends one real message |
 | Android (`android/`) | Android Studio. Point it at your server with `-PapiBaseUrl=http://<server>:3001/api/v1/` | GitHub Actions builds it on changes to `android/` |
 
 After changing an API endpoint, regenerate the public API description with `cd api && pnpm export:openapi` and commit `api/openapi.json`.
