@@ -68,6 +68,10 @@ The dashboard's **Messaging › API** tab has ready-to-copy versions in several 
 
 Only text people who agreed to hear from you, and honor opt-outs. Personal phone plans are meant for person-to-person texting, so keep bulk sends modest. See [Sending responsibly](docs/SETUP.md#9-sending-responsibly).
 
+## Maintaining this fork
+
+How CrossHub differs from textbee, how to pull in new textbee releases, and the dashboard's design rules: [docs/MAINTAINING.md](docs/MAINTAINING.md).
+
 ## Credits and license
 
 CrossHub is a fork of [textbee](https://github.com/textbee/textbee) by textbee.dev, released under the MIT License. This fork adds the iPhone Mac relay, removes the hosted service's billing, and rebrands and redesigns the dashboard. See [LICENSE](LICENSE).

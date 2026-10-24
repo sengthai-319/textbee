@@ -328,7 +328,7 @@ describe('MailService.sendTemplated', () => {
     process.env = env
   })
 
-  it('sends html and text from the notifications sender with the tag header', async () => {
+  it('sends html and text with the tag header, from the server default sender', async () => {
     const { service, mailerService, sentEmailModel } = setup()
 
     await expect(sendT2(service)).resolves.toBe('sent')
@@ -336,11 +336,13 @@ describe('MailService.sendTemplated', () => {
     const mail = mailerService.sendMail.mock.calls[0][0]
     expect(mail).toMatchObject({
       to: 'ada@example.com',
-      from: 'textbee <notifications@textbee.dev>',
-      replyTo: 'support@textbee.dev',
-      subject: 'Reset your textbee password',
+      subject: 'Reset your CrossHub password',
       headers: { 'X-SES-MESSAGE-TAGS': 'template=T2' },
     })
+    // No bundled sender: the mailer falls back to this server's MAIL_FROM,
+    // never to an address on someone else's domain.
+    expect(mail.from).toBeUndefined()
+    expect(mail.replyTo).toBeUndefined()
     expect(mail.headers['X-SES-CONFIGURATION-SET']).toBeUndefined()
     expect(mail.headers['List-Unsubscribe']).toBeUndefined()
     expect(mail.text).toContain('Hi Ada,')
