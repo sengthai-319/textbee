@@ -62,6 +62,9 @@ export interface Device {
   // returns. It is deliberately not modelled here yet: surfacing it is a
   // feature, not a fix, and belongs in its own change.
   appVersionCode?: number
+  // 'pull' for the Mac relay, which collects its messages instead of
+  // receiving a push; absent or 'fcm' for the Android app.
+  transport?: 'fcm' | 'pull'
   appStateInfo?: {
     hasSendSmsPermission?: boolean
     hasReadPhoneStatePermission?: boolean
