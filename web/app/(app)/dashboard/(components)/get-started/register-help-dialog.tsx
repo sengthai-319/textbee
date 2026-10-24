@@ -55,7 +55,7 @@ export default function RegisterHelpDialog({
             Allow restricted settings, then allow SMS.
           </li>
           <li>
-            Your phone should appear under Registered Devices on this dashboard
+            Your phone should appear under Devices on this dashboard
             when the link succeeds.
           </li>
           <li>

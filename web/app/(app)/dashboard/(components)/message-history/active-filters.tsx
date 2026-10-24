@@ -59,7 +59,7 @@ export default function ActiveFilters({ value, onChange }: ActiveFiltersProps) {
           <button
             type='button'
             onClick={() => onChange(chip.clear)}
-            className='inline-flex h-7 items-center gap-1 rounded-full border border-primary/30 bg-primary/10 pl-2.5 pr-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+            className='inline-flex h-7 items-center gap-1 rounded-full border border-transparent bg-primary/10 pl-2.5 pr-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
             aria-label={`Remove filter: ${chip.label}`}
             title={chip.key === 'batch' ? value.batchId : undefined}
           >

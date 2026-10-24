@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -10,12 +11,15 @@ import { Spinner } from '@/components/ui/spinner'
 import { Routes } from '@/config/routes'
 import { useToast } from '@/hooks/use-toast'
 import { useGenerateApiKey } from '@/lib/api'
-import { QrCode, Copy, Smartphone, Download, AlertTriangle } from 'lucide-react'
+import { QrCode, Copy, AlertTriangle } from 'lucide-react'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import QRCode from 'react-qr-code'
 
 export type GenerateApiKeyHandle = {
+  // Asks first ("Create an API key"), then shows the key
   open: () => void
+  // Skips the question, for flows where the person already chose to create one
+  generate: () => void
 }
 
 type GenerateApiKeyProps = {
@@ -42,9 +46,6 @@ const GenerateApiKey = forwardRef<GenerateApiKeyHandle, GenerateApiKeyProps>(
       setIsConfirmGenerateKeyModalOpen(true)
     }
 
-    useImperativeHandle(ref, () => ({
-      open: () => setIsConfirmGenerateKeyModalOpen(true),
-    }))
 
     const {
       isPending: isGeneratingApiKey,
@@ -60,6 +61,11 @@ const GenerateApiKey = forwardRef<GenerateApiKeyHandle, GenerateApiKeyProps>(
         },
       })
 
+    useImperativeHandle(ref, () => ({
+      open: () => setIsConfirmGenerateKeyModalOpen(true),
+      generate: () => void generateApiKey(),
+    }))
+
     const { toast } = useToast()
 
     const handleCopyKey = () => {
@@ -74,7 +80,7 @@ const GenerateApiKey = forwardRef<GenerateApiKeyHandle, GenerateApiKeyProps>(
       <>
         {showTrigger ? (
           <Button variant={triggerVariant} onClick={handleConfirmGenerateKey}>
-            <QrCode className='mr-2 h-4 w-4' />
+            <QrCode />
             {triggerLabel}
           </Button>
         ) : null}
@@ -85,27 +91,31 @@ const GenerateApiKey = forwardRef<GenerateApiKeyHandle, GenerateApiKeyProps>(
         >
           <DialogContent className='sm:max-w-md'>
             <DialogHeader>
-              <DialogTitle>Create new API Key</DialogTitle>
+              <DialogTitle>Create an API key</DialogTitle>
               <DialogDescription>
-                By clicking generate, you will be able to view your API key.
-                Make sure to save it before closing the modal as you will not be
-                able to view it again.
+                The key is shown once, right after you create it. Copy it or
+                scan it into the app before you close the next window.
               </DialogDescription>
             </DialogHeader>
-            <div className='flex flex-col space-y-4'>
+            <DialogFooter>
               <Button
+                variant='outline'
+                size='sm'
+                onClick={() => setIsConfirmGenerateKeyModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                size='sm'
                 onClick={() => generateApiKey()}
                 disabled={isGeneratingApiKey}
               >
-                {isGeneratingApiKey ? (
-                  <div className='flex justify-center items-center h-full'>
-                    <Spinner size='sm' className='text-primary-foreground' />
-                  </div>
-                ) : (
-                  'Generate API Key'
+                {isGeneratingApiKey && (
+                  <Spinner size='sm' className='text-accent-foreground' />
                 )}
+                Create key
               </Button>
-            </div>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 
@@ -115,88 +125,59 @@ const GenerateApiKey = forwardRef<GenerateApiKeyHandle, GenerateApiKeyProps>(
         >
           <DialogContent className='sm:max-w-lg'>
             <DialogHeader>
-              <DialogTitle>Your API Key</DialogTitle>
+              <DialogTitle>Your API key</DialogTitle>
               <DialogDescription>
-                Use this API key to connect your device or authenticate your
-                service.
+                Scan the code with the CrossHub Android app, or copy the key
+                into the Mac relay, the iPhone Shortcut or your own code.
               </DialogDescription>
             </DialogHeader>
 
-            <div className='space-y-6'>
-              <div className='flex justify-center p-4 bg-muted dark:bg-white rounded-lg '>
+            <div className='space-y-4'>
+              <div className='flex justify-center rounded-2xl bg-white p-5'>
                 {generatedApiKey?.data && (
-                  <QRCode value={generatedApiKey?.data} size={120} />
+                  <QRCode value={generatedApiKey?.data} size={132} />
                 )}
               </div>
 
-              <div className='space-y-2'>
-                <div className='flex items-center gap-2'>
-                  <code className='relative rounded bg-muted px-[0.5rem] py-[0.3rem] font-mono text-sm flex-1'>
-                    {generatedApiKey?.data}
-                  </code>
-                  <Button
-                    variant='outline'
-                    size='icon'
-                    aria-label='Copy API key'
-                    title='Copy API key'
-                    onClick={handleCopyKey}
-                  >
-                    <Copy className='h-4 w-4' />
-                  </Button>
-                </div>
+              <div className='flex items-center gap-2 rounded-xl bg-surface-secondary py-1.5 pl-3 pr-1.5'>
+                <code className='min-w-0 flex-1 break-all font-mono text-sm'>
+                  {generatedApiKey?.data}
+                </code>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='size-8 shrink-0 md:size-8'
+                  aria-label='Copy API key'
+                  title='Copy API key'
+                  onClick={handleCopyKey}
+                >
+                  <Copy />
+                </Button>
               </div>
 
-              <div className='space-y-4 text-sm'>
-                <div className='space-y-2'>
-                  <h4 className='font-medium flex items-center gap-2'>
-                    <Smartphone className='h-4 w-4' />
-                    For Device Registration
-                  </h4>
-                  <p className='text-muted-foreground'>
-                    Open the CrossHub app and scan the QR code, or manually enter
-                    the API key in the app and click register/update.
-                  </p>
-                </div>
-
-                <div className='space-y-2'>
-                  <h4 className='font-medium flex items-center gap-2'>
-                    <Download className='h-4 w-4' />
-                    Don&apos;t have the app?
-                  </h4>
-                  <p className='text-muted-foreground'>
-                    Download the APK from{' '}
-                    <a
-                      href={Routes.downloadAndroidApp}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-primary hover:underline'
-                    >
-                      {Routes.downloadAndroidApp}
-                    </a>{' '}
-                    and install it.
-                  </p>
-                </div>
-
-                <div className='space-y-2'>
-                  <h4 className='font-medium'>For External Services</h4>
-                  <p className='text-muted-foreground'>
-                    Copy the API key and store it securely for authenticating your
-                    external service with CrossHub.
-                  </p>
-                </div>
-
-                <div className='rounded-md bg-warning/10 p-3 mt-4'>
-                  <div className='flex items-center gap-2 text-warning'>
-                    <AlertTriangle className='h-4 w-4' />
-                    <p className='text-sm font-medium'>Important</p>
-                  </div>
-                  <p className='mt-2 text-sm text-warning'>
-                    Once you close this modal, you will not be able to view your
-                    API key again. Make sure to save it before closing.
-                  </p>
-                </div>
+              <div className='flex gap-3 rounded-2xl bg-warning-soft px-4 py-3 text-sm'>
+                <AlertTriangle className='mt-0.5 size-4 shrink-0 text-warning' />
+                <p className='text-foreground'>
+                  You won&apos;t see this key again after you close this
+                  window. No app yet?{' '}
+                  <a
+                    href={Routes.downloadAndroidApp}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='font-medium text-accent underline-offset-4 hover:underline'
+                  >
+                    Get the Android app
+                  </a>
+                  .
+                </p>
               </div>
             </div>
+
+            <DialogFooter>
+              <Button size='sm' onClick={() => setIsGenerateKeyModalOpen(false)}>
+                Done
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </>

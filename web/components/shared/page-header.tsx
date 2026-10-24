@@ -3,6 +3,8 @@ import type { ComponentType, ReactNode } from 'react'
 type PageHeaderProps = {
   title: string
   description?: string
+  // Accepted for existing callers but not drawn: a tinted icon tile beside
+  // every heading was decoration, and the sidebar already shows the icon.
   icon?: ComponentType<{ className?: string }>
   actions?: ReactNode
 }
@@ -18,23 +20,15 @@ type PageHeaderProps = {
 export default function PageHeader({
   title,
   description,
-  icon: Icon,
   actions,
 }: PageHeaderProps) {
   return (
     <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between'>
-      <div className='flex items-start gap-3'>
-        {Icon && (
-          <span className='mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary'>
-            <Icon className='h-5 w-5' />
-          </span>
+      <div className='space-y-1'>
+        <h2 className='text-2xl font-semibold tracking-tight'>{title}</h2>
+        {description && (
+          <p className='text-sm text-muted-foreground'>{description}</p>
         )}
-        <div className='space-y-1'>
-          <h2 className='text-2xl font-semibold tracking-tight'>{title}</h2>
-          {description && (
-            <p className='text-sm text-muted-foreground'>{description}</p>
-          )}
-        </div>
       </div>
       {actions}
     </div>

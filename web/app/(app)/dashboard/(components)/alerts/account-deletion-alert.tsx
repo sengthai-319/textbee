@@ -38,7 +38,7 @@ export default function AccountDeletionAlert() {
   )
 
   return (
-    <Alert className='border-destructive/30 bg-destructive/[0.07] text-foreground'>
+    <Alert className='border-transparent bg-destructive/[0.07] text-foreground'>
       <AlertDescription className='flex items-center gap-2'>
         <AlertTriangle className='h-5 w-5 flex-shrink-0 text-destructive' />
         <div className='text-sm md:text-base'>

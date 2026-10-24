@@ -17,7 +17,7 @@ export default function SmsPermissionAlert() {
   const phone = status.deviceName ? ` on ${status.deviceName}` : ''
 
   return (
-    <Alert className='border-destructive/30 bg-destructive/5 text-foreground'>
+    <Alert className='border-transparent bg-destructive/5 text-foreground'>
       <AlertDescription className='flex flex-col sm:flex-row flex-wrap items-center gap-2 md:gap-4'>
         <span className='w-full sm:flex-1 text-center sm:text-left text-sm md:text-base flex items-start justify-center sm:justify-start gap-2'>
           <ShieldAlert className='h-5 w-5 shrink-0 text-destructive mt-0.5' />

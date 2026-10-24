@@ -84,7 +84,7 @@ export default function GetStartedCard() {
 
   if (status === 'celebrate') {
     return (
-      <Card className='border-primary/25 animate-fade-in-up'>
+      <Card className='border-transparent animate-fade-in-up'>
         <CardContent className='flex flex-col items-center gap-3 py-8 text-center'>
           <div className='rounded-full bg-primary/15 p-3 animate-check-pop'>
             <PartyPopper className='h-7 w-7 text-primary' />
@@ -117,7 +117,7 @@ export default function GetStartedCard() {
       <button
         type='button'
         onClick={() => setMinimizedPersisted(false)}
-        className='flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10'
+        className='flex w-full items-center gap-3 rounded-xl border border-transparent bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10'
       >
         <Sparkles className='h-4 w-4 shrink-0 text-primary' />
         <span className='text-sm font-medium'>
@@ -138,7 +138,7 @@ export default function GetStartedCard() {
   }
 
   return (
-    <Card className='border-primary/25 animate-fade-in'>
+    <Card className='border-transparent animate-fade-in'>
       <CardHeader className='pb-3'>
         <div className='flex items-start justify-between gap-4'>
           <div className='min-w-0'>
@@ -203,7 +203,7 @@ export default function GetStartedCard() {
                         'border-2 border-primary bg-background text-primary',
                       !step.isDone &&
                         !isActive &&
-                        'bg-muted text-muted-foreground'
+                        'bg-default text-muted-foreground'
                     )}
                   >
                     {step.isDone ? (
@@ -258,7 +258,7 @@ export default function GetStartedCard() {
                       </p>
                     )}
                     {!step.isDone && (
-                      <span className='rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
+                      <span className='rounded-full bg-default px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
                         {step.timeEstimate}
                       </span>
                     )}

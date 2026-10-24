@@ -33,11 +33,9 @@ function WebhooksSummaryRow() {
   return (
     <Link
       href='/dashboard/webhooks'
-      className='group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:bg-muted/50'
+      className='card card--default group flex-row items-center gap-3 px-5 py-4 transition-colors hover:bg-surface-hover'
     >
-      <div className='rounded-full bg-primary/10 p-2'>
-        <Webhook className='h-4 w-4 text-primary' />
-      </div>
+      <Webhook className='h-4 w-4 shrink-0 text-muted-foreground' />
       <div className='min-w-0 flex-1'>
         <p className='text-sm font-medium'>Webhooks</p>
         <p className='truncate text-xs text-muted-foreground'>

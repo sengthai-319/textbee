@@ -89,12 +89,17 @@ test.describe('dashboard (mocked API, no real backend)', () => {
 
       // Key generation is still reachable, just no longer the first thing.
       await expect(
-        dialog.getByRole('heading', { name: 'Create new API Key' })
+        page.getByRole('heading', { name: 'Your API key' })
       ).toHaveCount(0)
-      await dialog.getByRole('button', { name: 'Continue' }).click()
+      // Choosing "Create API key" here is the decision, so the key comes
+      // straight up without a second "are you sure" window.
+      await dialog.getByRole('button', { name: 'Create API key' }).click()
       await expect(
-        page.getByRole('heading', { name: 'Create new API Key' })
+        page.getByRole('heading', { name: 'Your API key' })
       ).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Create an API key' })
+      ).toHaveCount(0)
     })
   }
 
@@ -109,7 +114,7 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     // That button asks for a key, so device instructions would be noise.
     await page.getByRole('button', { name: 'New API key' }).click()
     await expect(
-      page.getByRole('heading', { name: 'Create new API Key' })
+      page.getByRole('heading', { name: 'Create an API key' })
     ).toBeVisible()
   })
 
@@ -245,7 +250,8 @@ test.describe('dashboard (mocked API, no real backend)', () => {
 
     await page.getByRole('button', { name: 'Add device' }).first().click()
     const dialog = page.getByRole('dialog')
-    await dialog.getByRole('tab', { name: 'iPhone only' }).click()
+    // The tab says who it is for: an iPhone with a Windows PC (no Mac)
+    await dialog.getByRole('tab', { name: 'iPhone + Windows' }).click()
     await dialog.getByRole('button', { name: 'Register this iPhone' }).click()
 
     await expect(dialog.getByText('device_shortcut')).toBeVisible()

@@ -77,7 +77,7 @@ export function WebhookCard({
       <CollapsibleTrigger asChild>
         <div
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors',
+            'flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-default/40 transition-colors',
             'select-none',
           )}
           role='button'
@@ -102,7 +102,7 @@ export function WebhookCard({
             </span>
             <Badge
               variant={webhook.isActive ? 'default' : 'secondary'}
-              className='h-5 shrink-0 px-1.5 text-[11px] uppercase tracking-wide'
+              className='h-5 shrink-0 px-1.5 text-[11px]'
             >
               {webhook.isActive ? 'Active' : 'Inactive'}
             </Badge>
@@ -151,9 +151,9 @@ export function WebhookCard({
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className='border-t bg-muted/20 px-3 py-3'>
+        <div className='border-t bg-default/20 px-3 py-3'>
           <dl className='grid gap-x-4 gap-y-3 text-sm sm:grid-cols-[120px_minmax(0,1fr)]'>
-            <dt className='pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground'>
+            <dt className='pt-2 text-xs font-medium text-muted-foreground'>
               Delivery URL
             </dt>
             <dd className='flex items-center gap-1 min-w-0'>
@@ -163,7 +163,7 @@ export function WebhookCard({
               <CopyButton value={webhook.deliveryUrl} label='Copy URL' />
             </dd>
 
-            <dt className='pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground'>
+            <dt className='pt-2 text-xs font-medium text-muted-foreground'>
               Signing Secret
             </dt>
             <dd className='flex items-center gap-1 min-w-0'>
@@ -186,7 +186,7 @@ export function WebhookCard({
               <CopyButton value={webhook.signingSecret} label='Copy Secret' />
             </dd>
 
-            <dt className='pt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground'>
+            <dt className='pt-1 text-xs font-medium text-muted-foreground'>
               Events
             </dt>
             <dd className='flex flex-wrap gap-1.5'>

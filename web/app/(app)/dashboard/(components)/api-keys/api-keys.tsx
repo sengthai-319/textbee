@@ -140,7 +140,7 @@ export default function ApiKeys() {
       <Card className='flex min-w-0 max-w-full flex-col max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0'>
         <CardHeader className='flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2 max-md:min-h-11 max-md:flex-nowrap max-md:px-1 max-md:py-0'>
           <CardTitle className='whitespace-nowrap text-lg max-md:label-mono'>
-            API Keys
+            API keys
             {!isPending && !error && (
               <span className='ml-2 text-sm font-normal text-muted-foreground max-md:ml-1.5 max-md:text-xs'>
                 {apiKeys?.length ?? 0}
@@ -221,7 +221,7 @@ export default function ApiKeys() {
             {apiKeys?.map((apiKey: ApiKeyRow) => (
               <div
                 key={apiKey._id}
-                className='flex items-start gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50 max-md:min-h-16 max-md:items-center max-md:rounded-none max-md:py-2.5 max-md:pl-3.5 max-md:pr-1'
+                className='flex items-start gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-default/50 max-md:min-h-16 max-md:items-center max-md:rounded-none max-md:py-2.5 max-md:pl-3.5 max-md:pr-1'
               >
                 <Key className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground max-md:mt-0' />
                 <div className='min-w-0 flex-1 space-y-1 max-md:space-y-0.5'>
@@ -232,7 +232,7 @@ export default function ApiKeys() {
                   </div>
                   {/* inline-block so the tinted background hugs the key
                       instead of stretching into a full-width bar. */}
-                  <code className='hidden max-w-full truncate rounded bg-muted px-1.5 py-0.5 align-middle font-mono text-xs text-muted-foreground md:inline-block'>
+                  <code className='hidden max-w-full truncate rounded bg-default px-1.5 py-0.5 align-middle font-mono text-xs text-muted-foreground md:inline-block'>
                     {apiKey.apiKey}
                   </code>
                   <p className='flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground md:hidden'>
@@ -302,7 +302,7 @@ export default function ApiKeys() {
 
             <button
               type='button'
-              className='flex min-h-[52px] w-full items-center justify-between pl-3.5 pr-3 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/50 md:hidden'
+              className='flex min-h-[52px] w-full items-center justify-between pl-3.5 pr-3 text-left text-sm text-muted-foreground transition-colors hover:bg-default/50 md:hidden'
               onClick={() => setIsRevokedModalOpen(true)}
             >
               Revoked keys

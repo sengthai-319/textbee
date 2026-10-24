@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
+@import '@heroui/styles';
 
 /* Tailwind v4 dark mode driven by a `.dark` class (set by next-themes). */
 @custom-variant dark (&:is(.dark *));
@@ -14,46 +14,37 @@
  * (inset content). Every text token clears 4.5:1 on the surfaces it sits on.
  */
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-shell: hsl(var(--shell));
-  --color-subtle-foreground: hsl(var(--subtle-foreground));
-  --color-success: hsl(var(--success));
-  --color-warning: hsl(var(--warning));
+  /*
+   * HeroUI owns the core color names (background, foreground, surface,
+   * overlay, default, accent, muted, border, danger, success, warning) and
+   * the radius scale. These aliases keep the app's older class names
+   * (bg-card, bg-primary, text-muted-foreground, ...) pointing at the same
+   * HeroUI tokens, so both vocabularies render one design.
+   */
+  --color-card: var(--surface);
+  --color-card-foreground: var(--surface-foreground);
+  --color-popover: var(--overlay);
+  --color-popover-foreground: var(--overlay-foreground);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-foreground);
+  --color-brand-foreground: var(--accent-foreground);
+  --color-secondary: var(--default);
+  --color-secondary-foreground: var(--default-foreground);
+  --color-muted-foreground: var(--muted);
+  --color-subtle-foreground: var(--muted);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--danger-foreground);
+  --color-input: var(--field-border);
+  --color-ring: var(--focus);
+  /* App chrome (header, sidebar, footer) sits on the page background */
+  --color-shell: var(--background);
+  --color-brand-ink: var(--brand-ink);
 
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--brand-foreground));
-
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-
-  --color-brand-foreground: hsl(var(--brand-foreground));
-  --color-brand-ink: hsl(var(--brand-ink));
-
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   /* Gold ramp around the logo gold (#C89B3C, 500). */
   --color-brand-50: #fbf6ea;
@@ -68,13 +59,7 @@
   --color-brand-900: #4f3a12;
   --color-brand-950: #2e220a;
 
-  --radius-xl: var(--radius);
-  --radius-lg: calc(var(--radius) - 2px);
-  --radius-md: calc(var(--radius) - 4px);
-  --radius-sm: calc(var(--radius) - 8px);
-
-  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif,
-    system-ui, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
@@ -141,100 +126,110 @@
   }
 }
 
+/*
+ * CrossHub palette on HeroUI's token names. Unlayered, so it wins over the
+ * HeroUI defaults (which live in a cascade layer); everything HeroUI derives
+ * from these (hover, soft and field shades) follows automatically.
+ */
 :root {
   color-scheme: light;
-  /* Warm paper neutrals; gold is darkened so text and icons clear AA on white */
-  --background: 40 25% 97.5%;
-  --foreground: 0 0% 11%;
-  --shell: 40 16% 94%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 11%;
+  --radius: 0.5rem;
+  --background: hsl(40 25% 97.5%);
+  --foreground: hsl(0 0% 11%);
+  --surface: hsl(0 0% 100%);
+  --surface-foreground: var(--foreground);
+  --surface-secondary: hsl(40 18% 95%);
+  --surface-tertiary: hsl(40 14% 92.5%);
+  --overlay: hsl(0 0% 100%);
+  --overlay-foreground: var(--foreground);
+  --muted: hsl(30 5% 37%);
+  --default: hsl(40 12% 92%);
+  --default-foreground: var(--foreground);
   /* #876318, the logo gold (#C89B3C) darkened for 5.6:1 on white */
-  --primary: 40 70% 31%;
-  --brand-foreground: 0 0% 100%;
+  --accent: hsl(40 70% 31%);
+  --accent-foreground: hsl(0 0% 100%);
+  --success: hsl(160 84% 24%);
+  --success-foreground: hsl(0 0% 100%);
+  --warning: hsl(35 95% 30%);
+  --warning-foreground: hsl(0 0% 100%);
+  --danger: hsl(0 72% 42%);
+  --danger-foreground: hsl(0 0% 100%);
+  --segment: hsl(0 0% 100%);
+  --segment-foreground: var(--foreground);
+  --border: hsl(40 12% 88%);
+  --separator: hsl(40 12% 90%);
+  --focus: var(--accent);
+  --link: var(--accent);
+  --field-background: hsl(0 0% 100%);
+  --field-foreground: var(--foreground);
+  --field-border: hsl(40 12% 85%);
+  --field-border-width: 1px;
   /* Logo wordmark: the logo navy (#1B3A5C) */
-  --brand-ink: 211 55% 23%;
-  --secondary: 40 12% 91%;
-  --secondary-foreground: 0 0% 11%;
-  --muted: 40 12% 91%;
-  --muted-foreground: 30 5% 37%;
-  --subtle-foreground: 30 4% 41%;
-  --accent: 40 12% 91%;
-  --accent-foreground: 0 0% 11%;
-  --destructive: 0 72% 42%;
-  --destructive-foreground: 0 0% 100%;
-  --success: 160 84% 24%;
-  --warning: 35 95% 28%;
-  --border: 40 12% 87%;
-  --input: 40 12% 85%;
-  --ring: 40 70% 31%;
-  --chart-1: 41 56% 51%;
-  --chart-2: 170 45% 36%;
-  --chart-3: 210 12% 40%;
-  --chart-4: 24 60% 45%;
-  --chart-5: 75 35% 38%;
-  --radius: 0.875rem;
+  --brand-ink: hsl(211 55% 23%);
+  --chart-1: hsl(41 56% 51%);
+  --chart-2: hsl(170 45% 36%);
+  --chart-3: hsl(210 12% 40%);
+  --chart-4: hsl(24 60% 45%);
+  --chart-5: hsl(75 35% 38%);
 }
 
 .dark {
   color-scheme: dark;
   /* Charcoal from the logo tile (#2E2E2E), stepped so surfaces nest */
-  --background: 0 0% 10.5%;
-  --foreground: 40 12% 92%;
-  --shell: 0 0% 8%;
-  --card: 0 0% 13.5%;
-  --card-foreground: 40 12% 92%;
-  --popover: 0 0% 15%;
-  --popover-foreground: 40 12% 92%;
+  --background: hsl(0 0% 9%);
+  --foreground: hsl(40 12% 92%);
+  --surface: hsl(0 0% 12.5%);
+  --surface-foreground: var(--foreground);
+  --surface-secondary: hsl(0 0% 15.5%);
+  --surface-tertiary: hsl(0 0% 18%);
+  --overlay: hsl(0 0% 13.5%);
+  --overlay-foreground: var(--foreground);
+  --muted: hsl(40 6% 64%);
+  --default: hsl(0 0% 18%);
+  --default-foreground: var(--foreground);
   /* The logo gold, lifted slightly for text on charcoal */
-  --primary: 41 60% 56%;
-  --brand-foreground: 0 0% 9%;
+  --accent: hsl(41 60% 56%);
+  --accent-foreground: hsl(0 0% 9%);
+  --success: hsl(152 55% 52%);
+  --success-foreground: hsl(0 0% 9%);
+  --warning: hsl(38 92% 58%);
+  --warning-foreground: hsl(0 0% 9%);
+  --danger: hsl(0 80% 70%);
+  --danger-foreground: hsl(0 0% 9%);
+  --segment: hsl(0 0% 24%);
+  --segment-foreground: var(--foreground);
+  --border: hsl(0 0% 19%);
+  --separator: hsl(0 0% 17%);
+  --focus: var(--accent);
+  --link: var(--accent);
+  --field-background: hsl(0 0% 14%);
+  --field-foreground: var(--foreground);
+  --field-border: hsl(0 0% 22%);
   /* Navy is unreadable on charcoal, so the wordmark takes the text color */
-  --brand-ink: 40 12% 92%;
-  --secondary: 0 0% 17.5%;
-  --secondary-foreground: 40 12% 92%;
-  --muted: 0 0% 17.5%;
-  --muted-foreground: 40 6% 66%;
-  --subtle-foreground: 40 5% 61%;
-  --accent: 0 0% 17.5%;
-  --accent-foreground: 40 12% 92%;
-  --destructive: 0 80% 70%;
-  --destructive-foreground: 0 0% 9%;
-  --success: 152 55% 52%;
-  --warning: 38 92% 58%;
-  --border: 0 0% 20%;
-  --input: 0 0% 23%;
-  --ring: 41 60% 56%;
-  --chart-1: 41 60% 56%;
-  --chart-2: 170 45% 50%;
-  --chart-3: 210 15% 65%;
-  --chart-4: 24 60% 58%;
-  --chart-5: 75 35% 52%;
+  --brand-ink: hsl(40 12% 92%);
+  --chart-1: hsl(41 60% 56%);
+  --chart-2: hsl(170 45% 50%);
+  --chart-3: hsl(210 15% 65%);
+  --chart-4: hsl(24 60% 58%);
+  --chart-5: hsl(75 35% 52%);
 }
 
-/* Section and column labels: mono, uppercase, muted */
+/* Section and column labels: small, muted, sentence case */
 @utility label-mono {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--muted);
 }
 
-/* Card frame for single-element panels: shell ring plus hairline, no extra markup */
+/* Single-element panels: a plain HeroUI surface */
 @utility frame {
-  box-shadow:
-    0 0 0 4px hsl(var(--shell)),
-    0 0 0 5px hsl(var(--border));
+  background-color: var(--surface);
+  box-shadow: var(--surface-shadow);
 }
 
-/* Figures: mono with tabular digits */
+/* Figures: tabular digits in the body face */
 @utility num {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -244,24 +239,16 @@
  */
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    border-color: var(--border);
   }
   h1,
   h2,
   h3 {
-    font-family: var(--font-display);
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
   }
   body {
-    background-color: hsl(var(--background));
-    /* A faint gold glow from the top right gives the charcoal some depth */
-    background-image: radial-gradient(
-      70rem 36rem at 100% -12rem,
-      hsl(var(--primary) / 0.07),
-      transparent 70%
-    );
-    background-attachment: fixed;
-    color: hsl(var(--foreground));
+    background-color: var(--background);
+    color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     /* Safety net: an oversized element must never widen the page sideways. */

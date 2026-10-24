@@ -101,7 +101,7 @@ export default function UpdateAppModal() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-3 rounded-xl border bg-shell p-4'>
+        <div className='space-y-3 rounded-2xl bg-surface-secondary p-4'>
           <div className='flex items-start gap-3'>
             <Sparkles className='mt-0.5 h-4 w-4 text-primary' />
             <div className='space-y-1 text-sm text-muted-foreground'>

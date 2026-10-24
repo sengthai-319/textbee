@@ -166,7 +166,7 @@ export default function FiltersBar({
 
       <div className='flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center'>
         <div
-          className='flex w-full gap-1 overflow-x-auto rounded-lg bg-muted p-1 sm:w-fit'
+          className='flex w-full gap-1 overflow-x-auto rounded-lg bg-default p-1 sm:w-fit'
           role='tablist'
           aria-label='Message direction'
         >

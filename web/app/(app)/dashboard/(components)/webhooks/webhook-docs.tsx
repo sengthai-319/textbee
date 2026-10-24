@@ -110,8 +110,8 @@ def webhook():
 export function WebhookDocs() {
   return (
     <Accordion type='multiple' className='w-full space-y-3 sm:space-y-4'>
-      <AccordionItem value='delivery' className='frame border rounded-lg bg-card'>
-        <AccordionTrigger className='px-3 sm:px-4 hover:no-underline [&[data-state=open]>div]:bg-muted'>
+      <AccordionItem value='delivery' className='card card--default gap-0 border-b-0 px-5 py-0'>
+        <AccordionTrigger className='px-3 sm:px-4 hover:no-underline [&[data-state=open]>div]:bg-default'>
           <div className='flex items-center gap-2 py-2 -my-2 px-2 rounded-md'>
             <AlertCircle className='h-4 w-4' />
             <span className='text-sm sm:text-base'>Webhook Delivery Information</span>
@@ -137,8 +137,8 @@ export function WebhookDocs() {
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value='implementation' className='frame border rounded-lg bg-card'>
-        <AccordionTrigger className='px-4 hover:no-underline [&[data-state=open]>div]:bg-muted'>
+      <AccordionItem value='implementation' className='card card--default gap-0 border-b-0 px-5 py-0'>
+        <AccordionTrigger className='px-4 hover:no-underline [&[data-state=open]>div]:bg-default'>
           <div className='flex items-center gap-2 py-2 -my-2 px-2 rounded-md'>
             <AlertCircle className='h-4 w-4' />
             <span>Security & Implementation Guide</span>

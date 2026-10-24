@@ -115,7 +115,7 @@ export default function MapStep({ bulk }: { bulk: BulkSendState }) {
               {plan.counts.valid.toLocaleString()} will receive a message
             </span>
             {plan.counts.empty > 0 && (
-              <span className='rounded-full bg-muted px-2.5 py-1 font-medium text-muted-foreground'>
+              <span className='rounded-full bg-default px-2.5 py-1 font-medium text-muted-foreground'>
                 {plan.counts.empty} with no number
               </span>
             )}

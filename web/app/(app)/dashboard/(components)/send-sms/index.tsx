@@ -28,7 +28,6 @@ import {
   AlertCircle,
   BookOpen,
   CheckCircle2,
-  MessageSquare,
   Send,
   ShieldAlert,
 } from 'lucide-react'
@@ -122,10 +121,7 @@ export default function SendSms() {
   return (
     <Card>
       <CardHeader>
-        <div className='flex items-center gap-2'>
-          <MessageSquare className='h-5 w-5 text-primary' />
-          <CardTitle>Send SMS</CardTitle>
-        </div>
+        <CardTitle>Send SMS</CardTitle>
         <CardDescription>
           Send a message from one of your connected devices.
         </CardDescription>

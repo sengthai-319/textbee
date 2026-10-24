@@ -103,7 +103,7 @@ export function NotificationTile({
               type='button'
               aria-label={`Dismiss: ${notification.title}`}
               onClick={() => onDismiss(notification)}
-              className='rounded-md p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring/60'
+              className='rounded-md p-0.5 text-muted-foreground transition-colors hover:bg-default hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring/60'
             >
               <X className='h-3.5 w-3.5' />
             </button>

@@ -62,7 +62,7 @@ export default function VerifyEmailAlert() {
   }
 
   return (
-    <Alert className='border-destructive/30 bg-destructive/[0.07] text-foreground'>
+    <Alert className='border-transparent bg-destructive/[0.07] text-foreground'>
       <AlertDescription className='flex flex-col sm:flex-row flex-wrap items-center gap-2 md:gap-4'>
         <span className='w-full sm:flex-1 text-center sm:text-left text-sm md:text-base font-medium flex items-center justify-center sm:justify-start gap-2'>
           <ShieldAlert className='h-5 w-5 text-destructive' />

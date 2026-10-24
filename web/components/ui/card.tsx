@@ -9,7 +9,9 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "min-w-0 rounded-xl border bg-shell p-1 text-card-foreground",
+      // HeroUI's card surface. Padding lives on the parts, so a card with only
+      // a CardContent, or a header with a full-bleed table, both line up.
+      "card card--default min-w-0 gap-0 p-0 text-foreground",
       className
     )}
     {...props}
@@ -23,7 +25,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 px-5 pb-3.5 pt-4", className)}
+    className={cn("card__header gap-1 px-5 pb-0 pt-5", className)}
     {...props}
   />
 ))
@@ -35,7 +37,7 @@ const CardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("font-display font-semibold leading-none tracking-tight", className)}
+    className={cn("card__title text-base font-semibold leading-6", className)}
     {...props}
   />
 ))
@@ -49,7 +51,7 @@ const CardDescription = React.forwardRef<
   // producing invalid <p> nesting and hydration errors.
   <div
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("card__description", className)}
     {...props}
   />
 ))
@@ -59,7 +61,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("rounded-lg border bg-card p-5 shadow-[0_1px_2px_rgb(0_0_0/0.04)]", className)} {...props} />
+  <div ref={ref} className={cn("p-5 [.card\\_\\_header+&]:pt-4", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -69,7 +71,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center px-5 py-3", className)}
+    className={cn("flex items-center px-5 pb-5 pt-0", className)}
     {...props}
   />
 ))

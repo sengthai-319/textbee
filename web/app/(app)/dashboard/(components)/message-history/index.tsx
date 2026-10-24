@@ -141,7 +141,7 @@ export default function MessageHistory() {
     return (
       <div className='space-y-4'>
         <Skeleton className='h-9 w-full' />
-        <div className='rounded-xl border border-border'>
+        <div className='card card--default gap-0 p-0'>
           {[1, 2, 3, 4].map((i) => (
             <MessageRowSkeleton key={i} />
           ))}
@@ -186,7 +186,7 @@ export default function MessageHistory() {
       {/* The API answers 404 for a batch that is not on this account, which a
           shared link can carry. */}
       {isMissingBatch ? (
-        <div className='rounded-xl border border-border'>
+        <div className='card card--default gap-0 p-0'>
           <EmptyState
             icon={SearchX}
             title='This batch is not on your account'
@@ -207,7 +207,7 @@ export default function MessageHistory() {
       )}
 
       {isLoadingMessages ? (
-        <div className='rounded-xl border border-border'>
+        <div className='card card--default gap-0 p-0'>
           {[1, 2, 3, 4].map((i) => (
             <MessageRowSkeleton key={i} />
           ))}
@@ -216,7 +216,7 @@ export default function MessageHistory() {
         // A search that found nothing is a different situation from a device
         // that has never sent a message, and needs a different way out.
         isFiltered ? (
-          <div className='rounded-xl border border-border'>
+          <div className='card card--default gap-0 p-0'>
             <EmptyState
               icon={SearchX}
               title={
@@ -243,7 +243,7 @@ export default function MessageHistory() {
             </div>
           </div>
         ) : (
-          <div className='rounded-xl border border-border'>
+          <div className='card card--default gap-0 p-0'>
             <EmptyState
               icon={MessageSquare}
               title='No messages yet'
@@ -252,7 +252,7 @@ export default function MessageHistory() {
           </div>
         )
       ) : (
-        <div className='overflow-hidden rounded-xl border border-border'>
+        <div className='card card--default gap-0 overflow-hidden p-0'>
           {days.map((day) => (
             <section key={day.key}>
               {/* Deliberately not sticky. On mobile it pinned to the same
@@ -261,10 +261,10 @@ export default function MessageHistory() {
                   covered rows scrolled beneath it and swallowed their clicks.
                   A page holds 20 messages, so groups are short and a pinned
                   header bought little in exchange for that. */}
-              <h3 className='border-b border-border bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground'>
+              <h3 className='border-b border-separator bg-surface-secondary px-4 py-1.5 text-xs font-medium text-muted'>
                 {day.label}
               </h3>
-              <div className='divide-y divide-border'>
+              <div className='divide-y divide-separator'>
                 {day.messages.map((message) => {
                   const messageDevice = devicesById.get(
                     message.device?._id ?? ''

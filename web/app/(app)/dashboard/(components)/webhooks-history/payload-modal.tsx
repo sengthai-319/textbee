@@ -113,7 +113,7 @@ export function WebhookPayloadModal({ isOpen, onClose, smsData, payload }: Webho
             {/* Status */}
             <div className="space-y-2">
               <h3 className="font-semibold text-sm">Webhook Notification Status</h3>
-              <p className="text-sm bg-muted/30 rounded-md p-2 capitalize">
+              <p className="text-sm bg-default/30 rounded-md p-2 capitalize">
                 {smsData.webhookStatus}
               </p>
             </div>
@@ -122,7 +122,7 @@ export function WebhookPayloadModal({ isOpen, onClose, smsData, payload }: Webho
               <h3 className="font-semibold text-sm flex items-center gap-x-2">
                 Created At
               </h3>
-              <p className="text-sm bg-muted/30 rounded-md p-2 capitalize">
+              <p className="text-sm bg-default/30 rounded-md p-2 capitalize">
                 {new Date(smsData.createdAt).toLocaleDateString('en-GB')}
               </p>
             </div>

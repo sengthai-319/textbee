@@ -6,7 +6,7 @@ export function Code({ className, children, ...props }: CodeProps) {
   return (
     <pre
       className={cn(
-        "rounded-lg bg-muted p-4 overflow-x-auto text-sm",
+        "rounded-2xl bg-surface-secondary p-4 overflow-x-auto text-sm",
         className
       )}
       {...props}

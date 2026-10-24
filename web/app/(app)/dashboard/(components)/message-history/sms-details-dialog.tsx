@@ -112,7 +112,7 @@ export default function SmsDetailsDialog({
 
           {/* The message body leads: it is the reason this dialog is open. */}
           <div className='relative'>
-            <div className='whitespace-pre-wrap break-words rounded-lg bg-muted p-3 pr-11 text-sm'>
+            <div className='whitespace-pre-wrap break-words rounded-lg bg-default p-3 pr-11 text-sm'>
               {message.message}
             </div>
             <CopyButton
@@ -138,7 +138,7 @@ export default function SmsDetailsDialog({
 
             {deviceName && (
               <span
-                className='inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-muted-foreground'
+                className='inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full bg-default px-2.5 py-1 text-muted-foreground'
                 title={deviceName}
               >
                 <Smartphone className='h-3 w-3 shrink-0' />
@@ -151,12 +151,12 @@ export default function SmsDetailsDialog({
               <SimChip
                 message={message}
                 text={sim}
-                className='gap-1.5 rounded-full bg-muted px-2.5 py-1 text-muted-foreground'
+                className='gap-1.5 rounded-full bg-default px-2.5 py-1 text-muted-foreground'
               />
             )}
 
             {message.gatewayMessageId && (
-              <span className='inline-flex min-w-0 items-center gap-1 rounded-full bg-muted py-0.5 pl-2.5 pr-0.5 text-muted-foreground'>
+              <span className='inline-flex min-w-0 items-center gap-1 rounded-full bg-default py-0.5 pl-2.5 pr-0.5 text-muted-foreground'>
                 <span className='shrink-0'>ID</span>
                 <span className='truncate font-mono'>
                   {message.gatewayMessageId}
@@ -171,7 +171,7 @@ export default function SmsDetailsDialog({
           </div>
 
           {simMismatch(message) && (
-            <p className='rounded-lg border border-warning/30 bg-warning/5 p-3 text-xs text-foreground'>
+            <p className='rounded-lg border border-transparent bg-warning/5 p-3 text-xs text-foreground'>
               The request asked for SIM ID {message.simSubscriptionId}, but the
               phone used {simName(message)}. This usually means no SIM in the
               phone has that ID. SIM IDs can change when a SIM is removed,
@@ -181,7 +181,7 @@ export default function SmsDetailsDialog({
           )}
 
           {(message.errorCode || message.errorMessage) && (
-            <div className='space-y-1.5 rounded-lg border border-destructive/30 bg-destructive/5 p-3'>
+            <div className='space-y-1.5 rounded-lg border border-transparent bg-destructive/5 p-3'>
               <p className='text-sm font-medium text-destructive'>
                 Delivery failed
               </p>

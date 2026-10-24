@@ -135,7 +135,7 @@ export default function DeviceList() {
         <CardHeader className='flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2 max-md:min-h-11 max-md:flex-nowrap max-md:px-1 max-md:py-0'>
           <CardTitle className='whitespace-nowrap text-lg max-md:label-mono'>
             <span className='md:hidden'>Devices</span>
-            <span className='hidden md:inline'>Registered Devices</span>
+            <span className='hidden md:inline'>Devices</span>
             {!isPending && !error && (
               <span className='ml-2 text-sm font-normal text-muted-foreground max-md:ml-1.5 max-md:text-xs'>
                 {devices?.length ?? 0}
@@ -206,7 +206,7 @@ export default function DeviceList() {
             {devices?.map((device) => (
               <Card key={device._id} className='rounded-none border-x-0 border-b-0 border-t bg-transparent p-0 shadow-none first:border-t-0'>
                 <CardContent className='flex items-start gap-3 rounded-none border-0 bg-transparent px-0 py-3 shadow-none max-md:min-h-16 max-md:items-center max-md:py-2.5 max-md:pl-3.5 max-md:pr-1'>
-                  <span className='mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-muted/60 text-muted-foreground max-md:mt-0'>
+                  <span className='mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-default text-muted-foreground max-md:mt-0'>
                     <Smartphone className='h-4 w-4' />
                   </span>
                   <div className='min-w-0 flex-1'>
@@ -224,7 +224,7 @@ export default function DeviceList() {
                               <Badge
                                 tabIndex={0}
                                 variant='outline'
-                                className='shrink-0 cursor-default border-primary/30 bg-primary/10 px-2 py-0 text-[11px] text-primary'
+                                className='shrink-0 cursor-default border-transparent bg-primary/10 px-2 py-0 text-[11px] text-primary'
                               >
                                 Default
                               </Badge>
@@ -241,7 +241,7 @@ export default function DeviceList() {
                       {reportsSmsPermissionOff(device) && (
                         <Badge
                           variant='outline'
-                          className='shrink-0 border-destructive/30 bg-destructive/10 px-2 py-0 text-[11px] text-destructive'
+                          className='shrink-0 border-transparent bg-destructive/10 px-2 py-0 text-[11px] text-destructive'
                         >
                           SMS permission off
                         </Badge>
@@ -252,7 +252,7 @@ export default function DeviceList() {
                           target='_blank'
                           rel='noreferrer'
                           aria-label={`Update app (${latestAppVersionLabel} available)`}
-                          className="relative ml-auto shrink-0 rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-xs font-semibold text-warning after:absolute after:-inset-3 after:content-[''] md:hidden"
+                          className="relative ml-auto shrink-0 rounded-full border border-transparent bg-warning/10 px-2 py-0.5 text-xs font-semibold text-warning after:absolute after:-inset-3 after:content-[''] md:hidden"
                         >
                           Update
                         </a>
@@ -318,7 +318,7 @@ export default function DeviceList() {
                     </p>
                     <div className='mt-1.5 hidden min-w-0 items-center gap-1 md:flex'>
                       <code
-                        className='truncate rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground'
+                        className='truncate rounded bg-default px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground'
                         title={device._id}
                       >
                         {device._id}
@@ -335,7 +335,7 @@ export default function DeviceList() {
                       </Button>
                     </div>
                     {isDeviceOutdated(device as DeviceVersionCandidate) && (
-                      <div className='mt-2 hidden flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-md border border-warning/30 bg-warning/[0.08] px-2.5 py-1.5 md:flex'>
+                      <div className='mt-2 hidden flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl bg-warning-soft px-3 py-2 md:flex'>
                         <p className='flex min-w-0 items-center gap-1.5 text-xs text-warning'>
                           <ArrowUpCircle aria-hidden className='h-3.5 w-3.5 shrink-0' />
                           <span>

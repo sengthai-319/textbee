@@ -8,7 +8,7 @@ export default function SuccessPanel({ bulk }: { bulk: BulkSendState }) {
   const { plan, resetSend, resetFile, setTemplate } = bulk
 
   return (
-      <div className='frame rounded-lg border border-border bg-card p-8 text-center'>
+      <div className='card card--default gap-0 p-8 text-center'>
         <div className='mx-auto mb-3 w-fit rounded-full bg-success/10 p-3'>
           <CheckCircle2 className='h-6 w-6 text-success' />
         </div>
