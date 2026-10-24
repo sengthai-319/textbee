@@ -6,14 +6,14 @@ import PageHeader from '@/components/shared/page-header'
 // Messaging section shell: shared header + route-based tabs, so the active
 // tab survives refresh and every view has a shareable URL.
 //
-// The content column is defined once here rather than per page. Each subroute
-// used to set its own width (Send xl, Bulk 3xl, API 4xl, History none), so the
-// layout jumped every time you changed tab, and the header and tabs ran wider
-// than the content beneath them.
+// The header and tabs span the dashboard column and never move between tabs.
+// Content follows one rule shared with the other sections: forms and reading
+// content take FORM_WIDTH (Send, Bulk Send, API), while lists take the full
+// column (History).
 export default function MessagingLayout({ children }: PropsWithChildren) {
   return (
     <div className='flex-1 py-6 sm:py-8'>
-      <div className='w-full max-w-3xl'>
+      <div className='w-full'>
         <PageHeader
           icon={MessageSquareTextIcon}
           title='Messaging'

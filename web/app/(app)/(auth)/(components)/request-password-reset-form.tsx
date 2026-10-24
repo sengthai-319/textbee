@@ -29,6 +29,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import httpBrowserClient from '@/lib/httpBrowserClient'
 import { ApiEndpoints } from '@/config/api'
 import { Routes } from '@/config/routes'
+import { AUTH_CARD, AuthFrame } from './auth-shell'
 import { useTurnstile } from '@/lib/turnstile'
 
 const requestPasswordResetSchema = z.object({
@@ -99,13 +100,25 @@ export default function RequestPasswordResetForm() {
   }
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-background'>
-      <Card className='w-full max-w-[400px]'>
+    <AuthFrame
+      aside={
+        <>
+          Remembered it?{' '}
+          <Link
+            href={Routes.login}
+            className='font-medium text-primary underline-offset-4 hover:underline'
+          >
+            Log in
+          </Link>
+        </>
+      }
+    >
+      <Card className={AUTH_CARD}>
         <CardHeader className='space-y-1'>
-          <CardTitle className='text-2xl font-semibold text-center'>
+          <CardTitle className='text-2xl font-semibold'>
             Reset your password
           </CardTitle>
-          <CardDescription className='text-center'>
+          <CardDescription>
             Enter your email address and we&apos;ll send you a link to reset
             your password
           </CardDescription>
@@ -176,7 +189,7 @@ export default function RequestPasswordResetForm() {
             </Alert>
           )}
         </CardContent>
-        <CardFooter className='text-center'>
+        <CardFooter>
           <Link
             href={Routes.login}
             className='text-sm text-primary hover:underline'
@@ -185,6 +198,6 @@ export default function RequestPasswordResetForm() {
           </Link>
         </CardFooter>
       </Card>
-    </div>
+    </AuthFrame>
   )
 }

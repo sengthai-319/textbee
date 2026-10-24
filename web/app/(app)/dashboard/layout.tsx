@@ -18,11 +18,8 @@ import {
   type NavItem,
 } from './(components)/nav-items'
 import { cn } from '@/lib/utils'
+import { CONTENT_COLUMN } from '@/lib/layout'
 import { Routes } from '@/config/routes'
-
-// The dashboard's content column: centered, capped for readable line lengths,
-// with the page gutter. The footer uses the same value.
-export const contentColumn = 'mx-auto w-full max-w-[76rem] px-4 sm:px-6 lg:px-10'
 
 export default function DashboardLayout({
   children,
@@ -89,7 +86,7 @@ export default function DashboardLayout({
       <div className='flex min-h-[calc(100svh-3.5rem)] flex-col md:pl-60'>
         {/* One centered column with one gutter, so the breadcrumb, banners,
             page content and footer all share a left edge. */}
-        <div className={cn(contentColumn, 'flex-1')}>
+        <div className={cn(CONTENT_COLUMN, 'flex-1')}>
           <BreadcrumbNav />
           <NotificationTileStack />
           <main id='main-content' tabIndex={-1}>
