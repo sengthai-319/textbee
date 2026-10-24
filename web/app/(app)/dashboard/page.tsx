@@ -22,6 +22,7 @@ import AddDeviceDialog, {
   type AddDeviceHandle,
 } from './(components)/devices/add-device-dialog'
 import { useWebhooks } from '@/lib/api'
+import { Routes } from '@/config/routes'
 
 // Compact path to webhooks: it left the mobile tab bar and its management
 // section moved to /dashboard/webhooks, so Home keeps a discoverable link.
@@ -112,13 +113,13 @@ export default function DashboardPage() {
             size='sm'
             className='max-md:h-12 max-md:rounded-xl max-md:border max-md:border-input max-md:bg-card max-md:text-sm'
             onClick={() => window.open(
-                'https://textbee.dev/quickstart',
+                Routes.quickstart,
                 '_blank',
                 'noopener,noreferrer'
               )}
           >
             <ArrowUpRightIcon className='h-4 w-4' />
-            Quick Start
+            Setup guide
           </Button>
         </div>
       </div>

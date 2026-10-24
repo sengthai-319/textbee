@@ -69,7 +69,7 @@ describe('SimIdInput', () => {
     expect(screen.getByText(/not the slot number \(SIM 1 or\s+SIM 2\)/)).toBeTruthy()
     expect(screen.getByText(/can change after a SIM swap/)).toBeTruthy()
     expect(field()!.getAttribute('placeholder')).toBe('SIM subscription ID')
-    expect(screen.getByText(/SIM Cards section of the textbee app/)).toBeTruthy()
+    expect(screen.getByText(/SIM Cards section of the CrossHubSMS app/)).toBeTruthy()
   })
 
   it('flags an ID that is not in the last report', () => {

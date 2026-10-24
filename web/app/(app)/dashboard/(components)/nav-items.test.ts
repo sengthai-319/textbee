@@ -24,14 +24,13 @@ describe('isNavItemActive', () => {
     ).toBe(false)
   })
 
-  it('keeps Account active across the section while linking to billing', () => {
+  it('keeps Account active across the section while linking to profile', () => {
     const account = navItems.find((item) => item.label === 'Account')
     // Direct link skips the /dashboard/account redirect stub.
-    expect(account?.href).toBe('/dashboard/account/billing')
-    expect(isNavItemActive(account!, '/dashboard/account/billing')).toBe(true)
+    expect(account?.href).toBe('/dashboard/account/profile')
     expect(isNavItemActive(account!, '/dashboard/account/profile')).toBe(true)
     expect(isNavItemActive(account!, '/dashboard/account/security')).toBe(true)
     expect(isNavItemActive(account!, '/dashboard/account')).toBe(true)
-    expect(isNavItemActive(account!, '/dashboard/community')).toBe(false)
+    expect(isNavItemActive(account!, '/dashboard/webhooks')).toBe(false)
   })
 })

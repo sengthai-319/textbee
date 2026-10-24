@@ -22,77 +22,17 @@ export const mockUser = {
 }
 
 export const mockStats = {
+  todaySentSMSCount: 320,
   totalSentSMSCount: 12840,
   totalReceivedSMSCount: 3120,
   totalDeviceCount: 2,
   totalApiKeyCount: 3,
 }
 
-export const mockSubscription = {
-  plan: {
-    name: 'Pro',
-    dailyLimit: 5000,
-    monthlyLimit: 100000,
-    bulkSendLimit: 1000,
-    deviceLimit: 5,
-  },
-  usage: {
-    dailyLimit: 5000,
-    monthlyLimit: 100000,
-    bulkSendLimit: 1000,
-    deviceLimit: 5,
-    processedSmsToday: 320,
-    processedSmsLastMonth: 18450,
-    monthlyPeriodStart: '2026-09-17T22:15:00.000Z',
-    monthlyResetAt: '2026-10-17T22:15:00.000Z',
-    dailyRemaining: 4680,
-    monthlyRemaining: 81550,
-    dailyUsagePercentage: 6.4,
-    monthlyUsagePercentage: 18.45,
-  },
-  status: 'active',
-  // Cents, and it must match the Pro price on the pricing page. This fixture
-  // previously said 1900, a price we do not charge.
-  amount: 999,
-  currency: 'usd',
-  recurringInterval: 'month',
-  subscriptionStartDate: new Date('2026-06-01T00:00:00.000Z').toISOString(),
-  currentPeriodEnd: new Date('2026-08-01T00:00:00.000Z').toISOString(),
-  customDailyLimit: null,
-  customMonthlyLimit: null,
-  customBulkSendLimit: null,
-  customDeviceLimit: null,
-}
-
 // What /billing/current-subscription actually returns for a user with no
 // subscription record: billing.service.ts synthesises this from the free plan.
 // There is deliberately no status, no amount and no dates, because there is no
 // subscription for them to belong to.
-export const mockFreeSubscription = {
-  plan: {
-    name: 'free',
-    dailyLimit: 50,
-    monthlyLimit: 300,
-    bulkSendLimit: 50,
-    deviceLimit: 1,
-  },
-  isActive: true,
-  usage: {
-    dailyLimit: 50,
-    monthlyLimit: 300,
-    bulkSendLimit: 50,
-    deviceLimit: 1,
-    processedSmsToday: 4,
-    processedSmsLastMonth: 40,
-    monthlyPeriodStart: '2026-09-28T09:30:00.000Z',
-    monthlyResetAt: '2026-10-28T09:30:00.000Z',
-    dailyRemaining: 46,
-    monthlyRemaining: 260,
-    dailyUsagePercentage: 8,
-    monthlyUsagePercentage: 13,
-  },
-}
-
 export const mockDevices = [
   {
     _id: 'device_1',
@@ -187,39 +127,6 @@ export const mockMessages = {
 // component reading them looked correct in tests and rendered every paid plan
 // as free in production.
 // The prices are made up so tests never pin the live ones.
-export const mockBillingPlans = [
-  {
-    name: 'free',
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    dailyLimit: 50,
-    monthlyLimit: 500,
-    bulkSendLimit: 50,
-    deviceLimit: 1,
-    isActive: true,
-  },
-  {
-    name: 'pro',
-    monthlyPrice: 1900,
-    yearlyPrice: 12000,
-    dailyLimit: 5000,
-    monthlyLimit: 100000,
-    bulkSendLimit: 500,
-    deviceLimit: 5,
-    isActive: true,
-  },
-  {
-    name: 'scale',
-    monthlyPrice: 4900,
-    yearlyPrice: 36000,
-    dailyLimit: -1,
-    monthlyLimit: -1,
-    bulkSendLimit: 2000,
-    deviceLimit: -1,
-    isActive: true,
-  },
-]
-
 // A feed with the engine on and one promo tile. Kept minimal on purpose: the
 // ordering and capping are decided server side and tested there, so the client
 // fixtures only need to exercise rendering and the flag.

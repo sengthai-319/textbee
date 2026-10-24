@@ -45,6 +45,15 @@ android {
         }
     }
 
+    // Your own server, e.g. ./gradlew assembleProdRelease -PapiBaseUrl=https://sms.example.com/api/v1/
+    // The trailing slash is required by Retrofit.
+    def apiBaseUrl = (project.findProperty('apiBaseUrl') ?: 'http://10.0.2.2:3001/api/v1/').toString()
+    if (!apiBaseUrl.endsWith('/')) apiBaseUrl += '/'
+    // Your dashboard, e.g. -PdashboardUrl=https://sms.example.com, for the app's "open dashboard" links
+    def dashboardUrl = (project.findProperty('dashboardUrl') ?: 'http://10.0.2.2:3000').toString().replaceAll('/+$', '')
+    // Plain http is allowed only when the server itself is http, e.g. on a home network
+    defaultConfig.manifestPlaceholders += [usesCleartextTraffic: apiBaseUrl.startsWith('http://').toString()]
+
     flavorDimensions "environment"
     
     productFlavors {
@@ -52,17 +61,19 @@ android {
             dimension "environment"
             applicationId "com.vernu.sms.dev"
             versionNameSuffix "-dev"
-            buildConfigField "String", "API_BASE_URL", '"https://api.dev.textbee.dev/api/v1/"'
+            buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
+            buildConfigField "String", "DASHBOARD_URL", "\"${dashboardUrl}\""
             buildConfigField "String", "ENVIRONMENT", '"development"'
-            resValue "string", "app_name", "textbee.dev (Dev)"
+            resValue "string", "app_name", "CrossHubSMS (Dev)"
         }
         
         prod {
             dimension "environment"
             applicationId "com.vernu.sms"
-            buildConfigField "String", "API_BASE_URL", '"https://api.textbee.dev/api/v1/"'
+            buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
+            buildConfigField "String", "DASHBOARD_URL", "\"${dashboardUrl}\""
             buildConfigField "String", "ENVIRONMENT", '"production"'
-            resValue "string", "app_name", "textbee.dev"
+            resValue "string", "app_name", "CrossHubSMS"
         }
     }
 

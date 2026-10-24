@@ -34,16 +34,16 @@ export default function RegisterHelpDialog({
         <ol className='mt-2 list-decimal space-y-3 pl-5 text-sm text-muted-foreground'>
           <li>Generate an API key in the step above (if you have not already).</li>
           <li>
-            Download the textbee Android app from{' '}
+            Install the CrossHubSMS Android app (see the{' '}
             <a
               href={Routes.downloadAndroidApp}
               target='_blank'
               rel='noreferrer'
               className='font-medium text-primary underline-offset-4 hover:underline'
             >
-              {Routes.downloadAndroidApp}
+              Android setup guide
             </a>
-            .
+            ).
           </li>
           <li>
             In the app, register your device by scanning the QR code shown when
@@ -57,6 +57,18 @@ export default function RegisterHelpDialog({
           <li>
             Your phone should appear under Registered Devices on this dashboard
             when the link succeeds.
+          </li>
+          <li>
+            Using an iPhone? Set up the{' '}
+            <a
+              href={Routes.setupIphone}
+              target='_blank'
+              rel='noreferrer'
+              className='font-medium text-primary underline-offset-4 hover:underline'
+            >
+              Mac relay
+            </a>{' '}
+            instead: a Mac sends your messages through the iPhone.
           </li>
         </ol>
         <DialogFooter className='flex flex-col gap-2 sm:flex-row sm:justify-between'>

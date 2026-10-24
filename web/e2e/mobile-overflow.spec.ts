@@ -15,16 +15,12 @@ const AUTHED_PAGES = [
   '/dashboard/messaging/api-guide',
   '/dashboard/webhooks',
   '/dashboard/webhooks/deliveries',
-  // The billing tab, not /dashboard/account: that route is a redirect stub
+  // The profile tab, not /dashboard/account: that route is a redirect stub
   // with no layout of its own, and measuring it raced the redirect. The
   // redirect itself is covered in account.spec.ts.
-  '/dashboard/account/billing',
   '/dashboard/account/profile',
   '/dashboard/account/security',
   '/dashboard/account/support',
-  // Community was the only section missing from this list, and also the only
-  // one that never got the mobile padding pass. Those two facts are related.
-  '/dashboard/community',
 ]
 
 // Deterministic replacement for waitForLoadState('networkidle'), which needs a
@@ -58,26 +54,6 @@ test.describe('no horizontal overflow at 375px (mocked API)', () => {
       await expectNoHorizontalScroll(page)
     })
   }
-
-  // The tightest grid in the app only exists inside a dialog, so a guard that
-  // never opens one cannot see it.
-  test('community share dialog fits at 375px', async ({ page, context }) => {
-    await authenticate(context)
-    await mockApi(page)
-    await page.goto('/dashboard/community')
-
-    await page.getByRole('button', { name: /Share textbee\.dev/ }).click()
-    const dialog = page.getByRole('dialog')
-    await expect(dialog.getByText('Choose your platform')).toBeVisible()
-
-    await expectNoHorizontalScroll(page)
-
-    // The dialog itself must not overflow its own box either.
-    const overflows = await dialog.evaluate(
-      (el) => el.scrollWidth > el.clientWidth + 1
-    )
-    expect(overflows, 'share dialog must not scroll sideways').toBe(false)
-  })
 
   test('login page', async ({ page }) => {
     await mockApi(page)

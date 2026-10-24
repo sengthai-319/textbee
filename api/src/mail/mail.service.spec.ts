@@ -33,7 +33,7 @@ describe('MailService', () => {
     const { context } = mailerService.sendMail.mock.calls[0][0]
     expect(context).toMatchObject({
       name: 'Ada',
-      brandName: 'textbee.dev',
+      brandName: 'CrossHubSMS',
       year: new Date().getFullYear(),
     })
   })
@@ -49,7 +49,7 @@ describe('MailService', () => {
     })
 
     const { context } = mailerService.sendMail.mock.calls[0][0]
-    expect(context.brandName).toBe('textbee.dev')
+    expect(context.brandName).toBe('CrossHubSMS')
     expect(context.year).toBe(new Date().getFullYear())
   })
 
@@ -63,7 +63,7 @@ describe('MailService', () => {
     })
 
     expect(mailerService.sendMail.mock.calls[0][0].context).toMatchObject({
-      brandName: 'textbee.dev',
+      brandName: 'CrossHubSMS',
     })
   })
 

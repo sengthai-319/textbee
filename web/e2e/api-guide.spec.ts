@@ -2,7 +2,11 @@ import { expect, test } from '@playwright/test'
 import { authenticate } from './session'
 import { mockApi } from './mock-api'
 import { mockDevices } from '../test/fixtures'
-import { buildEndpoints } from '../app/(app)/dashboard/messaging/(components)/api-guide/snippets'
+import {
+  API_BASE_URL,
+  buildEndpoints,
+} from '../app/(app)/dashboard/messaging/(components)/api-guide/snippets'
+import { MOCK_API_BASE_URL } from '../playwright.config'
 
 // The page streams behind a loading.tsx boundary, so its HTML can paint before
 // React hydrates, and a tab or copy click landing in that gap is silently
@@ -117,9 +121,11 @@ test.describe('api guide (mocked API, no real backend)', () => {
     // clears itself two seconds after the click (code-block.tsx setTimeout), so
     // waiting for it races a window narrow enough to miss on a loaded runner.
     // The clipboard content is the behaviour under test and it does not expire.
-    const expectedCurl = buildEndpoints(mockDevices[0]._id).find(
-      (endpoint) => endpoint.id === 'send-sms'
-    )!.samples.curl
+    // The samples target the server the dashboard is built for, which the
+    // test process does not see, so the expectation is rebased onto it.
+    const expectedCurl = buildEndpoints(mockDevices[0]._id)
+      .find((endpoint) => endpoint.id === 'send-sms')!
+      .samples.curl.replaceAll(API_BASE_URL, MOCK_API_BASE_URL)
     await expect
       .poll(() => page.evaluate(() => navigator.clipboard.readText()))
       .toBe(expectedCurl)

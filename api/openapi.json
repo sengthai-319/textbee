@@ -112,7 +112,7 @@
     },
     "/api/v1/gateway/send-sms": {
       "post": {
-        "description": "Sends one message to one or more recipients from a phone on your account. deviceId is optional: without it textbee uses your default device, otherwise the enabled device with the most recent heartbeat. Every recipient counts as one message against your plan.",
+        "description": "Sends one message to one or more recipients from a phone on your account. deviceId is optional: without it CrossHubSMS uses your default device, otherwise the enabled device with the most recent heartbeat. Every recipient counts as one message against your plan.",
         "operationId": "GatewayController_sendSMSDeviceless_v1",
         "parameters": [],
         "requestBody": {
@@ -522,7 +522,7 @@
         ]
       },
       "post": {
-        "description": "textbee POSTs the events you pick to your delivery URL and signs each request with your signing secret, sent as the X-Signature header. Failed deliveries are retried up to 10 times, and a subscription that keeps failing is paused.",
+        "description": "CrossHubSMS POSTs the events you pick to your delivery URL and signs each request with your signing secret, sent as the X-Signature header. Failed deliveries are retried up to 10 times, and a subscription that keeps failing is paused.",
         "operationId": "WebhookController_createWebhook_v1",
         "parameters": [],
         "requestBody": {
@@ -566,7 +566,7 @@
     },
     "/api/v1/webhooks/notifications": {
       "get": {
-        "description": "Delivery history across your subscriptions, newest first. Use it to see what textbee sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.",
+        "description": "Delivery history across your subscriptions, newest first. Use it to see what CrossHubSMS sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.",
         "operationId": "WebhookController_getWebhookNotifications_v1",
         "parameters": [
           {
@@ -734,7 +734,7 @@
         ]
       },
       "patch": {
-        "description": "Changes only the fields you send. Use isActive to re-enable a subscription textbee paused after repeated failures.",
+        "description": "Changes only the fields you send. Use isActive to re-enable a subscription CrossHubSMS paused after repeated failures.",
         "operationId": "WebhookController_updateWebhook_v1",
         "parameters": [
           {
@@ -833,13 +833,13 @@
     }
   },
   "info": {
-    "title": "textbee API",
-    "description": "Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbee dashboard, sent as the x-api-key header.",
+    "title": "CrossHubSMS API",
+    "description": "Send and receive SMS through an Android phone, or an iPhone through a Mac, that you own. Authenticate every request with an API key from your CrossHubSMS dashboard, sent as the x-api-key header.",
     "version": "1.0",
     "contact": {},
     "license": {
       "name": "MIT",
-      "url": "https://github.com/textbee/textbee/blob/main/LICENSE"
+      "url": "https://github.com/sengthai-319/textbee/blob/main/LICENSE"
     }
   },
   "tags": [
@@ -849,12 +849,12 @@
     },
     {
       "name": "webhooks",
-      "description": "Subscribe to SMS events and inspect the delivery attempts textbee made for them."
+      "description": "Subscribe to SMS events and inspect the delivery attempts CrossHubSMS made for them."
     }
   ],
   "servers": [
     {
-      "url": "https://api.textbee.dev"
+      "url": "http://localhost:3001"
     }
   ],
   "components": {
@@ -863,7 +863,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "x-api-key",
-        "description": "API key from your textbee dashboard, sent on every request."
+        "description": "API key from your CrossHubSMS dashboard, sent on every request."
       }
     },
     "schemas": {
@@ -1056,12 +1056,12 @@
         "properties": {
           "versionName": {
             "type": "string",
-            "description": "textbee app version name.",
+            "description": "CrossHubSMS app version name.",
             "example": "1.9.0"
           },
           "versionCode": {
             "type": "number",
-            "description": "textbee app version code.",
+            "description": "CrossHubSMS app version code.",
             "example": 190
           },
           "lastUpdated": {
@@ -1240,12 +1240,12 @@
           },
           "appVersionName": {
             "type": "string",
-            "description": "textbee app version name.",
+            "description": "CrossHubSMS app version name.",
             "example": "1.9.0"
           },
           "appVersionCode": {
             "type": "number",
-            "description": "textbee app version code.",
+            "description": "CrossHubSMS app version code.",
             "example": 190
           },
           "sentSMSCount": {
@@ -1267,7 +1267,7 @@
           },
           "receiveSMSEnabled": {
             "type": "boolean",
-            "description": "Whether incoming messages are forwarded to textbee. Required for received message history and webhooks."
+            "description": "Whether incoming messages are forwarded to CrossHubSMS. Required for received message history and webhooks."
           },
           "smsSendDelaySeconds": {
             "type": "number",
@@ -1295,7 +1295,7 @@
             ]
           },
           "appVersionInfo": {
-            "description": "textbee app version running on the device.",
+            "description": "CrossHubSMS app version running on the device.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AppVersionInfoDTO"
@@ -1434,7 +1434,7 @@
           },
           "simSubscriptionId": {
             "type": "number",
-            "description": "SIM to send from, as subscriptionId from the device simInfo. Defaults to the device default SIM. Android can assign a new id when a SIM is removed and reinserted or swapped, so read the current id from the SIM Cards section of the textbee app before you hard-code it. An id that matches no active SIM is sent from the preferred SIM set in the textbee app, or the device default SIM.",
+            "description": "SIM to send from, as subscriptionId from the device simInfo. Defaults to the device default SIM. Android can assign a new id when a SIM is removed and reinserted or swapped, so read the current id from the SIM Cards section of the CrossHubSMS app before you hard-code it. An id that matches no active SIM is sent from the preferred SIM set in the CrossHubSMS app, or the device default SIM.",
             "example": 1
           },
           "scheduledAt": {
@@ -1474,13 +1474,13 @@
         "properties": {
           "code": {
             "type": "string",
-            "description": "Machine readable warning code. SMS_PERMISSION_MISSING: the textbee app on the sending phone last reported the SMS permission as off. The message is queued, and it fails if the permission is still off.",
+            "description": "Machine readable warning code. SMS_PERMISSION_MISSING: the CrossHubSMS app on the sending phone last reported the SMS permission as off. The message is queued, and it fails if the permission is still off.",
             "example": "SMS_PERMISSION_MISSING"
           },
           "message": {
             "type": "string",
             "description": "Human readable explanation of the warning.",
-            "example": "The textbee app on this phone last reported the SMS permission as off. The message fails if it is still off."
+            "example": "The CrossHubSMS app on this phone last reported the SMS permission as off. The message fails if it is still off."
           }
         },
         "required": [
@@ -1569,7 +1569,7 @@
           },
           "simSubscriptionId": {
             "type": "number",
-            "description": "SIM to send from, as subscriptionId from the device simInfo. Defaults to the device default SIM. Android can assign a new id when a SIM is removed and reinserted or swapped, so read the current id from the SIM Cards section of the textbee app before you hard-code it. An id that matches no active SIM is sent from the preferred SIM set in the textbee app, or the device default SIM.",
+            "description": "SIM to send from, as subscriptionId from the device simInfo. Defaults to the device default SIM. Android can assign a new id when a SIM is removed and reinserted or swapped, so read the current id from the SIM Cards section of the CrossHubSMS app before you hard-code it. An id that matches no active SIM is sent from the preferred SIM set in the CrossHubSMS app, or the device default SIM.",
             "example": 1
           },
           "scheduledAt": {
@@ -2219,7 +2219,7 @@
           },
           "unknownCount": {
             "type": "number",
-            "description": "Messages with no result: no report from the phone 20 minutes after they were due, or a state textbee does not recognize. A late report still updates the message and the batch.",
+            "description": "Messages with no result: no report from the phone 20 minutes after they were due, or a state CrossHubSMS does not recognize. A late report still updates the message and the batch.",
             "example": 0
           },
           "status": {
@@ -2323,7 +2323,7 @@
           },
           "text": {
             "type": "string",
-            "description": "What textbee recorded, for example why the subscription was paused."
+            "description": "What CrossHubSMS recorded, for example why the subscription was paused."
           }
         },
         "required": [
@@ -2348,7 +2348,7 @@
           },
           "isActive": {
             "type": "boolean",
-            "description": "Whether deliveries are attempted. textbee pauses subscriptions that keep failing."
+            "description": "Whether deliveries are attempted. CrossHubSMS pauses subscriptions that keep failing."
           },
           "events": {
             "type": "array",
@@ -2401,7 +2401,7 @@
             "description": "Last time a delivery failed."
           },
           "notes": {
-            "description": "Notes textbee added, such as an auto-pause reason.",
+            "description": "Notes CrossHubSMS added, such as an auto-pause reason.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/WebhookNoteDTO"
@@ -2472,7 +2472,7 @@
           },
           "payload": {
             "type": "object",
-            "description": "Exact JSON body textbee POSTed to your endpoint."
+            "description": "Exact JSON body CrossHubSMS POSTed to your endpoint."
           },
           "computedStatus": {
             "type": "string",
@@ -2482,7 +2482,7 @@
               "delivered",
               "failed"
             ],
-            "description": "Delivery state. Retrying means textbee will try again, failed means it gave up after 10 attempts."
+            "description": "Delivery state. Retrying means CrossHubSMS will try again, failed means it gave up after 10 attempts."
           },
           "deliveryUrl": {
             "type": "string",
@@ -2510,7 +2510,7 @@
           "deliveryAttemptAbortedAt": {
             "format": "date-time",
             "type": "string",
-            "description": "When textbee stopped retrying."
+            "description": "When CrossHubSMS stopped retrying."
           },
           "errorType": {
             "type": "string",
@@ -2614,12 +2614,12 @@
           },
           "deliveryUrl": {
             "type": "string",
-            "description": "URL textbee POSTs events to. Must be http or https and publicly reachable. Private and loopback hosts are rejected.",
-            "example": "https://example.com/textbee/webhook"
+            "description": "URL CrossHubSMS POSTs events to. Must be http or https and publicly reachable. Private and loopback hosts are rejected.",
+            "example": "https://example.com/crosshubsms/webhook"
           },
           "signingSecret": {
             "type": "string",
-            "description": "Shared secret, at least 20 characters. textbee signs every delivery with it and sends the signature in the X-Signature header, so your endpoint can verify the request really came from textbee."
+            "description": "Shared secret, at least 20 characters. CrossHubSMS signs every delivery with it and sends the signature in the X-Signature header, so your endpoint can verify the request really came from textbee."
           },
           "events": {
             "type": "array",
@@ -2656,12 +2656,12 @@
           },
           "isActive": {
             "type": "boolean",
-            "description": "Whether deliveries are attempted. Set it to true to re-enable a subscription textbee paused after repeated failures."
+            "description": "Whether deliveries are attempted. Set it to true to re-enable a subscription CrossHubSMS paused after repeated failures."
           },
           "deliveryUrl": {
             "type": "string",
             "description": "New delivery URL. Same rules as on create: http or https, no private or loopback hosts.",
-            "example": "https://example.com/textbee/webhook"
+            "example": "https://example.com/crosshubsms/webhook"
           },
           "signingSecret": {
             "type": "string",

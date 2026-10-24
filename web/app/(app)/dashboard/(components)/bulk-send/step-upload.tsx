@@ -24,10 +24,7 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
     fileName,
     fileError,
     fileWarning,
-    maxRows,
     resetFile,
-    rowCapExceeded,
-    recipientCount,
     isDragActive,
     plan,
     hasFile,
@@ -116,9 +113,6 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
               </p>
               <p className='mt-1 text-xs text-muted-foreground'>
                 Up to {formatFileSize(MAX_FILE_SIZE)}
-                {maxRows !== undefined && maxRows !== Number.POSITIVE_INFINITY
-                  ? ` and ${maxRows.toLocaleString()} rows on your plan`
-                  : ''}
               </p>
             </div>
 
@@ -138,19 +132,6 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
             <AlertCircle className='h-4 w-4' />
             <AlertTitle>That file could not be used</AlertTitle>
             <AlertDescription>{fileError}</AlertDescription>
-          </Alert>
-        )}
-
-        {rowCapExceeded && (
-          <Alert variant='destructive'>
-            <AlertCircle className='h-4 w-4' />
-            <AlertTitle>That file is over your plan limit</AlertTitle>
-            <AlertDescription>
-              It has {recipientCount.toLocaleString()} usable recipient
-              {recipientCount === 1 ? '' : 's'} and your plan allows{' '}
-              {maxRows!.toLocaleString()} per bulk send. Remove the extra rows,
-              split the file into smaller batches, or upgrade your plan.
-            </AlertDescription>
           </Alert>
         )}
 

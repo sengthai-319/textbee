@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" rx="110" fill="#2E2E2E"/>
+  <g fill="#C89B3C">
+    <mask id="gap"><rect width="500" height="500" fill="#fff"/><path d="M226 247 L473 0 H500 V247 Z" fill="#000"/></mask>
+    <circle cx="250" cy="233" r="119" fill="none" stroke="#C89B3C" stroke-width="34" mask="url(#gap)"/>
+    <rect x="159" y="212" width="107" height="35"/>
+    <rect x="277" y="212" width="74" height="35"/>
+    <rect x="234" y="140" width="32" height="263"/>
+  </g>
+</svg>

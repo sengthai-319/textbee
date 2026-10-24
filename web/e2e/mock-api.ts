@@ -1,11 +1,9 @@
 import type { Page, Route } from '@playwright/test'
 import {
   mockApiKeys,
-  mockBillingPlans,
   mockDevices,
   mockMessages,
   mockStats,
-  mockSubscription,
   mockUser,
   mockWebhookNotifications,
   mockWebhooks,
@@ -21,32 +19,14 @@ const json = (route: Route, body: unknown, status = 200) =>
 // Intercept EVERY call to the backend (`/api/v1/**`) and serve fixtures. Because
 // the app is pointed at a backend host that nothing listens on, this guarantees
 // no request ever reaches a real backend during e2e.
-export type MockApiOverrides = {
-  /** Serve a different subscription payload, e.g. the free-user shape. */
-  subscription?: unknown
-  /** Fail POST /billing/checkout with this message, to exercise the error state. */
-  checkoutError?: string
-}
-
-export async function mockApi(page: Page, overrides: MockApiOverrides = {}) {
+export async function mockApi(page: Page) {
   await page.route('**/api/v1/**', (route) => {
     const path = new URL(route.request().url()).pathname.replace('/api/v1', '')
 
     // Create a per-invocation device-state copy before routing
     const devicesCopy = mockDevices.map((d) => ({ ...d }))
 
-    // Kept in-origin so following the redirect does not leave the test app.
-    if (path === '/billing/checkout') {
-      if (overrides.checkoutError) {
-        return json(route, { message: overrides.checkoutError }, 400)
-      }
-      return json(route, { redirectUrl: '/dashboard?polar-checkout-mock=1' })
-    }
-
     if (path === '/auth/who-am-i') return json(route, { data: mockUser })
-    if (path === '/billing/current-subscription')
-      return json(route, overrides.subscription ?? mockSubscription)
-    if (path === '/billing/plans') return json(route, mockBillingPlans)
     if (path === '/gateway/devices') return json(route, { data: devicesCopy })
     if (path === '/gateway/stats') return json(route, { data: mockStats })
     if (path === '/webhooks') return json(route, { data: mockWebhooks })

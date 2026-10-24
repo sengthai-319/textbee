@@ -3,12 +3,10 @@ import { ApiEndpoints } from '@/config/api'
 import {
   API_BASE_URL,
   mockApiKeys,
-  mockBillingPlans,
   mockDevices,
   mockMessages,
   mockNotificationFeed,
   mockStats,
-  mockSubscription,
   mockUser,
   mockWebhookNotifications,
   mockWebhooks,
@@ -70,12 +68,6 @@ export const handlers = [
   http.get(url(ApiEndpoints.gateway.getWebhookNotifications()), () =>
     raw(mockWebhookNotifications)
   ),
-
-  // --- billing ---
-  http.get(url(ApiEndpoints.billing.currentSubscription()), () =>
-    raw(mockSubscription)
-  ),
-  http.get(url(ApiEndpoints.billing.plans()), () => raw(mockBillingPlans)),
 
   // Account-level message history; device scoping travels as a query param.
   http.get(`${API_BASE_URL}/gateway/messages`, () => raw(mockMessages)),

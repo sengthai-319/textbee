@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   MessageSquareText,
   Webhook,
-  Users,
   UserCircle,
   type LucideIcon,
 } from 'lucide-react'
@@ -12,8 +11,8 @@ export type NavItem = {
   label: string
   icon: LucideIcon
   // Active-state prefix when it differs from href (Account links straight to
-  // billing so the click skips the /dashboard/account redirect stub, but must
-  // stay highlighted on every account tab).
+  // its first tab so the click skips the /dashboard/account redirect stub, but
+  // must stay highlighted on every account tab).
   match?: string
   // The mobile tab bar caps at 4 items (375px width); items marked
   // mobileHidden appear only in the desktop sidebar and the command palette.
@@ -25,10 +24,9 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/messaging', label: 'Messaging', icon: MessageSquareText },
-  { href: '/dashboard/webhooks', label: 'Webhooks', icon: Webhook, mobileHidden: true },
-  { href: '/dashboard/community', label: 'Community', icon: Users },
+  { href: '/dashboard/webhooks', label: 'Webhooks', icon: Webhook },
   {
-    href: '/dashboard/account/billing',
+    href: '/dashboard/account/profile',
     label: 'Account',
     icon: UserCircle,
     match: '/dashboard/account',

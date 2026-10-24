@@ -44,12 +44,6 @@ export const ApiEndpoints = {
     getStats: () => '/gateway/stats',
     smsPermissionStatus: () => '/gateway/sms-permission-status',
   },
-  billing: {
-    currentSubscription: () => '/billing/current-subscription',
-    checkout: () => '/billing/checkout',
-    changePlan: () => '/billing/change-plan',
-    plans: () => '/billing/plans',
-  },
   support: {
     customerSupport: () => '/support/customer-support',
     requestAccountDeletion: () => '/support/request-account-deletion',

@@ -195,7 +195,7 @@ export function WebhookDocs() {
                   <code>
                     {'"simUsed": { "subscriptionId": 19, "slotIndex": 1, "carrierName": "Example Mobile", "displayName": "Work", "countryIso": "us", "mcc": "310", "mnc": "260" }'}
                   </code>
-                  . It is present only when the textbee app on the phone
+                  . It is present only when the CrossHubSMS app on the phone
                   reports the SIM, and each field inside it is optional.
                 </p>
               </div>

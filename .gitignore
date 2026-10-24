@@ -7,3 +7,6 @@
 .omc/
 # Rendered email previews (pnpm preview:emails)
 api/tmp/
+
+# Redis snapshots from local runs
+*.rdb

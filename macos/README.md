@@ -1,14 +1,14 @@
-# textbee for Mac (iPhone relay)
+# CrossHubSMS Mac relay (iPhone)
 
-Send textbee messages from an **iPhone** instead of an Android phone.
+Send CrossHubSMS messages from an **iPhone** instead of an Android phone.
 
-iOS does not let apps send SMS on their own, so the textbee app can't run on an iPhone. This client runs on a Mac instead. It registers with your textbee server as a device, collects the messages queued for it, and hands each one to the **Messages** app. Your iPhone then delivers it as a regular SMS through **Text Message Forwarding**.
+iOS does not let apps send SMS on their own, so the CrossHubSMS app can't run on an iPhone. This client runs on a Mac instead. It registers with your CrossHubSMS server as a device, collects the messages queued for it, and hands each one to the **Messages** app. Your iPhone then delivers it as a regular SMS through **Text Message Forwarding**.
 
 The dashboard, bulk sends, CSV uploads, scheduling and the REST API work as they do with an Android device.
 
 ## How it differs from the Android app
 
-| | Android app | textbee for Mac |
+| | Android app | Mac relay |
 |---|---|---|
 | How it gets messages | Push (Firebase) | Polls the server every few seconds |
 | Status reports | sent, delivered, failed | sent, failed (Messages can't report delivery) |
@@ -17,57 +17,23 @@ The dashboard, bulk sends, CSV uploads, scheduling and the REST API work as they
 
 ## Requirements
 
-- A **textbee server with pull-device support**: this fork, self-hosted (see [Run the textbee server on the same Mac](#run-the-textbee-server-on-the-same-mac)). The hosted textbee.dev service doesn't accept pull devices.
+- A **CrossHubSMS server** (see [Run the server](#run-the-server)).
 - A Mac running macOS 12 or later, with `python3`. It ships with the Xcode Command Line Tools; run `xcode-select --install` if it's missing. No other packages are needed.
 - An iPhone signed in to the same Apple Account as the Mac.
 
-## Run the textbee server on the same Mac
+## Run the server
 
-The simplest setup runs the server, the dashboard and the relay all on the one Mac, using [Docker Desktop](https://www.docker.com/products/docker-desktop).
-
-1. Get the code and create the settings files, with random secrets:
-   ```bash
-   git clone https://github.com/sengthai-319/textbee.git
-   cd textbee
-   cp api/.env.example api/.env
-   cp web/.env.example web/.env
-   sed -i '' "s|^JWT_SECRET=.*|JWT_SECRET=$(openssl rand -hex 32)|" api/.env
-   sed -i '' "s|^NEXTAUTH_SECRET=.*|NEXTAUTH_SECRET=$(openssl rand -hex 32)|" web/.env
-   ```
-   Leave the `FIREBASE_*` lines empty; the relay doesn't use Firebase. The example files already contain Cloudflare's Turnstile test keys, so the sign-up bot check passes on a local machine.
-
-2. Start everything. The first build takes 5–10 minutes:
-   ```bash
-   docker compose up -d --build
-   docker compose ps          # textbee-db, textbee-redis, textbee-api and textbee-web should all be up
-   ```
-   Check the API:
-   ```bash
-   docker compose logs textbee-api --tail 15                                        # ends with "Nest application successfully started"
-   curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3001/api/v1/gateway/devices   # prints 401
-   ```
-   The log also warns that `FIREBASE_PROJECT_ID` isn't set. That's expected.
-
-3. Sign up at http://localhost:3000. A local server can't send the verification email, and sending is blocked until the email is verified, so mark it as verified in the database. Use the exact address you signed up with; it's case-sensitive:
-   ```bash
-   docker exec textbee-db mongosh -u adminUser -p adminPassword --authenticationDatabase admin textbee --quiet \
-     --eval 'printjson(db.users.updateOne({email:"you@example.com"},{$set:{emailVerifiedAt:new Date()}}))'
-   ```
-   It should print `modifiedCount: 1`.
-
-4. Create an API key in the dashboard, then follow [Setup](#setup) with `--server http://localhost:3001/api/v1`.
-
-When you're done, `docker compose down` stops everything. Your data is kept in Docker volumes for next time.
+The relay needs a CrossHubSMS server. Follow [docs/SETUP.md](../docs/SETUP.md) steps 1–3 to run one with Docker and create an API key, then come back here.
 
 ## Setup
 
 1. **Turn on Text Message Forwarding.** On the iPhone, go to `Settings` › `Apps` › `Messages` › `Text Message Forwarding` and switch on your Mac. On older iOS versions it's `Settings` › `Messages` › `Text Message Forwarding`. Then open Messages on the Mac and send one SMS by hand to check that it works.
 
-2. **Create an API key.** In the textbee dashboard, create an API key.
+2. **Create an API key.** In the CrossHubSMS dashboard, create an API key.
 
 3. **Register the Mac.**
    ```bash
-   python3 textbee_mac.py setup --server https://YOUR-TEXTBEE-API/api/v1 --api-key YOUR_KEY
+   python3 textbee_mac.py setup --server http://localhost:3001/api/v1 --api-key YOUR_KEY
    ```
    The Mac now appears in your dashboard's device list. Running `setup` again updates the same device instead of adding a new one.
 
@@ -92,7 +58,7 @@ When you're done, `docker compose down` stops everything. Your data is kept in D
 
 | Command | What it does |
 |---|---|
-| `setup` | Registers this Mac with a textbee server (`--server`, `--api-key`, `--name`, `--service sms\|imessage`) |
+| `setup` | Registers this Mac with a CrossHubSMS server (`--server`, `--api-key`, `--name`, `--service sms\|imessage`) |
 | `test` | Sends one message through Messages without the server (`--to`, `--message`) |
 | `run` | Relays messages until stopped (`--once` polls one time and exits) |
 | `status` | Shows the server, the device ID and the sent and failed counts |
@@ -159,7 +125,7 @@ openssl s_client -connect registry.npmjs.org:443 -servername registry.npmjs.org 
 The issuer should be Google Trust Services or another public authority. If it isn't, turn off that app's web protection while the build runs.
 
 ### Sending from the dashboard says "Please verify your email to continue"
-Mark the account as verified (step 3 of [Run the textbee server on the same Mac](#run-the-textbee-server-on-the-same-mac)). The address must match exactly.
+Mark the account as verified (step 3.2 of [docs/SETUP.md](../docs/SETUP.md#3-create-your-account-and-an-api-key)). The address must match exactly.
 
 ### `test` says "Can't get participant" or "Not authorized to send Apple events"
 - **"Can't get participant":** Text Message Forwarding is off, or Messages on the Mac isn't signed in. Send one SMS by hand from Messages to check.
@@ -169,4 +135,4 @@ Mark the account as verified (step 3 of [Run the textbee server on the same Mac]
 The device was registered against a different server, or by an older version. Run `setup` again.
 
 ### `USE_SMS_QUEUE=false` still uses the queue
-This is a known textbee issue: the value is read as the text `"false"`, which counts as on. Remove the line, or leave it empty, to turn the queue off. With Docker Compose, Redis runs anyway, so the queue works either way.
+This is a known issue inherited from textbee: the value is read as the text `"false"`, which counts as on. Remove the line, or leave it empty, to turn the queue off. With Docker Compose, Redis runs anyway, so the queue works either way.

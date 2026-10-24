@@ -13,6 +13,8 @@ export type DeviceVersionCandidate = {
     versionCode?: number | null
     versionName?: string | null
   } | null
+  // 'pull' for the Mac relay, which has no Android app to update
+  transport?: string | null
 }
 
 export const DEFAULT_LATEST_APP_VERSION_CODE = 17
@@ -87,6 +89,10 @@ export function isDeviceOutdated(
   device: DeviceVersionCandidate,
   latestVersionCode = latestAppVersionCode
 ) {
+  if (device.transport === 'pull') {
+    return false
+  }
+
   const deviceVersionCode = getDeviceVersionCode(device)
 
   if (deviceVersionCode === null) {

@@ -8,7 +8,6 @@ import { SMS } from './schemas/sms.schema'
 import { SMSBatch } from './schemas/sms-batch.schema'
 import { AuthService } from '../auth/auth.service'
 import { WebhookService } from '../webhook/webhook.service'
-import { BillingService } from '../billing/billing.service'
 import { SmsQueueService } from './queue/sms-queue.service'
 import { UsersService } from '../users/users.service'
 import { UserRollupService } from '../users/user-rollup.service'
@@ -40,7 +39,6 @@ describe('GatewayService', () => {
   let smsBatchModel: Model<SMSBatch>
   let authService: AuthService
   let webhookService: WebhookService
-  let billingService: BillingService
   let smsQueueService: SmsQueueService
 
   const mockDeviceModel = {
@@ -88,11 +86,6 @@ describe('GatewayService', () => {
     deliverNotification: jest.fn(),
   }
 
-  const mockBillingService = {
-    canPerformAction: jest.fn(),
-    getUserLimits: jest.fn(),
-    notifyDeviceLimitReached: jest.fn(),
-  }
 
   const singleWavePlan = (count: number, delayMs?: number) => ({
     waves: [{ start: 0, end: count, delayMs: delayMs ?? 0 }],
@@ -144,10 +137,6 @@ describe('GatewayService', () => {
           useValue: mockWebhookService,
         },
         {
-          provide: BillingService,
-          useValue: mockBillingService,
-        },
-        {
           provide: SmsQueueService,
           useValue: mockSmsQueueService,
         },
@@ -176,7 +165,6 @@ describe('GatewayService', () => {
     smsBatchModel = module.get<Model<SMSBatch>>(getModelToken(SMSBatch.name))
     authService = module.get<AuthService>(AuthService)
     webhookService = module.get<WebhookService>(WebhookService)
-    billingService = module.get<BillingService>(BillingService)
     smsQueueService = module.get<SmsQueueService>(SmsQueueService)
 
     // Reset all mocks
@@ -282,7 +270,6 @@ describe('GatewayService', () => {
         fcmToken: 'token123',
       }
       mockDeviceModel.findOne.mockResolvedValue(null)
-      mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: -1 })
       mockDeviceModel.create.mockResolvedValue({ _id: 'device123' })
 
       await service.registerDevice(inputWithoutEnabled, mockUser)
@@ -298,7 +285,6 @@ describe('GatewayService', () => {
 
       beforeEach(() => {
         mockDeviceModel.findOne.mockResolvedValue(null)
-        mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: -1 })
         mockDeviceModel.create.mockResolvedValue({ _id: 'device123' })
       })
 
@@ -357,7 +343,6 @@ describe('GatewayService', () => {
 
     it('drops an appVersionCode of 0, which older builds send when unset', async () => {
       mockDeviceModel.findOne.mockResolvedValue(null)
-      mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: -1 })
       mockDeviceModel.create.mockResolvedValue({ _id: 'device123' })
 
       await service.registerDevice(
@@ -370,21 +355,8 @@ describe('GatewayService', () => {
       )
     })
 
-    it('should block registration when the device limit is already reached', async () => {
-      mockDeviceModel.findOne.mockResolvedValue(null)
-      mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: 1 })
-      mockBillingService.notifyDeviceLimitReached.mockResolvedValue(undefined)
-      mockDeviceModel.countDocuments.mockResolvedValue(1)
-
-      await expect(
-        service.registerDevice(mockDeviceInput, mockUser),
-      ).rejects.toMatchObject({ status: HttpStatus.TOO_MANY_REQUESTS })
-      expect(mockDeviceModel.create).not.toHaveBeenCalled()
-    })
-
     it('should mark the first device of a user as the default', async () => {
       mockDeviceModel.findOne.mockResolvedValue(null)
-      mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: -1 })
       mockDeviceModel.countDocuments.mockResolvedValue(0)
       mockDeviceModel.create.mockResolvedValue({ _id: 'device123' })
 
@@ -400,7 +372,6 @@ describe('GatewayService', () => {
 
     it('should not mark a later device as the default', async () => {
       mockDeviceModel.findOne.mockResolvedValue(null)
-      mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: -1 })
       mockDeviceModel.countDocuments.mockResolvedValue(1)
       mockDeviceModel.create.mockResolvedValue({ _id: 'device456' })
 
@@ -414,7 +385,6 @@ describe('GatewayService', () => {
       // there is no ValidationPipe, so an unknown body field would otherwise
       // be written straight through to the device
       mockDeviceModel.findOne.mockResolvedValue(null)
-      mockBillingService.getUserLimits.mockResolvedValue({ deviceLimit: -1 })
       mockDeviceModel.countDocuments.mockResolvedValue(1)
       mockDeviceModel.create.mockResolvedValue({ _id: 'device456' })
 
@@ -734,7 +704,6 @@ describe('GatewayService', () => {
 
       const update = mockDeviceModel.findByIdAndUpdate.mock.calls[0][1]
       expect(update.$set).not.toHaveProperty('enabled')
-      expect(mockBillingService.getUserLimits).not.toHaveBeenCalled()
     })
 
     it('drops an appVersionCode of 0 so a partial update cannot zero the stored one', async () => {
@@ -991,7 +960,6 @@ describe('GatewayService', () => {
       mockSmsBatchModel.findByIdAndUpdate.mockImplementation(() => ({
         exec: jest.fn().mockResolvedValue(true),
       }))
-      mockBillingService.canPerformAction.mockResolvedValue({ overLimit: false })
       mockSmsQueueService.isQueueEnabled.mockReturnValue(false)
       
       // Fix the mock
@@ -1002,11 +970,6 @@ describe('GatewayService', () => {
       const result = await service.sendSMS(mockDeviceId, mockSmsInput)
 
       expect(mockDeviceModel.findById).toHaveBeenCalledWith(mockDeviceId)
-      expect(mockBillingService.canPerformAction).toHaveBeenCalledWith(
-        mockDevice.user.toString(),
-        'send_sms',
-        mockSmsInput.recipients.length,
-      )
       expect(mockSmsBatchModel.create).toHaveBeenCalled()
       expect(mockSmsModel.create).toHaveBeenCalled()
       expect(firebaseAdmin.messaging().sendEach).toHaveBeenCalled()
@@ -1029,7 +992,7 @@ describe('GatewayService', () => {
       expect(result.warning).toEqual({
         code: 'SMS_PERMISSION_MISSING',
         message:
-          'The textbee app on this phone last reported the SMS permission as off. The message fails if it is still off.',
+          'The CrossHubSMS app on this phone last reported the SMS permission as off. The message fails if it is still off.',
       })
     })
 
@@ -1085,7 +1048,6 @@ describe('GatewayService', () => {
         service.sendSMS(mockDeviceId, mockSmsInput),
       ).rejects.toThrow(HttpException)
       expect(mockDeviceModel.findById).toHaveBeenCalledWith(mockDeviceId)
-      expect(mockBillingService.canPerformAction).not.toHaveBeenCalled()
     })
 
     it('should throw error if message is blank', async () => {
@@ -1383,7 +1345,6 @@ describe('GatewayService', () => {
       mockSmsBatchModel.findByIdAndUpdate.mockImplementation(() => ({
         exec: jest.fn().mockResolvedValue(true),
       }))
-      mockBillingService.canPerformAction.mockResolvedValue({ overLimit: false })
       mockSmsQueueService.isQueueEnabled.mockReturnValue(false)
       
       // Fix the mock
@@ -1394,11 +1355,6 @@ describe('GatewayService', () => {
       const result = await service.sendBulkSMS(mockDeviceId, mockBulkSmsInput)
 
       expect(mockDeviceModel.findById).toHaveBeenCalledWith(mockDeviceId)
-      expect(mockBillingService.canPerformAction).toHaveBeenCalledWith(
-        mockDevice.user.toString(),
-        'bulk_send_sms',
-        2,
-      )
       expect(mockSmsBatchModel.create).toHaveBeenCalled()
       expect(mockSmsModel.create).toHaveBeenCalled()
       expect(firebaseAdmin.messaging().sendEach).toHaveBeenCalled()
@@ -1578,7 +1534,6 @@ describe('GatewayService', () => {
       mockDeviceModel.findByIdAndUpdate.mockImplementation(() => ({
         exec: jest.fn().mockResolvedValue(true),
       }))
-      mockBillingService.canPerformAction.mockResolvedValue({ overLimit: false })
       mockWebhookService.deliverNotification.mockResolvedValue(true)
     })
 
@@ -1586,11 +1541,6 @@ describe('GatewayService', () => {
       const result = await service.receiveSMS(mockDeviceId, mockReceivedSmsData)
 
       expect(mockDeviceModel.findById).toHaveBeenCalledWith(mockDeviceId)
-      expect(mockBillingService.canPerformAction).toHaveBeenCalledWith(
-        mockDevice.user.toString(),
-        'receive_sms',
-        1,
-      )
       expect(mockSmsModel.create).toHaveBeenCalled()
       expect(mockDeviceModel.findByIdAndUpdate).toHaveBeenCalled()
       expect(mockWebhookService.deliverNotification).toHaveBeenCalledWith({
@@ -1695,7 +1645,6 @@ describe('GatewayService', () => {
         })
 
         expect(result).toEqual({ ignored: true, reason })
-        expect(mockBillingService.canPerformAction).not.toHaveBeenCalled()
         expect(mockSmsModel.create).not.toHaveBeenCalled()
         expect(mockWebhookService.deliverNotification).not.toHaveBeenCalled()
       },
@@ -1747,17 +1696,6 @@ describe('GatewayService', () => {
       expect(created).not.toHaveProperty('createdAt')
       expect(created).not.toHaveProperty('originalCreatedAt')
       expect(created).not.toHaveProperty('overLimit')
-    })
-
-    it('marks a message stored over the plan limit', async () => {
-      mockBillingService.canPerformAction.mockResolvedValue({ overLimit: true })
-
-      await service.receiveSMS(mockDeviceId, mockReceivedSmsData)
-
-      expect(mockSmsModel.create).toHaveBeenCalledWith(
-        expect.objectContaining({ overLimit: true }),
-      )
-      expect(mockWebhookService.deliverNotification).toHaveBeenCalled()
     })
 
     describe('RECEIVED_WEBHOOK_MAX_AGE_HOURS', () => {
@@ -2055,6 +1993,7 @@ describe('GatewayService', () => {
       expect(mockDeviceModel.find).toHaveBeenCalledWith({ user: mockUser._id })
       expect(mockAuthService.getUserApiKeys).toHaveBeenCalledWith(mockUser)
       expect(result).toEqual({
+        todaySentSMSCount: 2,
         totalSentSMSCount: 30,
         totalReceivedSMSCount: 20,
         totalDeviceCount: 2,

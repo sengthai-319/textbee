@@ -200,7 +200,7 @@ fun SetupCompleteScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "SMS you receive on this phone will appear in your textbee dashboard and be accessible via API",
+                        text = "SMS you receive on this phone will appear in your CrossHubSMS dashboard and be accessible via API",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -249,7 +249,7 @@ fun SetupCompleteScreen(
         OutlinedButton(
             onClick = {
                 context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard"))
+                    Intent(Intent.ACTION_VIEW, Uri.parse("${com.vernu.sms.BuildConfig.DASHBOARD_URL}/dashboard"))
                 )
             },
             modifier = Modifier
@@ -264,12 +264,12 @@ fun SetupCompleteScreen(
         TextButton(
             onClick = {
                 context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/docs"))
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sengthai-319/textbee/blob/main/docs/SETUP.md"))
                 )
             }
         ) {
             Text(
-                text = "New to textbee? Read the quickstart guide",
+                text = "New to CrossHubSMS? Read the quickstart guide",
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -277,12 +277,12 @@ fun SetupCompleteScreen(
         TextButton(
             onClick = {
                 context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/textbee/textbee?ref=android-star"))
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sengthai-319/textbee"))
                 )
             }
         ) {
             Text(
-                text = "textbee is open source. Star it on GitHub.",
+                text = "CrossHubSMS is open source. Star it on GitHub.",
                 style = MaterialTheme.typography.bodySmall
             )
         }

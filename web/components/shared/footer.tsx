@@ -1,21 +1,14 @@
 import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/external-links'
-import { Activity } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { BrandMark } from './brand'
 
-// A logged-in user is already converted, so the app footer stays a single slim
-// bar rather than the marketing site's multi-column link farm. It borrows that
-// footer's visual language (muted surface, muted-to-foreground link hovers,
-// green status pill) so the two still read as one product.
+// A single slim bar: brand on the left, the setup docs on the right.
 const links = [
-  { label: 'Quick start', href: Routes.quickstart },
-  { label: 'Download app', href: Routes.downloadAndroidApp },
-  { label: 'Contribute', href: Routes.contribute },
-  { label: 'Discord', href: ExternalLinks.discord },
-  { label: 'Privacy', href: Routes.privacyPolicy },
-  { label: 'Terms', href: Routes.termsOfService },
-  { label: 'Refund', href: Routes.refundPolicy },
+  { label: 'Setup guide', href: Routes.quickstart },
+  { label: 'Android', href: Routes.downloadAndroidApp },
+  { label: 'iPhone', href: Routes.setupIphone },
+  { label: 'GitHub', href: ExternalLinks.github },
 ]
 
 const linkClass =
@@ -28,15 +21,9 @@ export default function Footer() {
           ragged stack with no common edge to scan down. */}
       <div className='mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-6 sm:items-center sm:px-6 md:flex-row md:justify-between lg:px-8'>
         <div className='flex items-center gap-2'>
-          <Image
-            src='/images/logo.png'
-            alt='textbee logo'
-            width={20}
-            height={20}
-            className='h-5 w-5 rounded-full bg-white'
-          />
+          <BrandMark className='h-5 w-5' />
           <span className='text-sm text-muted-foreground'>
-            © {new Date().getFullYear()} textbee.dev
+            © {new Date().getFullYear()} CrossHubSMS
           </span>
         </div>
 
@@ -57,15 +44,6 @@ export default function Footer() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href={Routes.statusPage}
-            target='_blank'
-            rel='nofollow noopener noreferrer'
-            className='inline-flex items-center gap-1.5 rounded-full border bg-muted/70 px-2.5 py-1 text-sm font-medium text-success transition-colors hover:bg-muted'
-          >
-            <Activity className='h-3.5 w-3.5' />
-            Status
-          </Link>
         </nav>
       </div>
     </footer>

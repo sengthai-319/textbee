@@ -3,6 +3,7 @@ import {
   formatAppVersion,
   formatDeviceVersion,
   formatDeviceVersionShort,
+  isDeviceOutdated,
 } from './update-app-helpers'
 
 describe('formatAppVersion', () => {
@@ -84,5 +85,23 @@ describe('formatDeviceVersionShort', () => {
 
   it('returns null when nothing is known', () => {
     expect(formatDeviceVersionShort(base)).toBeNull()
+  })
+})
+
+describe('isDeviceOutdated', () => {
+  const base = { _id: 'd1', brand: 'Google', model: 'Pixel 8' }
+
+  it('flags an Android build older than the latest', () => {
+    expect(isDeviceOutdated({ ...base, appVersionCode: 1 }, 20)).toBe(true)
+    expect(isDeviceOutdated({ ...base, appVersionCode: 20 }, 20)).toBe(false)
+  })
+
+  it('never flags the Mac relay, which has no Android app to update', () => {
+    expect(
+      isDeviceOutdated(
+        { ...base, brand: 'Apple', model: 'Mac14,15', appVersionCode: 1, transport: 'pull' },
+        20
+      )
+    ).toBe(false)
   })
 })

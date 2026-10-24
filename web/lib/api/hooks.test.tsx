@@ -2,13 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { TestProviders } from '@/test/render'
-import { API_BASE_URL, mockDevices, mockSubscription, mockUser } from '@/test/fixtures'
+import { API_BASE_URL, mockDevices, mockUser } from '@/test/fixtures'
 import { server } from '@/test/msw/server'
 import { ApiEndpoints } from '@/config/api'
 import {
   useCurrentUser,
   useDevices,
-  useSubscription,
   useWebhookNotifications,
 } from './hooks'
 
@@ -21,12 +20,6 @@ describe('data hooks', () => {
     const { result } = renderHook(() => useCurrentUser(), { wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(result.current.data?.email).toBe(mockUser.email)
-  })
-
-  it('useSubscription returns the raw body', async () => {
-    const { result } = renderHook(() => useSubscription(), { wrapper })
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data?.plan?.name).toBe(mockSubscription.plan.name)
   })
 
   it('useDevices unwraps to the device array', async () => {

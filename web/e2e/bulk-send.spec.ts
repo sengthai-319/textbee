@@ -27,15 +27,17 @@ async function uploadCsv(page: import('@playwright/test').Page, csv: string) {
 // The section streams behind a loading.tsx boundary, so the form's HTML can
 // paint before React hydrates it, and a file offered during that gap is
 // silently discarded (react-dropzone binds its change handler on mount).
-// The row cap in the dropzone copy is derived from useSubscription inside this
-// page's own hook, so seeing it proves this component hydrated and has data.
-// Waiting on the devices response would not: the dashboard layout requests the
-// same query key, so it can resolve before this page has hydrated.
+// React attaches its props to the dropzone input when it hydrates, so their
+// presence proves the change handler is bound. Waiting on the devices response
+// would not: the dashboard layout requests the same query key, so it can
+// resolve before this page has hydrated.
 async function gotoBulkPage(page: import('@playwright/test').Page) {
   await page.goto('/dashboard/messaging/bulk')
-  await expect(
-    page.getByText(/Up to 1 MB and [\d,]+ rows on your plan/)
-  ).toBeVisible()
+  await expect(page.getByText(/Up to 1 MB/)).toBeVisible()
+  await page.waitForFunction(() => {
+    const input = document.querySelector('input[type=file]')
+    return !!input && Object.keys(input).some((k) => k.startsWith('__reactProps'))
+  })
 }
 
 // Keyboard selection rather than clicking the option: the Radix popper can

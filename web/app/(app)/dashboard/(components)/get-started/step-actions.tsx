@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
-import { Download, MailCheck, Send } from 'lucide-react'
+import { Laptop, MailCheck, Send, Smartphone } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import httpBrowserClient from '@/lib/httpBrowserClient'
 import { ApiEndpoints } from '@/config/api'
 import { Routes } from '@/config/routes'
 import GenerateApiKey from '../api-keys/generate-api-key'
-import PlanPicker from './plan-picker'
 import InlineRegisterPanel from './inline-register-panel'
 
 const RESEND_COOLDOWN_SECONDS = 60
@@ -78,7 +77,6 @@ type StepActionsProps = {
   // makes sense for an unfinished step, like Skip, is dropped.
   isDone?: boolean
   isSaving: boolean
-  subLoading: boolean
   userEmail?: string
   onSkipStep: (stepId: string) => void
 }
@@ -88,7 +86,6 @@ export default function StepActions({
   stepId,
   isDone = false,
   isSaving,
-  subLoading,
   userEmail,
   onSkipStep,
 }: StepActionsProps) {
@@ -103,8 +100,16 @@ export default function StepActions({
             size='sm'
             onClick={() => window.open(Routes.downloadAndroidApp, '_blank', 'noopener,noreferrer')}
           >
-            <Download className='h-4 w-4' />
-            Download APK
+            <Smartphone className='h-4 w-4' />
+            Android guide
+          </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => window.open(Routes.setupIphone, '_blank', 'noopener,noreferrer')}
+          >
+            <Laptop className='h-4 w-4' />
+            iPhone (Mac relay) guide
           </Button>
           {!isDone && (
             <Button
@@ -128,15 +133,6 @@ export default function StepActions({
       )
     case 'register_device':
       return <InlineRegisterPanel />
-    case 'choose_plan':
-      return (
-        <PlanPicker
-          isLoading={subLoading}
-          isSaving={isSaving}
-          isDone={isDone}
-          onSkip={() => onSkipStep('choose_plan')}
-        />
-      )
     case 'first_message':
       return (
         <Button size='sm' asChild>

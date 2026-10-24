@@ -9,9 +9,7 @@ const LABELS: Record<string, string> = {
   '/dashboard/messaging/api-guide': 'API',
   '/dashboard/webhooks': 'Webhooks',
   '/dashboard/webhooks/deliveries': 'Deliveries',
-  '/dashboard/community': 'Community',
   '/dashboard/account': 'Account',
-  '/dashboard/account/billing': 'Billing & plan',
   '/dashboard/account/profile': 'Profile',
   '/dashboard/account/security': 'Security',
   '/dashboard/account/support': 'Support',
@@ -19,7 +17,7 @@ const LABELS: Record<string, string> = {
 
 // Section roots that only redirect link to the tab they land on.
 const LINK_TARGETS: Record<string, string> = {
-  '/dashboard/account': '/dashboard/account/billing',
+  '/dashboard/account': '/dashboard/account/profile',
 }
 
 // A section root that is itself a tab gets that tab as its last crumb.

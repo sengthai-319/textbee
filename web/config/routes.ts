@@ -1,8 +1,9 @@
+const REPO_URL = 'https://github.com/sengthai-319/textbee'
+const SETUP_GUIDE_URL = `${REPO_URL}/blob/main/docs/SETUP.md`
+
 export const Routes = {
-  landingPage: 'https://textbee.dev',
-  contribute: 'https://textbee.dev/contribute',
-  useCases: 'https://textbee.dev/use-cases',
-  quickstart: 'https://textbee.dev/quickstart',
+  landingPage: '/dashboard',
+  quickstart: SETUP_GUIDE_URL,
   login: '/login',
   register: '/register',
   logout: '/logout',
@@ -11,9 +12,7 @@ export const Routes = {
 
   dashboard: '/dashboard',
 
-  downloadAndroidApp: 'https://textbee.dev/download',
-  privacyPolicy: 'https://textbee.dev/privacy-policy',
-  refundPolicy: 'https://textbee.dev/refund-policy',
-  termsOfService: 'https://textbee.dev/terms-of-service',
-  statusPage: 'https://status.textbee.dev',
+  // The anchors match the headings in docs/SETUP.md.
+  downloadAndroidApp: `${SETUP_GUIDE_URL}#android-phones`,
+  setupIphone: `${SETUP_GUIDE_URL}#iphone-through-a-mac`,
 }

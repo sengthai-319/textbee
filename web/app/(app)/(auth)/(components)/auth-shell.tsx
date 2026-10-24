@@ -1,7 +1,7 @@
-import Image from 'next/image'
+import Brand from '@/components/shared/brand'
 import Link, { type LinkProps } from 'next/link'
 
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Routes } from '@/config/routes'
 import { cn } from '@/lib/utils'
 
@@ -16,9 +16,6 @@ type AuthShellProps = {
   className?: string
   children: React.ReactNode
 }
-
-const legalLinkClass =
-  'text-foreground underline underline-offset-2 hover:text-primary'
 
 // Login and register frame; the app header is hidden on these routes.
 export default function AuthShell({
@@ -44,20 +41,8 @@ export default function AuthShell({
   return (
     <div className='flex min-h-svh flex-col bg-background sm:bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] sm:[background-size:22px_22px]'>
       <header className='flex h-14 items-center justify-between gap-4 px-4 sm:h-auto sm:px-8 sm:py-5'>
-        <Link href={Routes.landingPage} className='flex items-center gap-2'>
-          <Image
-            src='/images/logo.png'
-            alt=''
-            width={28}
-            height={28}
-            className='h-7 w-7 rounded-full bg-white'
-          />
-          <span className='font-semibold tracking-tight'>
-            text<span className='text-primary'>bee</span>
-            <span className='text-xs font-normal text-muted-foreground'>
-              .dev
-            </span>
-          </span>
+        <Link href={Routes.landingPage} aria-label='CrossHubSMS home'>
+          <Brand markClassName='h-8 w-8' />
         </Link>
         <p className='hidden text-sm text-muted-foreground sm:block'>
           {switchPrompt} {switchLink}
@@ -96,31 +81,6 @@ export default function AuthShell({
 
             {children}
           </CardContent>
-          <CardFooter className='justify-center px-4 pb-2.5 pt-3'>
-            <p className='text-center text-[13px] leading-[19px] text-muted-foreground sm:text-xs sm:leading-[18px]'>
-              By continuing, you agree to our{' '}
-              <a
-                href={Routes.termsOfService}
-                target='_blank'
-                rel='noopener noreferrer'
-                className={legalLinkClass}
-              >
-                Terms of Service
-                <span className='sr-only'> (opens in new tab)</span>
-              </a>{' '}
-              and acknowledge our{' '}
-              <a
-                href={Routes.privacyPolicy}
-                target='_blank'
-                rel='noopener noreferrer'
-                className={legalLinkClass}
-              >
-                Privacy Policy
-                <span className='sr-only'> (opens in new tab)</span>
-              </a>
-              .
-            </p>
-          </CardFooter>
         </Card>
 
         <p className='mt-5 flex min-h-11 items-center gap-1.5 text-[15px] text-muted-foreground sm:hidden'>

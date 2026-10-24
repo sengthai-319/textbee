@@ -25,7 +25,7 @@ object SmsPermissionHelp {
         "Tap Open app settings below.",
         MENU_STEP.takeIf { restricted },
         "Tap Permissions, then SMS, then Allow.",
-        "Come back to textbee.",
+        "Come back to CrossHubSMS.",
     )
 
     fun intro(restricted: Boolean = needsRestrictedSettings): String =

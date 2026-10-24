@@ -18,8 +18,6 @@ export type UserShape = {
   }
 }
 
-export type SubShape = { plan?: { name?: string } } | null
-
 export type StepDef = {
   id: string
   label: string
@@ -33,7 +31,6 @@ export type StepDef = {
   checkDone: (
     user: UserShape | undefined,
     stats: StatsShape | undefined,
-    sub: SubShape,
     skipped: string[]
   ) => boolean
 }
@@ -49,12 +46,13 @@ export const STEPS: StepDef[] = [
   },
   {
     id: 'download_app',
-    label: 'Download the Android app',
-    description: 'Install textbee on the Android phone that will send your SMS.',
-    doneDescription: 'Installed. Download it again if you are setting up another phone.',
+    label: 'Set up your phone',
+    description:
+      'Android: install the CrossHubSMS app on the phone that will send your SMS. iPhone: set up the Mac relay, which sends through your iPhone.',
+    doneDescription: 'Your phone is set up. Follow the same guide to add another.',
     optional: true,
     timeEstimate: '~1 min',
-    checkDone: (_u, stats, _s, skipped) =>
+    checkDone: (_u, stats, skipped) =>
       (stats?.totalDeviceCount ?? 0) > 0 || skipped.includes('download_app'),
   },
   {
@@ -71,22 +69,11 @@ export const STEPS: StepDef[] = [
     id: 'register_device',
     label: 'Register your device',
     description:
-      'Turn your phone into your SMS gateway: scan the QR code below with the textbee app, then allow the SMS permission when the app asks.',
+      'Turn your phone into your SMS gateway: scan the QR code below with the CrossHubSMS app, then allow the SMS permission when the app asks.',
     doneDescription: 'Device registered. Register another the same way.',
     optional: false,
     timeEstimate: '~1 min',
     checkDone: (_u, stats) => (stats?.totalDeviceCount ?? 0) > 0,
-  },
-  {
-    id: 'choose_plan',
-    label: 'Choose your plan',
-    description: 'Pick the plan that fits your usage.',
-    doneDescription: 'Your plan is set. Change it any time.',
-    optional: true,
-    timeEstimate: '~30 sec',
-    checkDone: (_u, _stats, sub, skipped) =>
-      (sub?.plan?.name && sub.plan.name.toLowerCase() !== 'free') ||
-      skipped.includes('choose_plan'),
   },
   {
     id: 'first_message',
@@ -104,11 +91,10 @@ export type StepState = StepDef & { isDone: boolean }
 export function computeStepStates(
   user: UserShape | undefined,
   stats: StatsShape | undefined,
-  sub: SubShape,
   skipped: string[]
 ): StepState[] {
   return STEPS.map((s) => ({
     ...s,
-    isDone: s.checkDone(user, stats, sub, skipped),
+    isDone: s.checkDone(user, stats, skipped),
   }))
 }

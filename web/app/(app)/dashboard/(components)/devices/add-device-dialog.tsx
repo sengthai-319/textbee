@@ -53,16 +53,16 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
           </DialogHeader>
           <ol className='list-decimal space-y-3 pl-5 text-left text-sm text-muted-foreground'>
             <li>
-              Download textbee app from{' '}
+              Install the CrossHubSMS app on your Android phone (see the{' '}
               <a
                 href={Routes.downloadAndroidApp}
                 target='_blank'
                 rel='noreferrer'
                 className='font-medium text-primary underline-offset-4 hover:underline'
               >
-                {Routes.downloadAndroidApp}
+                Android setup guide
               </a>
-              , and install it.
+              ).
             </li>
             <li>
               Tap Continue to create a new API key and get a QR code in the next
@@ -70,7 +70,7 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
               the app instead
             </li>
             <li>
-              Open the textbee.dev app and scan the QR code or paste the key
+              Open the CrossHubSMS app and scan the QR code or paste the key
               manually. Your device should appear in the list when the link
               succeeds.
             </li>
@@ -78,6 +78,18 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
               Allow the SMS permission when the app asks. On Android 15 and
               newer, Android blocks it at first: open App info, tap the menu
               (⋮), choose Allow restricted settings, then allow SMS.
+            </li>
+            <li>
+              Using an iPhone? Set up the{' '}
+              <a
+                href={Routes.setupIphone}
+                target='_blank'
+                rel='noreferrer'
+                className='font-medium text-primary underline-offset-4 hover:underline'
+              >
+                Mac relay
+              </a>{' '}
+              instead: a Mac sends your messages through the iPhone.
             </li>
           </ol>
           <DialogFooter className='flex-col gap-2 sm:flex-row sm:justify-between'>

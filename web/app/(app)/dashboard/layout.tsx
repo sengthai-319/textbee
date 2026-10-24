@@ -18,6 +18,7 @@ import {
   type NavItem,
 } from './(components)/nav-items'
 import { cn } from '@/lib/utils'
+import { Routes } from '@/config/routes'
 
 export default function DashboardLayout({
   children,
@@ -47,9 +48,10 @@ export default function DashboardLayout({
       {/* Desktop sidebar, sits below the sticky app header (h-14). */}
       <aside className='fixed inset-y-0 left-0 top-14 z-30 hidden w-60 flex-col border-r border-border bg-shell md:flex'>
         <div className='flex-1 overflow-y-auto px-3 py-4'>
-          <div className='mb-4'>
+          <div className='mb-5'>
             <SearchTrigger onOpen={() => setSearchOpen(true)} />
           </div>
+          <p className='label-mono mb-2 px-3'>Workspace</p>
           {/* Distinct labels: several nav landmarks on one page are otherwise
               indistinguishable in a screen reader's landmark list. */}
           <nav className='flex flex-col gap-1' aria-label='Main'>
@@ -66,12 +68,12 @@ export default function DashboardLayout({
           <p className='text-xs text-muted-foreground'>
             Need help?{' '}
             <a
-              href='https://textbee.dev/quickstart'
+              href={Routes.quickstart}
               target='_blank'
               rel='noreferrer'
               className='font-medium text-primary hover:underline'
             >
-              Quick start
+              Setup guide
             </a>
           </p>
           <ThemeToggle />
@@ -122,13 +124,25 @@ function SidebarLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
       prefetch
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+        'group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
         isActive
-          ? 'bg-card text-primary shadow-[0_0_0_1px_hsl(var(--border))]'
+          ? 'bg-primary/10 text-foreground'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground'
       )}
     >
-      <Icon className='h-[18px] w-[18px] shrink-0 stroke-[1.75]' />
+      {/* Gold rail marks the current section */}
+      {isActive && (
+        <span
+          aria-hidden='true'
+          className='absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary'
+        />
+      )}
+      <Icon
+        className={cn(
+          'h-[18px] w-[18px] shrink-0 stroke-[1.75]',
+          isActive ? 'text-primary' : 'group-hover:text-foreground'
+        )}
+      />
       <span>{item.label}</span>
     </Link>
   )

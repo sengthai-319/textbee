@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { authenticate } from './session'
 import { mockApi } from './mock-api'
-import { mockFreeSubscription, mockSubscription } from '../test/fixtures'
 
 test.describe('account settings (mocked API, no real backend)', () => {
-  test('/dashboard/account redirects to billing and shows the subscription', async ({
+  test('/dashboard/account redirects to the profile tab', async ({
     page,
     context,
   }) => {
@@ -12,77 +11,16 @@ test.describe('account settings (mocked API, no real backend)', () => {
     await mockApi(page)
     await page.goto('/dashboard/account')
 
-    await expect(page).toHaveURL(/\/dashboard\/account\/billing/)
+    await expect(page).toHaveURL(/\/dashboard\/account\/profile/)
     const nav = page.getByRole('navigation', { name: 'Section navigation' })
     await expect(
-      nav.getByRole('link', { name: 'Billing & plan' })
+      nav.getByRole('link', { name: 'Profile' })
     ).toHaveAttribute('aria-current', 'page')
-    // Mocked subscription plan name renders.
-    await expect(page.getByRole('heading', { name: 'Pro' })).toBeVisible()
-  })
-
-  test('a subscriber sees their status, price and the next tier up', async ({
-    page,
-    context,
-  }) => {
-    await authenticate(context)
-    await mockApi(page)
-    await page.goto('/dashboard/account/billing')
-
-    await expect(page.getByText('Active')).toBeVisible()
-    await expect(page.getByText('$9.99')).toBeVisible()
-    await expect(
-      page.getByRole('link', { name: /Upgrade to Scale/ })
-    ).toBeVisible()
-    await expect(
-      page.getByRole('link', { name: /Manage subscription/i })
-    ).toBeVisible()
-  })
-
-  test('a subscriber scheduled to cancel sees when access ends', async ({
-    page,
-    context,
-  }) => {
-    await authenticate(context)
-    await mockApi(page, {
-      subscription: { ...mockSubscription, cancelAtPeriodEnd: true },
-    })
-    await page.goto('/dashboard/account/billing')
-
-    await expect(page.getByText('Access ends')).toBeVisible()
-    await expect(page.getByText('Next payment')).toHaveCount(0)
-    await expect(page.getByText(/will not renew/)).toBeVisible()
-  })
-
-  // A free user has no subscription, so the payload carries no status. The
-  // page used to read that as a subscription whose status was unknown and
-  // told them so, alongside two "N/A" billing dates.
-  test('a free user is never told their status is unknown', async ({
-    page,
-    context,
-  }) => {
-    await authenticate(context)
-    await mockApi(page, { subscription: mockFreeSubscription })
-    await page.goto('/dashboard/account/billing')
-
-    await expect(page.getByRole('heading', { name: 'Free' })).toBeVisible()
-    await expect(page.getByText('Unknown')).toHaveCount(0)
-    await expect(page.getByText('N/A')).toHaveCount(0)
-    await expect(page.getByText('Start date')).toHaveCount(0)
-
-    // Sold the next tier, not offered a portal for a subscription they do not
-    // have.
-    await expect(
-      page.getByRole('link', { name: /Upgrade to Pro/ })
-    ).toBeVisible()
-    await expect(
-      page.getByRole('link', { name: /Manage subscription/i })
-    ).toHaveCount(0)
   })
 
   // The sidebar used to link to /dashboard/account, whose page is a server
   // redirect stub, so every click paid navigation + redirect + navigation.
-  test('the sidebar Account link goes straight to billing with no redirect hop', async ({
+  test('the sidebar Account link goes straight to the profile tab with no redirect hop', async ({
     page,
     context,
   }) => {
@@ -102,22 +40,8 @@ test.describe('account settings (mocked API, no real backend)', () => {
       .getByRole('link', { name: 'Account' })
       .click()
 
-    await expect(page).toHaveURL(/\/dashboard\/account\/billing$/)
-    await expect(page.getByRole('heading', { name: 'Pro' })).toBeVisible()
+    await expect(page).toHaveURL(/\/dashboard\/account\/profile$/)
     expect(stubHits).toEqual([])
-  })
-
-  test('the pricing page is reachable from billing on any plan', async ({
-    page,
-    context,
-  }) => {
-    await authenticate(context)
-    await mockApi(page, { subscription: mockFreeSubscription })
-    await page.goto('/dashboard/account/billing')
-
-    await expect(
-      page.getByRole('link', { name: /Compare all plans/ })
-    ).toHaveAttribute('href', 'https://textbee.dev/pricing')
   })
 
   // Password managers key off autoComplete to tell the three password boxes

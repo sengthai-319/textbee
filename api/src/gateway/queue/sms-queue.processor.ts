@@ -45,7 +45,7 @@ function getFcmErrorCode(error: { code?: string; message?: string } | null): str
 }
 
 const FCM_ACTIONABLE_MESSAGE =
-  'The device token is invalid. Please open the textbee mobile app, click on the update button to resync and try again.'
+  'The device token is invalid. Please open the CrossHubSMS app, click on the update button to resync and try again.'
 
 function getFcmErrorMessage(error: { code?: string; message?: string } | null | undefined): string {
   const rawPart = `FCM_DELIVERY_FAILED: ${error?.message || 'FCM delivery failed'}`
@@ -86,6 +86,15 @@ export class SmsQueueProcessor {
     // A pull device claims its messages once they are due, so there is
     // nothing to push and nothing to mark dispatched
     if (isPullDevice(device)) {
+      // Counted when queued, as the push path counts a handed-off push
+      await this.deviceModel
+        .findByIdAndUpdate(deviceId, { $inc: { sentSMSCount: fcmMessages.length } })
+        .exec()
+      if (device?.user && device.sentSMSCount === 0 && fcmMessages.length > 0) {
+        this.usersService
+          .markMilestone((device.user as any)?._id ?? device.user, 'firstSmsAt')
+          .catch(() => undefined)
+      }
       await this.batchStatus.refresh([smsBatchId])
       return skippedBatchResponse(fcmMessages.length, PULL_QUEUED_MESSAGE_ID)
     }

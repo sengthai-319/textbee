@@ -24,7 +24,7 @@ data class ComposeState(
     val sendSuccess: Boolean = false
 )
 
-const val UPGRADE_URL = "https://textbee.dev/pricing?ref=android-quota"
+val UPGRADE_URL = "${com.vernu.sms.BuildConfig.DASHBOARD_URL}/dashboard"
 
 class ComposeViewModel(app: Application) : AndroidViewModel(app) {
 

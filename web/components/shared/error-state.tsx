@@ -47,14 +47,14 @@ export default function ErrorState({
         </Button>
       )}
       <p className='mt-1 text-xs text-muted-foreground'>
-        Still stuck? Ask the{' '}
+        Still stuck?{' '}
         <a
-          href={ExternalLinks.discord}
+          href={ExternalLinks.issues}
           target='_blank'
           rel='noopener noreferrer'
           className='font-medium text-primary hover:underline'
         >
-          community on Discord
+          Open an issue on GitHub
         </a>
         .
       </p>

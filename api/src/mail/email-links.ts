@@ -4,10 +4,10 @@ const base = (value: string | undefined, fallback: string) =>
   (value || fallback).replace(/\/+$/, '')
 
 export const apiPublicUrl = () =>
-  base(process.env.API_PUBLIC_URL, 'https://api.textbee.dev')
+  base(process.env.API_PUBLIC_URL, 'http://localhost:3001')
 
 export const appPublicUrl = () =>
-  base(process.env.APP_PUBLIC_URL, 'https://app.textbee.dev')
+  base(process.env.APP_PUBLIC_URL, 'http://localhost:3000')
 
 export const emailLinkSecret = () => process.env.EMAIL_LINK_SECRET || ''
 

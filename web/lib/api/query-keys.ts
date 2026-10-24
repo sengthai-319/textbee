@@ -6,12 +6,10 @@ import type { ApiKeyStatusFilter } from './types'
 // not-yet-migrated components still share the same cache entries.
 export const queryKeys = {
   currentUser: ['currentUser'] as const,
-  subscription: ['currentSubscription'] as const,
   stats: ['stats'] as const,
   devices: ['devices'] as const,
   smsPermissionStatus: ['smsPermissionStatus'] as const,
   webhooks: ['webhooks'] as const,
-  billingPlans: ['billingPlans'] as const,
   notificationFeed: ['notificationFeed'] as const,
   apiKeys: (status: ApiKeyStatusFilter = 'active') =>
     ['apiKeys', status] as const,
