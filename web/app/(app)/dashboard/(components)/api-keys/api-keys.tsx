@@ -380,7 +380,7 @@ export default function ApiKeys() {
               revokedList?.map((k) => (
                 <div
                   key={k._id}
-                  className='flex items-center justify-between gap-3 rounded-md border p-3'
+                  className='flex items-center justify-between gap-3 rounded-2xl bg-surface-secondary p-3'
                 >
                   <div className='min-w-0 flex-1'>
                     <div className='font-medium text-sm truncate'>

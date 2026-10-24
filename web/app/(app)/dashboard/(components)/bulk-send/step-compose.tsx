@@ -44,7 +44,7 @@ export default function ComposeStep({ bulk }: { bulk: BulkSendState }) {
                 key={c}
                 type='button'
                 onClick={() => insertVariable(c)}
-                className='rounded-md border border-border bg-default/50 px-2 py-1 font-mono text-xs transition-colors hover:border-primary/50 hover:text-primary'
+                className='rounded-full border border-transparent bg-default px-2.5 py-1 font-mono text-xs transition-colors hover:border-primary/50 hover:text-primary'
               >
                 {`{{ ${c} }}`}
               </button>

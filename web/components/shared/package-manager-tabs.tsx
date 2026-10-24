@@ -82,7 +82,7 @@ export default function PackageManagerTabs({
     <Tabs
       value={manager}
       onValueChange={selectManager}
-      className={cn('overflow-hidden rounded-lg border border-border', className)}
+      className={cn('overflow-hidden rounded-2xl border border-separator', className)}
     >
       <div className='flex items-center justify-between gap-2 border-b border-border bg-default/50 px-2 py-1.5'>
         <TabsList aria-label='Package manager' className='h-auto border-0 bg-transparent p-0'>

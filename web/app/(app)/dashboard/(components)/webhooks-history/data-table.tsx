@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="rounded-md border">
+      <div className="card card--default gap-0 overflow-hidden p-0">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
