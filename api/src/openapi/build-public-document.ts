@@ -9,10 +9,10 @@ import {
 } from './swagger-config'
 import { PUBLIC_OPERATION_KEYS, toOperationKey } from './public-operations'
 
-const PUBLIC_TITLE = 'textbee API'
+const PUBLIC_TITLE = 'CrossHubSMS API'
 const PUBLIC_DESCRIPTION =
-  'Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbee dashboard, sent as the x-api-key header.'
-const PUBLIC_SERVER_URL = 'https://api.textbee.dev'
+  'Send and receive SMS through an Android phone, or an iPhone through a Mac, that you own. Authenticate every request with an API key from your CrossHubSMS dashboard, sent as the x-api-key header.'
+const PUBLIC_SERVER_URL = process.env.API_PUBLIC_URL || 'http://localhost:3001'
 const PUBLIC_TAG_NAMES = ['gateway', 'webhooks']
 
 const HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete'] as const

@@ -120,7 +120,7 @@ fun DashboardScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(
-                                text = "textbee.dev",
+                                text = "CrossHubSMS",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -580,7 +580,7 @@ private fun SubscriptionCard(
                             OutlinedButton(
                                 onClick = {
                                     context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/pricing?ref=android-dashboard"))
+                                        Intent(Intent.ACTION_VIEW, Uri.parse("${com.vernu.sms.BuildConfig.DASHBOARD_URL}/dashboard"))
                                     )
                                 }
                             ) {
@@ -590,7 +590,7 @@ private fun SubscriptionCard(
                             TextButton(
                                 onClick = {
                                     context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard/account"))
+                                        Intent(Intent.ACTION_VIEW, Uri.parse("${com.vernu.sms.BuildConfig.DASHBOARD_URL}/dashboard/account"))
                                     )
                                 }
                             ) {
@@ -693,7 +693,7 @@ private fun QuickActionsSection() {
             OutlinedButton(
                 onClick = {
                     context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard"))
+                        Intent(Intent.ACTION_VIEW, Uri.parse("${com.vernu.sms.BuildConfig.DASHBOARD_URL}/dashboard"))
                     )
                 },
                 modifier = Modifier.weight(1f)
@@ -705,7 +705,7 @@ private fun QuickActionsSection() {
             OutlinedButton(
                 onClick = {
                     context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/docs"))
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sengthai-319/textbee/blob/main/docs/SETUP.md"))
                     )
                 },
                 modifier = Modifier.weight(1f)

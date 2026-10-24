@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import Brand from './brand'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -125,20 +125,8 @@ export default function AppHeader({
   return (
     <header className='sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/80'>
       <div className='flex h-14 items-center gap-2 px-4'>
-        <Link className='flex items-center space-x-2' href={Routes.landingPage}>
-          <Image
-            src='/images/logo.png'
-            alt='textbee Logo'
-            width={24}
-            height={24}
-            className='h-6 w-6 rounded-full bg-white'
-          />
-          <span className='font-semibold tracking-tight'>
-            text<span className='text-primary'>bee</span>
-            <span className='align-center text-xs text-muted-foreground'>
-              .dev
-            </span>
-          </span>
+        <Link href={Routes.landingPage} aria-label='CrossHubSMS home'>
+          <Brand markClassName='h-7 w-7' />
         </Link>
 
         <div className='flex flex-1 items-center justify-end gap-2'>

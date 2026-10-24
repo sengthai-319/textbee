@@ -38,7 +38,7 @@ describe('EmailController', () => {
 
     expect(res.status).toHaveBeenCalledWith(200)
     const html = res.send.mock.calls[0][0]
-    expect(html).toContain('Unsubscribe from textbee product emails?')
+    expect(html).toContain('Unsubscribe from CrossHubSMS product emails?')
     expect(html).toContain('method="post"')
     expect(html).toContain('billing still arrive')
     expect(userModel.updateOne).not.toHaveBeenCalled()
@@ -77,7 +77,7 @@ describe('EmailController', () => {
     await controller.unsubscribe(make(), {}, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.send.mock.calls[0][0]).toContain('support@textbee.dev')
+    expect(res.send.mock.calls[0][0]).toContain('This link does not work')
     expect(userModel.updateOne).not.toHaveBeenCalled()
   })
 

@@ -18,6 +18,7 @@ import {
   type NavItem,
 } from './(components)/nav-items'
 import { cn } from '@/lib/utils'
+import { Routes } from '@/config/routes'
 
 export default function DashboardLayout({
   children,
@@ -66,12 +67,12 @@ export default function DashboardLayout({
           <p className='text-xs text-muted-foreground'>
             Need help?{' '}
             <a
-              href='https://textbee.dev/quickstart'
+              href={Routes.quickstart}
               target='_blank'
               rel='noreferrer'
               className='font-medium text-primary hover:underline'
             >
-              Quick start
+              Setup guide
             </a>
           </p>
           <ThemeToggle />

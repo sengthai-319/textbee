@@ -4,7 +4,11 @@
 // is runnable after pasting one API key. The previous guide always printed
 // YOUR_DEVICE_ID, which meant nothing on the page could be run as-is.
 
-export const API_BASE_URL = 'https://api.textbee.dev/api/v1'
+// Your own server, as configured for this dashboard, so copied samples talk to
+// it and never to a hosted service.
+export const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api/v1'
+).replace(/\/+$/, '')
 
 export type LanguageId = 'curl' | 'node' | 'python' | 'php' | 'go' | 'sdk'
 
@@ -58,9 +62,13 @@ export const SDK_PACKAGE = '@textbee/sdk'
 // Client setup shared by every SDK sample. The install command is deliberately
 // not here: it is rendered by the package manager picker above the code, so the
 // copy button hands back runnable code and nothing else.
+// textbee's SDK is API-compatible, so it is pointed at this server.
 const SDK_SETUP = `import { Textbee } from '@textbee/sdk'
 
-const textbee = new Textbee({ apiKey: process.env.TEXTBEE_API_KEY })`
+const sms = new Textbee({
+  apiKey: process.env.CROSSHUBSMS_API_KEY,
+  baseUrl: '${API_BASE_URL}',
+})`
 
 export function buildEndpoints(deviceId?: string): Endpoint[] {
   const id = deviceId || PLACEHOLDER_DEVICE
@@ -75,23 +83,23 @@ export function buildEndpoints(deviceId?: string): Endpoint[] {
       path: '/gateway/send-sms',
       samples: {
         curl: `curl -X POST "${API_BASE_URL}/gateway/send-sms" \\
-  -H "x-api-key: $TEXTBEE_API_KEY" \\
+  -H "x-api-key: $CROSSHUBSMS_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{${device.curl}
     "recipients": ["+14155550101"],
-    "message": "Hello from textbee"
+    "message": "Hello from CrossHubSMS"
   }'`,
         node: `const res = await fetch(
   '${API_BASE_URL}/gateway/send-sms',
   {
     method: 'POST',
     headers: {
-      'x-api-key': process.env.TEXTBEE_API_KEY,
+      'x-api-key': process.env.CROSSHUBSMS_API_KEY,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({${device.node}
       recipients: ['+14155550101'],
-      message: 'Hello from textbee',
+      message: 'Hello from CrossHubSMS',
     }),
   }
 )
@@ -101,10 +109,10 @@ console.log(await res.json())`,
 
 res = requests.post(
     '${API_BASE_URL}/gateway/send-sms',
-    headers={'x-api-key': os.environ['TEXTBEE_API_KEY']},
+    headers={'x-api-key': os.environ['CROSSHUBSMS_API_KEY']},
     json={${device.python}
         'recipients': ['+14155550101'],
-        'message': 'Hello from textbee',
+        'message': 'Hello from CrossHubSMS',
     },
 )
 
@@ -116,12 +124,12 @@ curl_setopt_array($ch, [
     CURLOPT_POST => true,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
-        'x-api-key: ' . getenv('TEXTBEE_API_KEY'),
+        'x-api-key: ' . getenv('CROSSHUBSMS_API_KEY'),
         'Content-Type: application/json',
     ],
     CURLOPT_POSTFIELDS => json_encode([${device.php}
         'recipients' => ['+14155550101'],
-        'message' => 'Hello from textbee',
+        'message' => 'Hello from CrossHubSMS',
     ]),
 ]);
 
@@ -137,12 +145,12 @@ import (
 )
 
 func main() {
-	body := []byte(\`{${device.go}"recipients":["+14155550101"],"message":"Hello from textbee"}\`)
+	body := []byte(\`{${device.go}"recipients":["+14155550101"],"message":"Hello from CrossHubSMS"}\`)
 
 	req, _ := http.NewRequest("POST",
 		"${API_BASE_URL}/gateway/send-sms",
 		bytes.NewBuffer(body))
-	req.Header.Set("x-api-key", os.Getenv("TEXTBEE_API_KEY"))
+	req.Header.Set("x-api-key", os.Getenv("CROSSHUBSMS_API_KEY"))
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
@@ -156,9 +164,9 @@ func main() {
 }`,
         sdk: `${SDK_SETUP}
 
-const result = await textbee.sendSms({${device.sdk}
+const result = await sms.sendSms({${device.sdk}
   recipients: ['+14155550101'],
-  message: 'Hello from textbee',
+  message: 'Hello from CrossHubSMS',
 })
 
 console.log(result)`,
@@ -179,7 +187,7 @@ console.log(result)`,
       path: '/gateway/send-bulk-sms',
       samples: {
         curl: `curl -X POST "${API_BASE_URL}/gateway/send-bulk-sms" \\
-  -H "x-api-key: $TEXTBEE_API_KEY" \\
+  -H "x-api-key: $CROSSHUBSMS_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{${device.curl}
     "messages": [
@@ -192,7 +200,7 @@ console.log(result)`,
   {
     method: 'POST',
     headers: {
-      'x-api-key': process.env.TEXTBEE_API_KEY,
+      'x-api-key': process.env.CROSSHUBSMS_API_KEY,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({${device.node}
@@ -209,7 +217,7 @@ console.log(await res.json())`,
 
 res = requests.post(
     '${API_BASE_URL}/gateway/send-bulk-sms',
-    headers={'x-api-key': os.environ['TEXTBEE_API_KEY']},
+    headers={'x-api-key': os.environ['CROSSHUBSMS_API_KEY']},
     json={${device.python}
         'messages': [
             {'recipients': ['+14155550101'], 'message': 'Hi Alice'},
@@ -226,7 +234,7 @@ curl_setopt_array($ch, [
     CURLOPT_POST => true,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
-        'x-api-key: ' . getenv('TEXTBEE_API_KEY'),
+        'x-api-key: ' . getenv('CROSSHUBSMS_API_KEY'),
         'Content-Type: application/json',
     ],
     CURLOPT_POSTFIELDS => json_encode([${device.php}
@@ -257,7 +265,7 @@ func main() {
 	req, _ := http.NewRequest("POST",
 		"${API_BASE_URL}/gateway/send-bulk-sms",
 		bytes.NewBuffer(body))
-	req.Header.Set("x-api-key", os.Getenv("TEXTBEE_API_KEY"))
+	req.Header.Set("x-api-key", os.Getenv("CROSSHUBSMS_API_KEY"))
 	req.Header.Set("Content-Type", "application/json")
 
 	res, _ := http.DefaultClient.Do(req)
@@ -274,7 +282,7 @@ const res = await fetch(
   {
     method: 'POST',
     headers: {
-      'x-api-key': process.env.TEXTBEE_API_KEY,
+      'x-api-key': process.env.CROSSHUBSMS_API_KEY,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({${device.node}
@@ -305,10 +313,10 @@ console.log(await res.json())`,
       path: '/gateway/messages?direction=received',
       samples: {
         curl: `curl "${API_BASE_URL}/gateway/messages?direction=received" \\
-  -H "x-api-key: $TEXTBEE_API_KEY"`,
+  -H "x-api-key: $CROSSHUBSMS_API_KEY"`,
         node: `const res = await fetch(
   '${API_BASE_URL}/gateway/messages?direction=received',
-  { headers: { 'x-api-key': process.env.TEXTBEE_API_KEY } }
+  { headers: { 'x-api-key': process.env.CROSSHUBSMS_API_KEY } }
 )
 
 console.log(await res.json())`,
@@ -316,7 +324,7 @@ console.log(await res.json())`,
 
 res = requests.get(
     '${API_BASE_URL}/gateway/messages',
-    headers={'x-api-key': os.environ['TEXTBEE_API_KEY']},
+    headers={'x-api-key': os.environ['CROSSHUBSMS_API_KEY']},
     params={'direction': 'received'},
 )
 
@@ -326,7 +334,7 @@ $ch = curl_init('${API_BASE_URL}/gateway/messages?direction=received');
 
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HTTPHEADER => ['x-api-key: ' . getenv('TEXTBEE_API_KEY')],
+    CURLOPT_HTTPHEADER => ['x-api-key: ' . getenv('CROSSHUBSMS_API_KEY')],
 ]);
 
 echo curl_exec($ch);`,
@@ -342,7 +350,7 @@ import (
 func main() {
 	req, _ := http.NewRequest("GET",
 		"${API_BASE_URL}/gateway/messages?direction=received", nil)
-	req.Header.Set("x-api-key", os.Getenv("TEXTBEE_API_KEY"))
+	req.Header.Set("x-api-key", os.Getenv("CROSSHUBSMS_API_KEY"))
 
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
@@ -352,7 +360,7 @@ func main() {
 }`,
         sdk: `${SDK_SETUP}
 
-const { data, meta } = await textbee.getMessages({
+const { data, meta } = await sms.getMessages({
   direction: 'received',
   page: 1,
   limit: 20,
@@ -361,7 +369,7 @@ const { data, meta } = await textbee.getMessages({
 console.log(data, meta)
 
 // Or drain every match, following the cursor for you
-for await (const message of textbee.iterateMessages({
+for await (const message of sms.iterateMessages({
   direction: 'received',
   order: 'asc',
 })) {
@@ -391,17 +399,17 @@ for await (const message of textbee.iterateMessages({
       path: '/gateway/messages',
       samples: {
         curl: `curl "${API_BASE_URL}/gateway/messages?page=1&limit=20" \\
-  -H "x-api-key: $TEXTBEE_API_KEY"
+  -H "x-api-key: $CROSSHUBSMS_API_KEY"
 
 # Which recipients of a batch failed, using the smsBatchId a send returns
 curl "${API_BASE_URL}/gateway/messages?smsBatchId=YOUR_BATCH_ID&status=failed" \\
-  -H "x-api-key: $TEXTBEE_API_KEY"`,
+  -H "x-api-key: $CROSSHUBSMS_API_KEY"`,
         node: `const url = new URL('${API_BASE_URL}/gateway/messages')
 url.searchParams.set('page', '1')
 url.searchParams.set('limit', '20')
 
 const res = await fetch(url, {
-  headers: { 'x-api-key': process.env.TEXTBEE_API_KEY },
+  headers: { 'x-api-key': process.env.CROSSHUBSMS_API_KEY },
 })
 
 console.log(await res.json())`,
@@ -409,7 +417,7 @@ console.log(await res.json())`,
 
 res = requests.get(
     '${API_BASE_URL}/gateway/messages',
-    headers={'x-api-key': os.environ['TEXTBEE_API_KEY']},
+    headers={'x-api-key': os.environ['CROSSHUBSMS_API_KEY']},
     params={'page': 1, 'limit': 20},
 )
 
@@ -420,7 +428,7 @@ $ch = curl_init($url);
 
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HTTPHEADER => ['x-api-key: ' . getenv('TEXTBEE_API_KEY')],
+    CURLOPT_HTTPHEADER => ['x-api-key: ' . getenv('CROSSHUBSMS_API_KEY')],
 ]);
 
 echo curl_exec($ch);`,
@@ -436,7 +444,7 @@ import (
 func main() {
 	req, _ := http.NewRequest("GET",
 		"${API_BASE_URL}/gateway/messages?page=1&limit=20", nil)
-	req.Header.Set("x-api-key", os.Getenv("TEXTBEE_API_KEY"))
+	req.Header.Set("x-api-key", os.Getenv("CROSSHUBSMS_API_KEY"))
 
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
@@ -446,7 +454,7 @@ func main() {
 }`,
         sdk: `${SDK_SETUP}
 
-const { data, meta } = await textbee.getMessages({
+const { data, meta } = await sms.getMessages({
   page: 1,
   limit: 20,
 })
@@ -454,8 +462,8 @@ const { data, meta } = await textbee.getMessages({
 console.log(data, meta)
 
 // Narrow to one device, or to the recipients of a batch that failed
-await textbee.getMessages({ deviceIds: ['${id}'] })
-await textbee.getMessages({ smsBatchId, status: 'failed' })`,
+await sms.getMessages({ deviceIds: ['${id}'] })
+await sms.getMessages({ smsBatchId, status: 'failed' })`,
       },
       // Status values match the SMS schema: pending, dispatched, sent,
       // delivered, failed, unknown, received.
@@ -464,7 +472,7 @@ await textbee.getMessages({ smsBatchId, status: 'failed' })`,
     {
       "_id": "665f1c2a9b1e4a0012ab34cd",
       "recipient": "+14155550101",
-      "message": "Hello from textbee",
+      "message": "Hello from CrossHubSMS",
       "direction": "sent",
       "status": "delivered",
       "requestedAt": "2026-07-18T09:12:00.000Z",

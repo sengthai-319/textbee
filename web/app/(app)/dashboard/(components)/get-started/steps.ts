@@ -46,9 +46,10 @@ export const STEPS: StepDef[] = [
   },
   {
     id: 'download_app',
-    label: 'Download the Android app',
-    description: 'Install textbee on the Android phone that will send your SMS.',
-    doneDescription: 'Installed. Download it again if you are setting up another phone.',
+    label: 'Set up your phone',
+    description:
+      'Android: install the CrossHubSMS app on the phone that will send your SMS. iPhone: set up the Mac relay, which sends through your iPhone.',
+    doneDescription: 'Your phone is set up. Follow the same guide to add another.',
     optional: true,
     timeEstimate: '~1 min',
     checkDone: (_u, stats, skipped) =>
@@ -68,7 +69,7 @@ export const STEPS: StepDef[] = [
     id: 'register_device',
     label: 'Register your device',
     description:
-      'Turn your phone into your SMS gateway: scan the QR code below with the textbee app, then allow the SMS permission when the app asks.',
+      'Turn your phone into your SMS gateway: scan the QR code below with the CrossHubSMS app, then allow the SMS permission when the app asks.',
     doneDescription: 'Device registered. Register another the same way.',
     optional: false,
     timeEstimate: '~1 min',

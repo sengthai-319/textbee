@@ -1,6 +1,5 @@
 import { escapeHtml } from './email-render'
 
-const SUPPORT = 'support@textbee.dev'
 
 const page = (title: string, body: string) =>
   '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
@@ -23,8 +22,8 @@ const NOTICES =
 
 export const unsubscribeConfirmPage = (token: string) =>
   page(
-    'Unsubscribe from textbee product emails?',
-    '<p>You will stop getting product tips and offers from textbee.</p>' +
+    'Unsubscribe from CrossHubSMS product emails?',
+    '<p>You will stop getting product tips and offers from CrossHubSMS.</p>' +
       NOTICES +
       form('unsubscribe', token, 'Unsubscribe'),
   )
@@ -32,7 +31,7 @@ export const unsubscribeConfirmPage = (token: string) =>
 export const unsubscribedPage = (token: string) =>
   page(
     'You are unsubscribed',
-    '<p>You will not get product emails from textbee anymore.</p>' +
+    '<p>You will not get product emails from CrossHubSMS anymore.</p>' +
       NOTICES +
       '<p>Changed your mind?</p>' +
       form('resubscribe', token, 'Subscribe again'),
@@ -41,12 +40,20 @@ export const unsubscribedPage = (token: string) =>
 export const resubscribedPage = () =>
   page(
     'You are subscribed again',
-    '<p>You will get textbee product emails again. You can unsubscribe with the link at the bottom of any of them.</p>',
+    '<p>You will get CrossHubSMS product emails again. You can unsubscribe with the link at the bottom of any of them.</p>',
   )
+
+// Read per call so a change to the environment applies without a rebuild
+const supportLine = () => {
+  const support = process.env.MAIL_REPLY_TO || process.env.ADMIN_EMAIL
+  return support
+    ? `<p>If it still does not work, write to <a href="mailto:${support}">${support}</a> and we will update your email settings.</p>`
+    : '<p>If it still does not work, ask the administrator of this server to update your email settings.</p>'
+}
 
 export const invalidLinkPage = () =>
   page(
     'This link does not work',
     '<p>The link may be incomplete or changed. Copy the whole link from the email and try again.</p>' +
-      `<p>If it still does not work, write to <a href="mailto:${SUPPORT}">${SUPPORT}</a> and we will update your email settings.</p>`,
+      supportLine(),
   )

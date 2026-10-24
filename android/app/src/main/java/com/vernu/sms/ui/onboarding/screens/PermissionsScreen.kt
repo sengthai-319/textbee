@@ -66,7 +66,7 @@ fun PermissionsScreen(
             PermissionItem(
                 permission = "android.permission.POST_NOTIFICATIONS",
                 label = "Notifications",
-                rationale = "Lets textbee show that it is running and sending in the background",
+                rationale = "Lets CrossHubSMS show that it is running and sending in the background",
                 icon = Icons.Default.Notifications
             )
         ) else emptyList()
@@ -161,7 +161,7 @@ fun PermissionsScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "textbee needs the SMS permission to send messages. The others are optional.",
+                text = "CrossHubSMS needs the SMS permission to send messages. The others are optional.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -207,7 +207,7 @@ fun PermissionsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "These permissions are only used to send and receive SMS on your behalf. textbee never accesses your existing message history.",
+                text = "These permissions are only used to send and receive SMS on your behalf. CrossHubSMS never accesses your existing message history.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -215,7 +215,7 @@ fun PermissionsScreen(
             TextButton(
                 onClick = {
                     context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/privacy-policy"))
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sengthai-319/textbee/blob/main/docs/SETUP.md"))
                     )
                 },
                 contentPadding = PaddingValues(0.dp)

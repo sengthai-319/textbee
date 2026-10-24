@@ -176,7 +176,7 @@ export default function SmsDetailsDialog({
               phone used {simName(message)}. This usually means no SIM in the
               phone has that ID. SIM IDs can change when a SIM is removed,
               reinserted or swapped. Copy the current ID from the SIM Cards
-              section of the textbee app.
+              section of the CrossHubSMS app.
             </p>
           )}
 
@@ -197,7 +197,7 @@ export default function SmsDetailsDialog({
               )}
               {message.errorCode === 'PERMISSION_DENIED' && (
                 <p className='text-xs text-foreground'>
-                  The textbee app on this phone does not have SMS permission.{' '}
+                  The CrossHubSMS app on this phone does not have SMS permission.{' '}
                   <a
                     href={smsPermissionGuideUrl('message_details')}
                     target='_blank'

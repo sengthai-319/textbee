@@ -19,9 +19,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'textbee.dev - sms gateway - dashboard',
-
-  metadataBase: new URL('https://textbee.dev'),
+  title: 'CrossHubSMS',
+  description: 'Your own SMS gateway for Android phones and iPhones.',
 }
 
 export default async function RootLayout({ children }: PropsWithChildren) {

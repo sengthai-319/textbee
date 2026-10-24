@@ -1,6 +1,7 @@
 'use client'
 import { useSession } from 'next-auth/react'
 import React, { useEffect } from 'react'
+import { ExternalLinks } from '@/config/external-links'
 
 // Mobile reaches the chat from the account menu, so the floating launcher
 // stays off small screens where it covered row menus and the tab bar.
@@ -14,7 +15,7 @@ export function openSupportChat() {
   // @ts-ignore
   const widget = window.SupportHQWidget
   if (widget) widget.open()
-  else window.location.href = 'mailto:support@textbee.dev'
+  else window.open(ExternalLinks.issues, '_blank', 'noopener,noreferrer')
 }
 
 export default function SupportHQWidget() {

@@ -47,8 +47,7 @@ export default function AccountDeletionAlert() {
           {daysRemaining > 0
             ? `in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}.`
             : 'very soon.'}{' '}
-          If you would like to cancel this request, please email{' '}
-          <span className='font-medium'>support@textbee.dev</span>.
+          To cancel this request, ask the administrator of this server.
         </div>
       </AlertDescription>
     </Alert>

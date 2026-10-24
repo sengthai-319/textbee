@@ -35,16 +35,25 @@ export default function InlineRegisterPanel() {
       <div className='flex flex-col gap-4 sm:flex-row'>
         <ol className='flex-1 list-decimal space-y-2 pl-5 text-sm text-muted-foreground'>
           <li>
-            Install the textbee app on your Android phone from{' '}
+            Install the CrossHubSMS app on your Android phone (see the{' '}
             <a
               href={Routes.downloadAndroidApp}
               target='_blank'
               rel='noreferrer'
               className='font-medium text-primary underline-offset-4 hover:underline'
             >
-              textbee.dev/download
+              Android setup guide
             </a>
-            .
+            ). Using an iPhone? Set up the{' '}
+            <a
+              href={Routes.setupIphone}
+              target='_blank'
+              rel='noreferrer'
+              className='font-medium text-primary underline-offset-4 hover:underline'
+            >
+              Mac relay
+            </a>{' '}
+            instead.
           </li>
           <li>
             {apiKey

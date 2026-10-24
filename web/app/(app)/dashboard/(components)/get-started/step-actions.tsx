@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
-import { Download, MailCheck, Send } from 'lucide-react'
+import { Laptop, MailCheck, Send, Smartphone } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import httpBrowserClient from '@/lib/httpBrowserClient'
 import { ApiEndpoints } from '@/config/api'
@@ -100,8 +100,16 @@ export default function StepActions({
             size='sm'
             onClick={() => window.open(Routes.downloadAndroidApp, '_blank', 'noopener,noreferrer')}
           >
-            <Download className='h-4 w-4' />
-            Download APK
+            <Smartphone className='h-4 w-4' />
+            Android guide
+          </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => window.open(Routes.setupIphone, '_blank', 'noopener,noreferrer')}
+          >
+            <Laptop className='h-4 w-4' />
+            iPhone (Mac relay) guide
           </Button>
           {!isDone && (
             <Button
