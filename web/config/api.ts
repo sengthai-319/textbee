@@ -3,6 +3,7 @@ export const ApiEndpoints = {
     login: () => '/auth/login',
     register: () => '/auth/register',
     signInWithGoogle: () => '/auth/google-login',
+    oidcLogin: () => '/auth/oidc-login',
     updateProfile: () => '/auth/update-profile',
     changePassword: () => '/auth/change-password',
 

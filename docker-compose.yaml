@@ -61,7 +61,7 @@ services:
     # BIND_ADDRESS limits which network can reach it: 0.0.0.0 is every
     # network, a NetBird or Tailscale address is only that private network.
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${API_PORT:-3001}:3001"
+      - "${API_BIND_ADDRESS:-${BIND_ADDRESS:-0.0.0.0}}:${API_PORT:-3001}:3001"
     env_file:
       - ./api/.env
     environment:
@@ -70,6 +70,16 @@ services:
       # Built from .env so the API always uses the database's real password,
       # whatever an older api/.env says.
       - MONGO_URI=mongodb://${MONGO_ROOT_USER:-adminUser}:${MONGO_ROOT_PASS}@textbee-db:27017/textbee?authSource=admin
+      # Sign-in settings, shared with the dashboard (see .env.example).
+      - OIDC_ISSUER=${OIDC_ISSUER:-}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-}
+      - OIDC_NAME=${OIDC_NAME:-}
+      - PASSWORD_LOGIN=${PASSWORD_LOGIN:-}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-}
+      - OIDC_ALLOWED_GROUPS=${OIDC_ALLOWED_GROUPS:-}
+      - OIDC_ALLOW_SIGNUP=${OIDC_ALLOW_SIGNUP:-}
+      - OIDC_TRUST_EMAIL=${OIDC_TRUST_EMAIL:-}
 
     depends_on:
       textbee-db:
@@ -86,11 +96,18 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${WEB_PORT:-3000}:3000"
+      - "${WEB_BIND_ADDRESS:-${BIND_ADDRESS:-0.0.0.0}}:${WEB_PORT:-3000}:3000"
     env_file:
       - ./web/.env
     environment:
       - PORT=3000
+      # Sign-in settings, shared with the dashboard (see .env.example).
+      - OIDC_ISSUER=${OIDC_ISSUER:-}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-}
+      - OIDC_NAME=${OIDC_NAME:-}
+      - PASSWORD_LOGIN=${PASSWORD_LOGIN:-}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-}
       - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:3001/api/v1}
 
     depends_on:

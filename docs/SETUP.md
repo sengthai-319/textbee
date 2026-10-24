@@ -379,7 +379,7 @@ Texts go out about **5 seconds apart** by default, to avoid carrier throttling, 
 
 By default the dashboard only works on your home network. To use it securely from anywhere, including your phone's browser:
 
-1. Install **[Tailscale](https://tailscale.com)** (free) on the server computer and on each device you'll use, signed in to the same account.
+1. Install **[Tailscale](https://tailscale.com)** or **[NetBird](https://netbird.io)** (both free) on the server computer and on each device you'll use. For NetBird, including making the dashboard reachable *only* over it, see [SSO.md › NetBird](SSO.md#part-2-netbird).
 2. Use the server's Tailscale name, such as `your-imac.tailnet-name.ts.net`, in place of `Your-iMac.local` in [step 2.3](#2-run-the-server), and rebuild.
 
 Nothing is exposed to the public internet. If you'd rather put it on a public domain, put it behind HTTPS (for example with Caddy or Cloudflare Tunnel), and use `https://` addresses everywhere. Then set `TRUST_PROXY_HOPS=1` in `api/.env` so rate limiting sees each visitor's real address. Leave it unset when nothing sits in front of the API: otherwise any visitor could claim a fresh address per request and skip the limit.

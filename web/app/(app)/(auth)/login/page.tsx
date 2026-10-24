@@ -1,29 +1,9 @@
-'use client'
+import { getAuthMethods } from '@/lib/auth-methods'
+import LoginView from './login-view'
 
-import { useSearchParams } from 'next/navigation'
-
-import AuthShell from '../(components)/auth-shell'
-import LoginForm from '../(components)/login-form'
-import { Routes } from '@/config/routes'
+// Rendered per request so the sign-in options follow the server's settings.
+export const dynamic = 'force-dynamic'
 
 export default function LoginPage() {
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect')
-
-  return (
-    <AuthShell
-      title='Welcome back'
-      description='Log in to manage your devices and messages.'
-      switchPrompt='New to CrossHub?'
-      switchLabel='Create an account'
-      switchHref={{
-        pathname: Routes.register,
-        query: {
-          redirect: redirect ? decodeURIComponent(redirect) : undefined,
-        },
-      }}
-    >
-      <LoginForm />
-    </AuthShell>
-  )
+  return <LoginView methods={getAuthMethods()} />
 }

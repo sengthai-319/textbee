@@ -11,10 +11,17 @@ import LoginWithGoogle from './login-with-google'
 type AuthShellProps = {
   title: string
   description: string
-  switchPrompt: string
-  switchLabel: string
+  // The "New to CrossHub? Create an account" line. Left out when there is
+  // nowhere to switch to (sign-up closed).
+  switchPrompt?: string
+  switchLabel?: string
   switchHref: LinkProps['href']
   className?: string
+  // Shown above the form: errors and the single sign-on button.
+  before?: React.ReactNode
+  // Draw an "or" between `before` and the form.
+  separated?: boolean
+  showGoogle?: boolean
   children: React.ReactNode
 }
 
@@ -65,21 +72,36 @@ export default function AuthShell({
   switchLabel,
   switchHref,
   className,
+  before,
+  separated = false,
+  showGoogle = true,
   children,
 }: AuthShellProps) {
-  const googleEnabled = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
+  const googleEnabled = showGoogle && Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
 
-  const switchLink = (
-    <Link
-      href={switchHref}
-      className='font-medium text-primary underline-offset-4 hover:underline'
-    >
-      {switchLabel}
-    </Link>
+  const aside =
+    switchPrompt && switchLabel ? (
+      <>
+        {switchPrompt}{' '}
+        <Link
+          href={switchHref}
+          className='font-medium text-primary underline-offset-4 hover:underline'
+        >
+          {switchLabel}
+        </Link>
+      </>
+    ) : undefined
+
+  const orDivider = (
+    <div className='flex items-center gap-3'>
+      <span className='h-px flex-1 bg-border' />
+      <span className='text-xs text-muted-foreground'>or</span>
+      <span className='h-px flex-1 bg-border' />
+    </div>
   )
 
   return (
-    <AuthFrame aside={<>{switchPrompt} {switchLink}</>}>
+    <AuthFrame aside={aside}>
         <Card className={cn(AUTH_CARD, className)}>
           <CardContent className='flex flex-col gap-5 rounded-xl px-5 py-6 sm:px-7 sm:py-8'>
             <div className='space-y-1.5'>
@@ -91,16 +113,13 @@ export default function AuthShell({
               </p>
             </div>
 
+            {before}
+            {separated && orDivider}
+
             {googleEnabled && (
               <>
                 <LoginWithGoogle />
-                <div className='flex items-center gap-3'>
-                  <span className='h-px flex-1 bg-border' />
-                  <span className='text-xs text-muted-foreground'>
-                    or
-                  </span>
-                  <span className='h-px flex-1 bg-border' />
-                </div>
+                {orDivider}
               </>
             )}
 

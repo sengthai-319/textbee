@@ -65,6 +65,10 @@ curl -X POST "http://localhost:3001/api/v1/gateway/devices/YOUR_DEVICE_ID/send-s
 
 The dashboard's **Messaging › API** tab has ready-to-copy versions in several languages, already filled in with your server address and device ID.
 
+## Single sign-on and private access
+
+Sign in with **Authentik** (or any OpenID Connect provider), optionally as the only way in and limited to a group, and make the dashboard reachable only over **NetBird**: [docs/SSO.md](docs/SSO.md).
+
 ## Sending responsibly
 
 Only text people who agreed to hear from you, and honor opt-outs. Personal phone plans are meant for person-to-person texting, so keep bulk sends modest. See [Sending responsibly](docs/SETUP.md#9-sending-responsibly).
