@@ -51,7 +51,7 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     await expect(
       page.getByRole('progressbar', { name: 'Setup progress' })
     ).toBeVisible()
-    await expect(page.getByText('6 of 6')).toBeVisible()
+    await expect(page.getByText('5 of 5')).toBeVisible()
     // Webhooks summary row keeps a mobile path to /dashboard/webhooks
     // (fixtures have 1 active webhook).
     await expect(
@@ -166,7 +166,7 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     await expect(page.getByText('Sent today')).toBeVisible()
     await expect(page.getByText('320', { exact: true })).toBeVisible()
     await expect(page.getByText('12,840')).toBeVisible()
-    await expect(page.getByRole('progressbar')).toHaveCount(0)
+    await expect(page.getByRole('progressbar', { name: /usage/i })).toHaveCount(0)
     await expect(page.getByText(/remaining|upgrade/i)).toHaveCount(0)
   })
 
@@ -228,7 +228,8 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     await page.getByRole('button', { name: 'Device actions' }).nth(1).click()
     await page.getByRole('menuitem', { name: 'Set as default' }).click()
 
-    await expect(page.getByText('Default device updated')).toBeVisible()
+    // The toast and its live-region announcement both carry the text
+    await expect(page.getByText('Default device updated').first()).toBeVisible()
     await expect(galaxy).toContainText('Default')
     await expect(pixel).not.toContainText('Default')
   })

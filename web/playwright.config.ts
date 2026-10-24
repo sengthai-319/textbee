@@ -7,6 +7,8 @@ import { defineConfig, devices } from '@playwright/test'
 export const TEST_AUTH_SECRET = 'e2e-test-secret-do-not-use-in-prod'
 const PORT = 3100
 export const BASE_URL = `http://localhost:${PORT}`
+// A backend host that only exists to be intercepted (see e2e/mock-api.ts).
+export const MOCK_API_BASE_URL = 'http://localhost:3999/api/v1'
 
 export default defineConfig({
   testDir: './e2e',
@@ -40,7 +42,7 @@ export default defineConfig({
       NEXTAUTH_URL: BASE_URL,
       NEXTAUTH_SECRET: TEST_AUTH_SECRET,
       // Point the app at a backend host that only exists to be intercepted.
-      NEXT_PUBLIC_API_BASE_URL: 'http://localhost:3999/api/v1',
+      NEXT_PUBLIC_API_BASE_URL: MOCK_API_BASE_URL,
       NEXT_PUBLIC_GOOGLE_CLIENT_ID: 'e2e-google-client-id',
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA',
     },

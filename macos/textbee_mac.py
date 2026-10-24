@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-textbee for Mac: turns a Mac into a textbee device.
+CrossHubSMS Mac relay: turns a Mac into a CrossHubSMS device.
 
-textbee normally pushes each message to the Android app, which sends it from
+CrossHubSMS normally pushes each message to the Android app, which sends it from
 the phone's SIM. iPhones cannot send SMS from an app, so this client takes the
-phone's place instead: it registers with textbee as a 'pull' device, collects
+phone's place instead: it registers with CrossHubSMS as a 'pull' device, collects
 its messages from the server, and hands each one to the Messages app. The
 iPhone paired with the Mac delivers it as a regular SMS through Text Message
 Forwarding.
@@ -32,8 +32,9 @@ from pathlib import Path
 
 APP_VERSION_NAME = "1.0.0"
 APP_VERSION_CODE = 1
-USER_AGENT = f"textbee-mac/{APP_VERSION_NAME}"
+USER_AGENT = f"crosshubsms-mac/{APP_VERSION_NAME}"
 
+# The folder and launch agent keep their original names so existing installs keep working
 HOME = Path(
     os.environ.get("TEXTBEE_MAC_HOME")
     or Path.home() / "Library" / "Application Support" / "textbee-mac"
@@ -94,7 +95,7 @@ def save_config(config: dict):
     tmp.replace(CONFIG_PATH)
 
 
-## textbee API
+## CrossHubSMS API
 
 class ApiError(Exception):
     def __init__(self, status: int, body: str):
@@ -345,7 +346,7 @@ def run(config: dict, once: bool = False):
             elif e.status == 403:
                 sys.exit(
                     "The server refused to hand out messages (403). This client needs a "
-                    "textbee server with pull-device support, and a device registered by "
+                    "CrossHubSMS server with pull-device support, and a device registered by "
                     f"this client. Server said: {e.body[:300]}"
                 )
             else:
@@ -396,7 +397,7 @@ def cmd_setup(args):
     save_config(config)
     if device.get("transport") != "pull":
         log("Warning: the server did not record this device as a pull device. "
-            "It needs textbee with pull-device support, or it will try to push to it.")
+            "It needs CrossHubSMS with pull-device support, or it will try to push to it.")
     log(f"Registered as device {device['_id']} ({device.get('name')}). Config saved to {CONFIG_PATH}")
     log("Next: python3 textbee_mac.py test --to +15551234567, then python3 textbee_mac.py run")
 
@@ -466,12 +467,12 @@ def cmd_uninstall_agent(args):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Relay textbee messages through Messages and your iPhone.")
+    parser = argparse.ArgumentParser(description="Relay CrossHubSMS messages through Messages and your iPhone.")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("setup", help="Register this Mac with a textbee server")
-    p.add_argument("--server", default=DEFAULT_SERVER, help=f"textbee API base URL (default {DEFAULT_SERVER})")
-    p.add_argument("--api-key", required=True, help="API key from the textbee dashboard")
+    p = sub.add_parser("setup", help="Register this Mac with a CrossHubSMS server")
+    p.add_argument("--server", default=DEFAULT_SERVER, help=f"CrossHubSMS API base URL (default {DEFAULT_SERVER})")
+    p.add_argument("--api-key", required=True, help="API key from the CrossHubSMS dashboard")
     p.add_argument("--name", help="Device name shown in the dashboard")
     p.add_argument("--service", choices=["sms", "imessage"], default="sms",
                    help="Send as SMS through the iPhone (default) or as iMessage")
@@ -479,7 +480,7 @@ def main(argv=None):
 
     p = sub.add_parser("test", help="Send one message through Messages, without the server")
     p.add_argument("--to", required=True, help="Phone number in international format")
-    p.add_argument("--message", default="Test from textbee for Mac")
+    p.add_argument("--message", default="Test from the CrossHubSMS Mac relay")
     p.add_argument("--service", choices=["sms", "imessage"])
     p.set_defaults(func=cmd_test)
 

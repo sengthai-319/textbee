@@ -1,6 +1,6 @@
 # Android Build Variants Setup (Dev vs Prod)
 
-This document explains how to use the dev and prod build variants for the SMS Gateway Android app.
+This document explains how to use the dev and prod build variants for the CrossHubSMS Android app. For a first setup, follow [docs/SETUP.md](../docs/SETUP.md#android-phones) instead.
 
 ## Overview
 
@@ -13,8 +13,8 @@ The app now supports two build variants:
 | Feature | Dev | Prod |
 |---------|-----|------|
 | Package Name | `com.vernu.sms.dev` | `com.vernu.sms` |
-| App Name | "SMS Gateway (Dev)" | "SMS Gateway" |
-| API Base URL | `https://api-dev.textbee.dev/api/v1/` | `https://api.textbee.dev/api/v1/` |
+| App Name | "CrossHubSMS (Dev)" | "CrossHubSMS" |
+| API Base URL | `-PapiBaseUrl` (both) | `-PapiBaseUrl` (both) |
 | Firebase Config | `app/src/dev/google-services.json` | `app/src/prod/google-services.json` |
 | Version Suffix | `-dev` appended | No suffix |
 
@@ -34,16 +34,15 @@ The app now supports two build variants:
 
 ### 2. API Configuration
 
-The API base URLs are now configured via build variants:
-- **Dev**: `https://api-dev.textbee.dev/api/v1/`
-- **Prod**: `https://api.textbee.dev/api/v1/`
-
-To change the dev API URL, edit the `buildConfigField` in `app/build.gradle`:
-```gradle
-dev {
-    buildConfigField "String", "API_BASE_URL", '"https://api-dev.textbee.dev/api/v1/"'
-}
+Both variants use your own server. Pass its address as a Gradle property, or set it in `gradle.properties`:
+```bash
+./gradlew assembleProdRelease \
+  -PapiBaseUrl=http://Your-iMac.local:3001/api/v1/ \
+  -PdashboardUrl=http://Your-iMac.local:3000
 ```
+- `apiBaseUrl` is the API the app talks to. The trailing slash is required, and the default is `http://10.0.2.2:3001/api/v1/` (the host machine from an emulator).
+- `dashboardUrl` is where the app's "open dashboard" links go (default `http://10.0.2.2:3000`).
+- Plain `http://` is allowed only when `apiBaseUrl` is `http://`.
 
 ## Building the App
 
@@ -73,8 +72,8 @@ dev {
 ## Installation
 
 Both variants can be installed simultaneously on the same device since they have different package names:
-- Dev app will show as "SMS Gateway (Dev)"
-- Prod app will show as "SMS Gateway"
+- Dev app will show as "CrossHubSMS (Dev)"
+- Prod app will show as "CrossHubSMS"
 
 ## Environment Detection
 
