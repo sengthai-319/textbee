@@ -1,13 +1,14 @@
 import { expect, test } from '@playwright/test'
 import { authenticate } from './session'
 import { mockApi } from './mock-api'
+import { Routes } from '../config/routes'
 
-// Guards for the app chrome: the footer used to be rendered above the
-// dashboard's fixed sidebar, so the sidebar painted over its left edge, and the
-// fixed mobile tab bar covered its bottom edge.
+// Guards for the app chrome. The dashboard has no page footer: on desktop the
+// sidebar runs the full height and carries help and the account (with the
+// theme) at its foot; on phones the header's account menu carries both.
 
 test.describe('app chrome (mocked API, no real backend)', () => {
-  test('desktop: sidebar does not overlap the footer', async ({
+  test('desktop: full-height sidebar, no top bar and no page footer', async ({
     page,
     context,
   }) => {
@@ -16,80 +17,42 @@ test.describe('app chrome (mocked API, no real backend)', () => {
     await mockApi(page)
     await page.goto('/dashboard')
 
-    const footer = page.locator('footer')
-    await expect(footer).toBeVisible()
+    const sidebar = page.getByRole('complementary', { name: 'Sidebar' })
+    await expect(sidebar).toBeVisible()
+    const box = await sidebar.boundingBox()
+    expect(box!.y, 'sidebar starts at the top of the window').toBe(0)
+    expect(box!.height).toBe(900)
 
-    const sidebar = page.locator('aside')
-    const footerBox = await footer.boundingBox()
-    const sidebarBox = await sidebar.boundingBox()
-
-    expect(footerBox, 'footer must have a layout box').not.toBeNull()
-    expect(sidebarBox, 'sidebar must have a layout box').not.toBeNull()
-
-    // The footer must start where the sidebar ends, not underneath it.
-    expect(
-      footerBox!.x,
-      'footer must start at or after the sidebar right edge'
-    ).toBeGreaterThanOrEqual(sidebarBox!.x + sidebarBox!.width - 1)
+    await expect(page.locator('header')).toBeHidden()
+    await expect(page.locator('footer')).toHaveCount(0)
+    await expect(sidebar.getByRole('link', { name: 'CrossHub home' })).toBeVisible()
   })
 
-  test('mobile: bottom tab bar does not cover the footer', async ({
+  test('desktop: the help menu holds the setup guides', async ({
     page,
     context,
   }) => {
-    await page.setViewportSize({ width: 375, height: 800 })
+    await page.setViewportSize({ width: 1280, height: 900 })
     await authenticate(context)
     await mockApi(page)
     await page.goto('/dashboard')
 
-    const footer = page.locator('footer')
-    await expect(footer).toBeVisible()
-    const tabBar = page.locator('nav.fixed').first()
-
-    // Scrolled again on every attempt rather than once up front: the page
-    // starts as a short loading skeleton and grows as each card's data lands,
-    // so a single scroll to the bottom can be measured from a document that is
-    // still shorter than it ends up, leaving the footer below the viewport.
-    await expect
-      .poll(
-        async () => {
-          await page.evaluate(() =>
-            window.scrollTo(0, document.body.scrollHeight)
-          )
-          const footerBox = await footer.boundingBox()
-          const tabBarBox = await tabBar.boundingBox()
-          if (!footerBox || !tabBarBox) return Number.POSITIVE_INFINITY
-          // The footer's last pixel must sit above the tab bar's first pixel.
-          return footerBox.y + footerBox.height - (tabBarBox.y + 1)
-        },
-        { message: 'footer bottom must clear the fixed tab bar' }
-      )
-      .toBeLessThanOrEqual(0)
-  })
-
-  test('mobile: footer links stack vertically', async ({ page, context }) => {
-    await page.setViewportSize({ width: 375, height: 800 })
-    await authenticate(context)
-    await mockApi(page)
-    await page.goto('/dashboard')
-
-    const links = page.locator('footer nav a')
-    const count = await links.count()
-    expect(count).toBeGreaterThan(2)
-
-    // Stacked means every link sits on its own row, so each y is distinct.
-    const ys: number[] = []
-    for (let i = 0; i < count; i += 1) {
-      const box = await links.nth(i).boundingBox()
-      expect(box).not.toBeNull()
-      ys.push(Math.round(box!.y))
-    }
-    expect(new Set(ys).size, 'each footer link should be on its own row').toBe(
-      count
+    await page
+      .getByRole('complementary', { name: 'Sidebar' })
+      .getByRole('button', { name: 'Help & guides' })
+      .click()
+    const menu = page.getByRole('menu')
+    await expect(menu.getByRole('menuitem', { name: /Setup guide/ })).toHaveAttribute(
+      'href',
+      Routes.quickstart
+    )
+    await expect(menu.getByRole('menuitem', { name: /iPhone with Windows/ })).toHaveAttribute(
+      'href',
+      Routes.setupShortcut
     )
   })
 
-  test('desktop: footer links share rows instead of stacking', async ({
+  test('desktop: theme is chosen from the account menu in the sidebar', async ({
     page,
     context,
   }) => {
@@ -97,22 +60,63 @@ test.describe('app chrome (mocked API, no real backend)', () => {
     await authenticate(context)
     await mockApi(page)
     await page.goto('/dashboard')
-    // Text metrics decide wrapping, so wait for fonts before measuring.
-    await page.evaluate(() => document.fonts.ready)
 
-    const links = page.locator('footer nav a')
-    const count = await links.count()
-
-    const ys: number[] = []
-    for (let i = 0; i < count; i += 1) {
-      const box = await links.nth(i).boundingBox()
-      ys.push(Math.round(box!.y))
+    const openTheme = async () => {
+      await page
+        .getByRole('complementary', { name: 'Sidebar' })
+        .getByRole('button', { name: 'Account menu' })
+        .click()
+      await page.getByRole('menuitem', { name: 'Theme' }).click()
     }
 
-    // The row layout wraps by design, so the guarantee is "not one per row",
-    // not "exactly one row": asserting a single row made this flaky whenever
-    // font metrics pushed a link onto a second line.
-    expect(new Set(ys).size).toBeLessThan(count)
+    await openTheme()
+    await page.getByRole('menuitemradio', { name: 'Light' }).click()
+    await expect(page.locator('html')).not.toHaveClass(/dark/)
+
+    await openTheme()
+    await page.getByRole('menuitemradio', { name: 'Dark' }).click()
+    await expect(page.locator('html')).toHaveClass(/dark/)
+  })
+
+  test('desktop: the sidebar collapses to a rail and remembers it', async ({
+    page,
+    context,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await authenticate(context)
+    await mockApi(page)
+    await page.goto('/dashboard')
+
+    const sidebar = page.getByRole('complementary', { name: 'Sidebar' })
+    const width = async () => (await sidebar.boundingBox())!.width
+    expect(await width()).toBe(240)
+
+    await page.getByRole('button', { name: 'Collapse sidebar' }).click()
+    await expect.poll(width).toBe(72)
+    // Icons only, still reachable by name.
+    await expect(sidebar.getByRole('link', { name: 'Messaging' })).toBeVisible()
+
+    await page.reload()
+    await expect.poll(width).toBe(72)
+
+    await page.getByRole('button', { name: 'Expand sidebar' }).click()
+    await expect.poll(width).toBe(240)
+  })
+
+  test('mobile: the header account menu carries theme and help', async ({
+    page,
+    context,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 800 })
+    await authenticate(context)
+    await mockApi(page)
+    await page.goto('/dashboard')
+
+    await expect(page.locator('footer')).toHaveCount(0)
+    await page.locator('header').getByRole('button', { name: 'Account menu' }).click()
+    await expect(page.getByRole('menuitem', { name: 'Theme' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Help & guides' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Log out' })).toBeVisible()
   })
 
   test('top bar is reduced to brand and account', async ({ page, context }) => {
@@ -127,23 +131,5 @@ test.describe('app chrome (mocked API, no real backend)', () => {
     await expect(header.getByRole('button', { name: 'Toggle theme' })).toHaveCount(
       0
     )
-  })
-
-  test('theme control lives in the sidebar', async ({ page, context }) => {
-    await page.setViewportSize({ width: 1280, height: 900 })
-    await authenticate(context)
-    await mockApi(page)
-    await page.goto('/dashboard')
-
-    const themeGroup = page
-      .locator('aside')
-      .getByRole('group', { name: 'Color theme' })
-    await expect(themeGroup).toBeVisible()
-
-    await themeGroup.getByRole('button', { name: 'Dark' }).click()
-    await expect(page.locator('html')).toHaveClass(/dark/)
-
-    await themeGroup.getByRole('button', { name: 'Light' }).click()
-    await expect(page.locator('html')).not.toHaveClass(/dark/)
   })
 })

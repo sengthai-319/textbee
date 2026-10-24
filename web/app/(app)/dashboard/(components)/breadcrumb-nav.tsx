@@ -4,14 +4,15 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 import { buildBreadcrumbs } from './breadcrumbs'
+import { cn } from '@/lib/utils'
 
-export default function BreadcrumbNav() {
+export default function BreadcrumbNav({ className }: { className?: string }) {
   const crumbs = buildBreadcrumbs(usePathname())
   // A lone crumb only repeats the page the sidebar already highlights
   if (crumbs.length <= 1) return null
 
   return (
-    <nav aria-label='Breadcrumb' className='pt-6 sm:pt-8'>
+    <nav aria-label='Breadcrumb' className={cn('min-w-0 pt-6 sm:pt-8', className)}>
       <ol className='flex min-w-0 items-center gap-1 text-sm text-muted-foreground'>
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1
