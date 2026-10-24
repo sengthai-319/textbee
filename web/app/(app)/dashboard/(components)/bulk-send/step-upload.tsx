@@ -61,7 +61,7 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
 
             {/* Show what was actually parsed, so a mis-delimited file is
                 obvious before anything is sent. */}
-            <div className='overflow-x-auto rounded-lg border border-border'>
+            <div className='overflow-x-auto rounded-2xl border border-separator'>
               <table className='w-full text-left text-xs'>
                 <thead className='bg-default/50'>
                   <tr>
@@ -100,7 +100,7 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
             <div
               {...getRootProps()}
               className={cn(
-                'cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors sm:p-8',
+                'cursor-pointer rounded-2xl border-2 border-dashed p-6 text-center transition-colors sm:p-8',
                 isDragActive
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:border-primary/50 hover:bg-default/30'

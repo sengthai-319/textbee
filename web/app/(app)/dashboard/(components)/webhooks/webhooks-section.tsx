@@ -102,7 +102,7 @@ export default function WebhooksSection() {
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8'>
         <div className='space-y-4'>
           {isLoading ? (
-            <div className='rounded-md border divide-y'>
+            <div className='card card--default gap-0 divide-y divide-separator overflow-hidden p-0'>
               <WebhookRowSkeleton />
               <WebhookRowSkeleton />
               <WebhookRowSkeleton />
@@ -117,7 +117,7 @@ export default function WebhooksSection() {
               onRetry={() => refetch()}
             />
           ) : webhookList.length > 0 ? (
-            <div className='rounded-md border divide-y bg-card overflow-hidden'>
+            <div className='card card--default gap-0 divide-y divide-separator overflow-hidden p-0'>
               {webhookList.map((webhook) => (
                 <WebhookCard
                   key={webhook._id}
@@ -128,7 +128,7 @@ export default function WebhooksSection() {
               ))}
             </div>
           ) : (
-            <div className='bg-default/50 rounded-lg p-8 text-center'>
+            <div className='card card--default items-center gap-0 p-8 text-center'>
               <h3 className='text-lg font-medium mb-2'>
                 No webhooks configured
               </h3>

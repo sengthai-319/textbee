@@ -101,7 +101,7 @@ export function WebhookPayloadModal({ isOpen, onClose, smsData, payload }: Webho
                   Copy
                 </Button>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-md border p-4 overflow-auto max-h-64">
+              <div className="max-h-64 overflow-auto rounded-2xl bg-surface-secondary p-4">
                 <pre className="text-xs font-mono whitespace-pre-wrap text-gray-800 dark:text-gray-200">
                   {JSON.stringify(payload, null, 2)}
                 </pre>

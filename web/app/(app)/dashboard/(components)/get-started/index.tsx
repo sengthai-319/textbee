@@ -117,7 +117,7 @@ export default function GetStartedCard() {
       <button
         type='button'
         onClick={() => setMinimizedPersisted(false)}
-        className='flex w-full items-center gap-3 rounded-xl border border-transparent bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10'
+        className='flex w-full items-center gap-3 rounded-2xl border border-transparent bg-accent-soft px-4 py-2.5 text-left transition-colors hover:bg-primary/10'
       >
         <Sparkles className='h-4 w-4 shrink-0 text-primary' />
         <span className='text-sm font-medium'>

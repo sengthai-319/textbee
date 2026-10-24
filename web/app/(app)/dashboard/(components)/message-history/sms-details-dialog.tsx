@@ -171,7 +171,7 @@ export default function SmsDetailsDialog({
           </div>
 
           {simMismatch(message) && (
-            <p className='rounded-lg border border-transparent bg-warning/5 p-3 text-xs text-foreground'>
+            <p className='rounded-2xl bg-warning-soft p-3 text-xs text-foreground'>
               The request asked for SIM ID {message.simSubscriptionId}, but the
               phone used {simName(message)}. This usually means no SIM in the
               phone has that ID. SIM IDs can change when a SIM is removed,
@@ -181,7 +181,7 @@ export default function SmsDetailsDialog({
           )}
 
           {(message.errorCode || message.errorMessage) && (
-            <div className='space-y-1.5 rounded-lg border border-transparent bg-destructive/5 p-3'>
+            <div className='space-y-1.5 rounded-2xl bg-danger-soft p-3'>
               <p className='text-sm font-medium text-destructive'>
                 Delivery failed
               </p>

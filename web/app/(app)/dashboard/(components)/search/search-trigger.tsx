@@ -23,7 +23,7 @@ export default function SearchTrigger({
         onClick={onOpen}
         aria-label='Search'
         className={cn(
-          'inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-default hover:text-foreground',
+          'inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-default hover:text-foreground',
           className
         )}
       >
@@ -37,7 +37,7 @@ export default function SearchTrigger({
       type='button'
       onClick={onOpen}
       className={cn(
-        'inline-flex w-full items-center gap-2 rounded-lg border border-input bg-card px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-default',
+        'inline-flex w-full items-center gap-2 rounded-field border border-field-border bg-field px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-default',
         className
       )}
     >

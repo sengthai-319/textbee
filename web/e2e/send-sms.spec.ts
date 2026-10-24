@@ -65,6 +65,33 @@ test.describe('send sms (mocked API, no real backend)', () => {
     expect(payloads[0].deviceId).toBe(mockDevices[0]._id)
   })
 
+  test('adds numbers one after another by typing and pressing Enter', async ({
+    page,
+    context,
+  }) => {
+    await authenticate(context)
+    await mockApi(page)
+    await gotoSendPage(page)
+
+    // Real keystrokes, the way people type, rather than fill().
+    const to = page.getByLabel('To', { exact: true })
+    // A saved-number dropdown would swallow Enter.
+    await expect(to).toHaveAttribute('autocomplete', 'off')
+    await to.click()
+    for (const number of ['+18259943255', '+14035550199', '+16045550123']) {
+      await page.keyboard.type(number)
+      await page.keyboard.press('Enter')
+      // The cursor stays in the field, ready for the next one.
+      await expect(to).toBeFocused()
+      await expect(to).toHaveValue('')
+    }
+    await expect(page.getByRole('button', { name: /^Remove / })).toHaveCount(3)
+
+    // Backspace in the empty field takes off the last one.
+    await page.keyboard.press('Backspace')
+    await expect(page.getByRole('button', { name: /^Remove / })).toHaveCount(2)
+  })
+
   test('splits a pasted list into separate chips', async ({
     page,
     context,
