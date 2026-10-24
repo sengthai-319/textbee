@@ -22,23 +22,23 @@ describe('buildBreadcrumbs', () => {
       'Webhooks',
       'Deliveries',
     ])
-    expect(labels('/dashboard/account/billing')).toEqual([
+    expect(labels('/dashboard/account/profile')).toEqual([
       'Dashboard',
       'Account',
-      'Billing & plan',
+      'Profile',
     ])
   })
 
   it('links a redirecting section root to where it lands', () => {
     const account = buildBreadcrumbs('/dashboard/account/security')[1]
     expect(account).toEqual({
-      href: '/dashboard/account/billing',
+      href: '/dashboard/account/profile',
       label: 'Account',
     })
   })
 
   it('ignores a trailing slash', () => {
-    expect(labels('/dashboard/community/')).toEqual(['Dashboard', 'Community'])
+    expect(labels('/dashboard/webhooks/')).toEqual(['Dashboard', 'Webhooks'])
   })
 
   it('title-cases a route it does not know', () => {

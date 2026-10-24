@@ -140,13 +140,12 @@ describe('cache invalidation', () => {
       { data: [] }
     )
     queryClient.setQueryData(queryKeys.stats, { sentSMSCount: 0 })
-    queryClient.setQueryData(queryKeys.subscription, { usage: {} })
   }
 
   // Asserted on the keys handed to invalidateQueries rather than on
   // state.isInvalidated: a key with a live observer refetches immediately and
   // clears its own invalidated flag, so the flag is only readable for keys
-  // nothing is currently watching (useBulkSend watches the subscription).
+  // nothing is currently watching.
   const recordInvalidations = (queryClient: QueryClient) => {
     const spy = vi.spyOn(queryClient, 'invalidateQueries')
     return () =>
@@ -161,9 +160,6 @@ describe('cache invalidation', () => {
       )
       expect(keys, 'the dashboard stats must be invalidated').toContain(
         JSON.stringify(queryKeys.stats)
-      )
-      expect(keys, 'the subscription quota must be invalidated').toContain(
-        JSON.stringify(queryKeys.subscription)
       )
     })
 

@@ -15,7 +15,6 @@ import { ThrottlerByIpGuard } from './auth/guards/throttle-by-ip.guard'
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { Request, Response, NextFunction } from 'express'
 import { ScheduleModule } from '@nestjs/schedule'
-import { BillingModule } from './billing/billing.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { BullModule } from '@nestjs/bull'
 import { SupportModule } from './support/support.module'
@@ -59,7 +58,6 @@ export class LoggerMiddleware implements NestMiddleware {
     UsersModule,
     GatewayModule,
     WebhookModule,
-    BillingModule,
     SupportModule,
     AnalyticsModule,
     NotificationsModule,

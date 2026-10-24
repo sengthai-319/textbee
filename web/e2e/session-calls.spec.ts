@@ -40,7 +40,7 @@ test('dashboard navigation makes at most one /api/auth/session call', async ({
   await expect(page).toHaveURL(/\/dashboard\/webhooks\/deliveries$/)
 
   await mainNav.getByRole('link', { name: 'Account' }).click()
-  await expect(page).toHaveURL(/\/dashboard\/account\/billing$/)
+  await expect(page).toHaveURL(/\/dashboard\/account\/profile$/)
 
   expect(sessionCalls).toBeLessThanOrEqual(1)
 })

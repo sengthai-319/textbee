@@ -98,13 +98,13 @@ describe('search registry', () => {
     }
   })
 
-  it('finds billing by invoice and quota wording', () => {
-    const billing = searchEntries.find(
-      (e) => e.href === '/dashboard/account/billing'
+  it('finds security by password wording', () => {
+    const security = searchEntries.find(
+      (e) => e.href === '/dashboard/account/security'
     )
-    expect(billing).toBeDefined()
-    for (const term of ['invoice', 'quota', 'upgrade', 'cancel']) {
-      expect(billing!.keywords).toContain(term)
+    expect(security).toBeDefined()
+    for (const term of ['password', 'reset password', 'delete account']) {
+      expect(security!.keywords).toContain(term)
     }
   })
 })

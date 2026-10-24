@@ -6,7 +6,7 @@ import Papa from 'papaparse'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import httpBrowserClient from '@/lib/httpBrowserClient'
 import { ApiEndpoints } from '@/config/api'
-import { invalidateAfterSend, useDevices, useSubscription } from '@/lib/api'
+import { invalidateAfterSend, useDevices } from '@/lib/api'
 import { getSegmentInfo } from '@/lib/sms'
 import {
   buildRecipientPlan,
@@ -20,7 +20,6 @@ import {
 import {
   BULK_RECIPIENT_WARN_THRESHOLD,
   DEFAULT_SEND_DELAY_SECONDS,
-  FALLBACK_MAX_ROWS,
   MAX_FILE_SIZE,
 } from './constants'
 import { SIM_ID_ERROR } from '@/lib/sim-id'
@@ -42,19 +41,6 @@ export function useBulkSend() {
 
   const queryClient = useQueryClient()
   const { data: devices } = useDevices()
-  const { data: subscription, isPending: subscriptionPending } =
-    useSubscription()
-
-  // Only enforce a row cap once the real limit is known. The old version
-  // defaulted to 50 while the subscription was still loading, so an unlimited
-  // plan could be told its file was too big.
-  const maxRows = useMemo(() => {
-    const limit =
-      subscription?.usage?.bulkSendLimit ?? subscription?.plan?.bulkSendLimit
-    if (subscriptionPending) return undefined
-    if (limit === -1) return Number.POSITIVE_INFINITY
-    return limit || FALLBACK_MAX_ROWS
-  }, [subscription, subscriptionPending])
 
   const resetFile = () => {
     setRows([])
@@ -64,8 +50,6 @@ export function useBulkSend() {
     setPreviewIndex(0)
     setFileWarning(null)
   }
-
-  const rowCapUnknown = rows.length > 0 && maxRows === undefined
 
   const handleRecipientColumnChange = (value: string) => {
     setRecipientColumn(value)
@@ -171,12 +155,6 @@ export function useBulkSend() {
   // and charging the user for rows that are never sent blocked legal sends.
   const recipientCount = plan.valid.length
 
-  // Derived rather than checked once at drop time. The subscription can still
-  // be loading when a file lands, in which case maxRows is undefined and the
-  // old imperative check was skipped entirely and never revisited, so an
-  // over-cap file sailed through on a limited plan.
-  const rowCapExceeded = maxRows !== undefined && recipientCount > maxRows
-
   const selectedDevice = devices?.find((d) => d._id === deviceId)
   // NaN while the typed SIM ID is not a whole number; the send waits for a fix
   const simIdInvalid =
@@ -194,7 +172,7 @@ export function useBulkSend() {
   // high finite cap too, not just an uncapped plan: a 10,000 limit still lets
   // someone start a multi-hour send with nothing said about it.
   const overWarnThreshold =
-    !rowCapExceeded && recipientCount > BULK_RECIPIENT_WARN_THRESHOLD
+    recipientCount > BULK_RECIPIENT_WARN_THRESHOLD
 
   // Clamped, so the preview can never be stranded past the end of a shorter
   // list. Anything that shrinks plan.valid (changing the phone column, most
@@ -216,8 +194,6 @@ export function useBulkSend() {
   const hasFile = rows.length > 0
   const mapped =
     hasFile &&
-    !rowCapExceeded &&
-    !rowCapUnknown &&
     Boolean(recipientColumn) &&
     plan.valid.length > 0
   const composed = mapped && template.trim().length > 0 && Boolean(deviceId)
@@ -284,10 +260,7 @@ export function useBulkSend() {
     fileWarning,
     templateRef,
     devices,
-    maxRows,
     resetFile,
-    rowCapExceeded,
-    rowCapUnknown,
     recipientCount,
     estimatedSendMs,
     overWarnThreshold,

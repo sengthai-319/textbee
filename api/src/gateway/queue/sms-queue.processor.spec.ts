@@ -83,6 +83,9 @@ describe('SmsQueueProcessor.handleSendSms', () => {
     expect(mockSmsModel.bulkWrite).not.toHaveBeenCalled()
     expect(response.successCount).toBe(1)
     expect(mockBatchStatus.refresh).toHaveBeenCalledWith([smsBatchId])
+    expect(mockDeviceModel.findByIdAndUpdate).toHaveBeenCalledWith(deviceId, {
+      $inc: { sentSMSCount: 1 },
+    })
   })
 
   it('pushes normally when nothing is listed for skipping', async () => {

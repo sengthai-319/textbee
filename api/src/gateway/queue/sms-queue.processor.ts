@@ -86,6 +86,15 @@ export class SmsQueueProcessor {
     // A pull device claims its messages once they are due, so there is
     // nothing to push and nothing to mark dispatched
     if (isPullDevice(device)) {
+      // Counted when queued, as the push path counts a handed-off push
+      await this.deviceModel
+        .findByIdAndUpdate(deviceId, { $inc: { sentSMSCount: fcmMessages.length } })
+        .exec()
+      if (device?.user && device.sentSMSCount === 0 && fcmMessages.length > 0) {
+        this.usersService
+          .markMilestone((device.user as any)?._id ?? device.user, 'firstSmsAt')
+          .catch(() => undefined)
+      }
       await this.batchStatus.refresh([smsBatchId])
       return skippedBatchResponse(fcmMessages.length, PULL_QUEUED_MESSAGE_ID)
     }

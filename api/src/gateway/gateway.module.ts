@@ -9,7 +9,6 @@ import { UsersModule } from '../users/users.module'
 import { SMS, SMSSchema } from './schemas/sms.schema'
 import { SMSBatch, SMSBatchSchema } from './schemas/sms-batch.schema'
 import { WebhookModule } from 'src/webhook/webhook.module'
-import { BillingModule } from 'src/billing/billing.module'
 import { BullModule } from '@nestjs/bull'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { SmsQueueService } from './queue/sms-queue.service'
@@ -63,7 +62,6 @@ import { SEND_JOB_TIMEOUT_MS } from './queue/send-timeout'
     AuthModule,
     UsersModule,
     WebhookModule,
-    forwardRef(() => BillingModule),
     ConfigModule,
   ],
   controllers: [GatewayController],

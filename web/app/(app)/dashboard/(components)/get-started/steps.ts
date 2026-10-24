@@ -18,8 +18,6 @@ export type UserShape = {
   }
 }
 
-export type SubShape = { plan?: { name?: string } } | null
-
 export type StepDef = {
   id: string
   label: string
@@ -33,7 +31,6 @@ export type StepDef = {
   checkDone: (
     user: UserShape | undefined,
     stats: StatsShape | undefined,
-    sub: SubShape,
     skipped: string[]
   ) => boolean
 }
@@ -54,7 +51,7 @@ export const STEPS: StepDef[] = [
     doneDescription: 'Installed. Download it again if you are setting up another phone.',
     optional: true,
     timeEstimate: '~1 min',
-    checkDone: (_u, stats, _s, skipped) =>
+    checkDone: (_u, stats, skipped) =>
       (stats?.totalDeviceCount ?? 0) > 0 || skipped.includes('download_app'),
   },
   {
@@ -78,17 +75,6 @@ export const STEPS: StepDef[] = [
     checkDone: (_u, stats) => (stats?.totalDeviceCount ?? 0) > 0,
   },
   {
-    id: 'choose_plan',
-    label: 'Choose your plan',
-    description: 'Pick the plan that fits your usage.',
-    doneDescription: 'Your plan is set. Change it any time.',
-    optional: true,
-    timeEstimate: '~30 sec',
-    checkDone: (_u, _stats, sub, skipped) =>
-      (sub?.plan?.name && sub.plan.name.toLowerCase() !== 'free') ||
-      skipped.includes('choose_plan'),
-  },
-  {
     id: 'first_message',
     label: 'Send your first message',
     description: 'The moment it all works: send an SMS from the dashboard.',
@@ -104,11 +90,10 @@ export type StepState = StepDef & { isDone: boolean }
 export function computeStepStates(
   user: UserShape | undefined,
   stats: StatsShape | undefined,
-  sub: SubShape,
   skipped: string[]
 ): StepState[] {
   return STEPS.map((s) => ({
     ...s,
-    isDone: s.checkDone(user, stats, sub, skipped),
+    isDone: s.checkDone(user, stats, skipped),
   }))
 }

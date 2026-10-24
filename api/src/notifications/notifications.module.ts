@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { AuthModule } from '../auth/auth.module'
-import { BillingModule } from '../billing/billing.module'
 import { Plan, PlanSchema } from '../billing/schemas/plan.schema'
 import {
   Subscription,
@@ -40,7 +39,6 @@ import {
     ]),
     UsersModule,
     AuthModule,
-    BillingModule,
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService, NotificationContextLoader],

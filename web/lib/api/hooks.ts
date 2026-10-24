@@ -17,9 +17,7 @@ import type {
   GatewayStats,
   NotificationEvent,
   NotificationFeed,
-  Plan,
   SmsPermissionStatus,
-  Subscription,
   User,
   WebhookNotification,
   WebhookSubscription,
@@ -55,33 +53,6 @@ export function useCurrentUser(options?: QueryOpts<User>) {
     queryKey: queryKeys.currentUser,
     queryFn: () =>
       httpBrowserClient.get(ApiEndpoints.auth.whoAmI()).then(unwrapData<User>),
-    ...options,
-  })
-}
-
-// ---------- billing ----------
-
-export function useSubscription(options?: QueryOpts<Subscription>) {
-  return useQuery({
-    queryKey: queryKeys.subscription,
-    queryFn: () =>
-      httpBrowserClient
-        .get(ApiEndpoints.billing.currentSubscription())
-        .then(unwrapBody<Subscription>),
-    ...options,
-  })
-}
-
-// /billing/plans returns a bare array, not a { data } envelope. Prices change
-// rarely, so a long stale time avoids refetching on every page.
-export function useBillingPlans(options?: QueryOpts<Plan[]>) {
-  return useQuery({
-    queryKey: queryKeys.billingPlans,
-    queryFn: () =>
-      httpBrowserClient
-        .get(ApiEndpoints.billing.plans())
-        .then(unwrapBody<Plan[]>),
-    staleTime: 10 * 60 * 1000,
     ...options,
   })
 }
@@ -334,7 +305,6 @@ export function useUpdateOnboarding() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.currentUser })
       void queryClient.invalidateQueries({ queryKey: queryKeys.stats })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.subscription })
     },
   })
 }
@@ -469,7 +439,6 @@ export function invalidateAfterSend(queryClient: QueryClient) {
   // or a multi-device selection that does not key on the sending device.
   void queryClient.invalidateQueries({ queryKey: queryKeys.messagesAll })
   void queryClient.invalidateQueries({ queryKey: queryKeys.stats })
-  void queryClient.invalidateQueries({ queryKey: queryKeys.subscription })
   void queryClient.invalidateQueries({
     queryKey: queryKeys.smsPermissionStatus,
   })

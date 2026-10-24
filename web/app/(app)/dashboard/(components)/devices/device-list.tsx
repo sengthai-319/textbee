@@ -16,17 +16,14 @@ import {
   ExternalLink,
   Loader2,
   MoreVertical,
-  TriangleAlert,
   ArrowUpCircle,
 } from 'lucide-react'
-import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 import { Routes } from '@/config/routes'
 import {
   useDeleteDevice,
   useDevices,
   useSetDefaultDevice,
-  useSubscription,
   type Device,
 } from '@/lib/api'
 import EmptyState from '@/components/shared/empty-state'
@@ -88,17 +85,6 @@ export default function DeviceList() {
     useState<DeviceRow | null>(null)
   const { toast } = useToast()
   const { isPending, error, data: devices, refetch } = useDevices()
-
-  const { data: currentSubscription } = useSubscription()
-
-  // -1 (or missing) means unlimited; only enabled devices count toward the limit
-  const deviceLimit = currentSubscription?.usage?.deviceLimit ?? -1
-  const activeDeviceCount =
-    devices?.filter((device) => device.enabled).length ?? 0
-  const isDeviceLimitReached =
-    deviceLimit !== -1 && !isPending && activeDeviceCount >= deviceLimit
-  const isApproachingDeviceLimit =
-    deviceLimit >= 2 && !isPending && activeDeviceCount === deviceLimit - 1
 
   const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteDevice()
   const { mutate: setDefaultDevice, isPending: isSettingDefaultDevice } =
@@ -170,54 +156,6 @@ export default function DeviceList() {
           </Button>
         </CardHeader>
       <CardContent className='max-md:overflow-hidden max-md:rounded-xl max-md:p-0 max-md:shadow-none'>
-          {(isDeviceLimitReached || isApproachingDeviceLimit) && (
-            <div
-              className={`mb-4 flex flex-col gap-2 rounded-lg border px-3 py-2 max-md:mx-3 max-md:mb-1 max-md:mt-3 sm:flex-row sm:items-center sm:justify-between ${
-                isDeviceLimitReached
-                  ? 'border-destructive/30 bg-destructive/10'
-                  : 'border-warning/30 bg-warning/10'
-              }`}
-            >
-              <div className='flex items-start gap-2'>
-                <TriangleAlert
-                  className={`mt-0.5 h-4 w-4 shrink-0 ${
-                    isDeviceLimitReached
-                      ? 'text-destructive'
-                      : 'text-warning'
-                  }`}
-                />
-                <p className='text-xs text-muted-foreground'>
-                  {isDeviceLimitReached ? (
-                    <>
-                      You've reached your plan's limit of{' '}
-                      <span className='font-medium text-foreground'>
-                        {deviceLimit} active device{deviceLimit === 1 ? '' : 's'}
-                      </span>
-                      . New devices can't be registered or re-enabled.
-                    </>
-                  ) : (
-                    <>
-                      You're using{' '}
-                      <span className='font-medium text-foreground'>
-                        {activeDeviceCount} of {deviceLimit}
-                      </span>{' '}
-                      active devices included in your plan.
-                    </>
-                  )}
-                </p>
-              </div>
-              {/* The dashboard has no /pricing route: this used to 404. */}
-              <Button variant='outline' size='sm' asChild className='shrink-0'>
-                <Link
-                  href={`${Routes.landingPage}/pricing`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  Upgrade plan
-                </Link>
-              </Button>
-            </div>
-          )}
           <div className='-my-2 max-md:my-0'>
             {isPending && (
               <>

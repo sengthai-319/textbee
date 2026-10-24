@@ -27,6 +27,7 @@ export interface User {
 }
 
 export interface GatewayStats {
+  todaySentSMSCount?: number
   totalSentSMSCount?: number
   totalReceivedSMSCount?: number
   totalDeviceCount?: number
@@ -78,56 +79,6 @@ export interface ApiKey {
   createdAt?: string
   revokedAt?: string
   usageCount?: number
-}
-
-export interface Plan {
-  name?: string
-  dailyLimit?: number
-  monthlyLimit?: number
-  bulkSendLimit?: number
-  deviceLimit?: number
-  // Prices are in cents and live on the plan as monthlyPrice/yearlyPrice.
-  // This type previously declared amount/currency/recurringInterval, which the
-  // plans endpoint has never sent: those belong to Subscription, populated
-  // from the payment provider. Anything reading plan.amount silently saw
-  // undefined and rendered a paid plan as free.
-  monthlyPrice?: number
-  yearlyPrice?: number
-  isActive?: boolean
-}
-
-export interface SubscriptionUsage {
-  dailyLimit?: number
-  monthlyLimit?: number
-  bulkSendLimit?: number
-  deviceLimit?: number
-  processedSmsToday?: number
-  // Counts the current billing period; the name predates periods.
-  processedSmsLastMonth?: number
-  monthlyPeriodStart?: string
-  monthlyResetAt?: string
-  dailyRemaining?: number
-  monthlyRemaining?: number
-  dailyUsagePercentage?: number
-  monthlyUsagePercentage?: number
-}
-
-export type SubscriptionStatus = 'active' | 'past_due' | 'canceled' | string
-
-export interface Subscription {
-  plan?: Plan
-  usage?: SubscriptionUsage
-  status?: SubscriptionStatus
-  amount?: number
-  currency?: string
-  recurringInterval?: string
-  subscriptionStartDate?: string
-  currentPeriodEnd?: string
-  cancelAtPeriodEnd?: boolean
-  customDailyLimit?: number | null
-  customMonthlyLimit?: number | null
-  customBulkSendLimit?: number | null
-  customDeviceLimit?: number | null
 }
 
 export type ApiKeyStatusFilter = 'active' | 'revoked' | 'all'

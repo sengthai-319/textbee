@@ -25,17 +25,17 @@ test.describe('command palette search (mocked API, no real backend)', () => {
     await expect(page).toHaveURL(/\/dashboard\/messaging\/bulk/)
   })
 
-  test('desktop: business wording finds billing', async ({ page, context }) => {
+  test('desktop: everyday wording finds security', async ({ page, context }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await authenticate(context)
     await mockApi(page)
     await page.goto('/dashboard')
 
     await page.getByRole('button', { name: /search/i }).first().click()
-    await page.getByPlaceholder(/search pages/i).fill('invoice')
-    await page.getByRole('option', { name: /billing/i }).click()
+    await page.getByPlaceholder(/search pages/i).fill('reset password')
+    await page.getByRole('option', { name: /security/i }).click()
 
-    await expect(page).toHaveURL(/\/dashboard\/account\/billing/)
+    await expect(page).toHaveURL(/\/dashboard\/account\/security/)
   })
 
   test('mobile: search is reachable and reaches webhooks', async ({

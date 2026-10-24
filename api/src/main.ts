@@ -84,10 +84,6 @@ async function bootstrap() {
     )
   }
 
-  app.use(
-    '/api/v1/billing/webhook/polar',
-    express.raw({ type: 'application/json' }),
-  )
   // SNS posts JSON as text/plain.
   app.use(
     '/api/v1/email/ses-events',

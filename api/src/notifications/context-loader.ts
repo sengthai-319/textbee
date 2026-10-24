@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
-import { PAID_MONTHLY_LIMIT_MULTIPLIER } from '../billing/billing.service'
 import { Plan, PlanDocument } from '../billing/schemas/plan.schema'
 import {
   Subscription,
@@ -19,6 +18,9 @@ import {
   periodAnchor,
 } from './rules/usage-window'
 import { NotificationSettings } from './schemas/notification-settings.schema'
+
+// Paid plans may run 10% over their monthly allowance before sends stop
+const PAID_MONTHLY_LIMIT_MULTIPLIER = 1.1
 
 // The resolver half of the attribute registry. The same attributes are resolved
 // attributes from the same stored data, so its preview cannot disagree with what

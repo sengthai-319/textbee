@@ -1,28 +1,29 @@
 'use client'
 
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { BarChart3, Smartphone, Key, MessageSquare } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { BarChart3, Clock, Smartphone, Key, MessageSquare } from 'lucide-react'
 import GetStartedCard from './get-started'
-import UsageSummary from './billing/usage-summary'
 import { useApiKeys, useDevices, useGatewayStats } from '@/lib/api'
 import { Skeleton } from '@/components/ui/skeleton'
 
-// Compact all-time totals. Deliberately no trend indicators: the stats
-// endpoint returns running totals with no time window, so there is nothing to
-// compare against and any arrow would be invented.
+// Compact totals. Deliberately no trend indicators: the stats endpoint
+// returns running totals, so there is nothing to compare against and any
+// arrow would be invented.
 function Stat({
   label,
   value,
   caption,
   icon: Icon,
+  className,
 }: {
   label: string
   value: string | number | undefined
   caption: string
   icon: typeof MessageSquare
+  className?: string
 }) {
   return (
-    <div className='min-w-0 bg-card px-4 py-3.5'>
+    <div className={`min-w-0 bg-card px-4 py-3.5 ${className ?? ''}`}>
       <div className='flex items-center justify-between gap-3'>
         <p className='label-mono truncate'>{label}</p>
         <Icon className='h-4 w-4 shrink-0 text-muted-foreground' />
@@ -49,6 +50,13 @@ export function Totals() {
 
   return (
     <>
+      <Stat
+        label='Sent today'
+        caption='since midnight'
+        value={stats?.todaySentSMSCount?.toLocaleString()}
+        icon={Clock}
+        className='max-lg:col-span-2'
+      />
       <Stat
         label='SMS sent'
         caption='all time'
@@ -83,22 +91,13 @@ export default function Overview() {
   return (
     <div className='space-y-6'>
       <GetStartedCard />
-      {/* One panel: quota windows on the left, all-time totals as a 2x2 on
-          the right from lg up; stacked above the totals on smaller screens. */}
-      {/* Below md the outer shell is dropped and the grid is the only surface. */}
+      {/* One row of totals from lg up; a 2-column grid below, with today's
+          count spanning the full width. Below md the outer shell is dropped
+          and the grid is the only surface. */}
       <Card className='max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0'>
-        <CardContent className='grid grid-cols-2 gap-px overflow-hidden bg-border p-0 max-md:rounded-xl lg:grid-flow-row-dense lg:grid-cols-4'>
-          <UsageSummary />
+        <CardContent className='grid grid-cols-2 gap-px overflow-hidden bg-border p-0 max-md:rounded-xl lg:grid-cols-5'>
           <Totals />
         </CardContent>
-        {/* The quota counts every message on the account, inbound and
-            outbound: the backend counts SMS documents with no type filter.
-            Saying "sent" would understate what actually consumes the limit. */}
-        <CardFooter className='px-3 pb-1.5 pt-2 max-md:px-1 max-md:pb-0'>
-          <p className='text-xs text-muted-foreground'>
-            Counts messages sent and received against your plan limit.
-          </p>
-        </CardFooter>
       </Card>
     </div>
   )

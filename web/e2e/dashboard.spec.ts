@@ -154,7 +154,7 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     await expect(page.getByText("Couldn't load your devices")).toHaveCount(0)
   })
 
-  test('leads with real quota usage, not invented trends', async ({
+  test('shows today and all-time totals, with no plan quota', async ({
     page,
     context,
   }) => {
@@ -162,27 +162,12 @@ test.describe('dashboard (mocked API, no real backend)', () => {
     await mockApi(page)
     await page.goto('/dashboard')
 
-    // Daily and monthly windows straight from the subscription fixture:
-    // 320 of 5,000 today, 18,450 of 100,000 this month.
-    await expect(
-      page.getByRole('progressbar', { name: 'Today usage' })
-    ).toBeVisible()
-    await expect(
-      page.getByRole('progressbar', { name: 'Billing period usage' })
-    ).toBeVisible()
-    await expect(page.getByText('/ 5,000')).toBeVisible()
-    await expect(page.getByText('4,680 remaining')).toBeVisible()
-
-    // The quota counts inbound messages too (the backend counts SMS documents
-    // with no type filter), so the label must not claim these are only sends.
-    await expect(
-      page.getByText(/Counts messages sent and received/)
-    ).toBeVisible()
-
-    // The old page decorated every stat with a green trend arrow and captioned
-    // all-time totals "Since last year". Nothing computed either.
-    await expect(page.getByText('Since last year')).toHaveCount(0)
-    await expect(page.getByText('Connected now')).toHaveCount(0)
+    // Straight from the stats fixture.
+    await expect(page.getByText('Sent today')).toBeVisible()
+    await expect(page.getByText('320', { exact: true })).toBeVisible()
+    await expect(page.getByText('12,840')).toBeVisible()
+    await expect(page.getByRole('progressbar')).toHaveCount(0)
+    await expect(page.getByText(/remaining|upgrade/i)).toHaveCount(0)
   })
 
   // The default device is what the API sends from when a request omits
