@@ -48,6 +48,32 @@ describe('AuthGuard', () => {
       expect(request.user).toBe(user)
     })
 
+    it('rejects a token issued before the password was last changed', async () => {
+      const changedAt = new Date('2026-05-01T12:00:00Z')
+      jwtService.verify.mockReturnValue({
+        sub: 'user_1',
+        iat: Math.floor(changedAt.getTime() / 1000) - 60,
+      })
+      usersService.findOne.mockResolvedValue({ ...user, passwordChangedAt: changedAt })
+      const request: any = { headers: { authorization: 'Bearer old' }, query: {} }
+
+      await expect(guard.canActivate(contextFor(request))).rejects.toThrow(
+        HttpException,
+      )
+    })
+
+    it('accepts a token issued in the same second as the password change', async () => {
+      const changedAt = new Date('2026-05-01T12:00:00.900Z')
+      jwtService.verify.mockReturnValue({
+        sub: 'user_1',
+        iat: Math.floor(changedAt.getTime() / 1000),
+      })
+      usersService.findOne.mockResolvedValue({ ...user, passwordChangedAt: changedAt })
+      const request: any = { headers: { authorization: 'Bearer new' }, query: {} }
+
+      await expect(guard.canActivate(contextFor(request))).resolves.toBe(true)
+    })
+
     it('throws 401 when the bearer token is invalid or expired', async () => {
       jwtService.verify.mockImplementation(() => {
         throw new Error('jwt expired')

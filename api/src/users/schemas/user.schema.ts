@@ -263,6 +263,10 @@ export class User {
   @Prop({ type: Date })
   lastLoginAt: Date
 
+  // Set when the password changes. Tokens issued before it stop working.
+  @Prop({ type: Date })
+  passwordChangedAt?: Date
+
   @Prop({ type: Date })
   emailVerifiedAt: Date
 

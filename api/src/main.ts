@@ -8,6 +8,7 @@ import { SwaggerModule } from '@nestjs/swagger'
 import * as express from 'express'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { applyApiConventions, buildSwaggerConfig } from './openapi/swagger-config'
+import { jwtSecretProblem, trustedProxyHops } from './common/startup-checks'
 
 // Ensure crypto is available globally for @nestjs/schedule
 if (typeof globalThis.crypto === 'undefined') {
@@ -28,6 +29,14 @@ process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
 })
 
 async function bootstrap() {
+  // Refuse to start with a missing or example secret: anyone who knows it
+  // can sign a login token for any account.
+  const secretProblem = jwtSecretProblem(process.env.JWT_SECRET)
+  if (secretProblem) {
+    logger.error(`${secretProblem} Generate one with: openssl rand -hex 32`)
+    process.exit(1)
+  }
+
   const app: NestExpressApplication = await NestFactory.create(AppModule)
   const PORT = process.env.PORT || 3001
 
@@ -90,10 +99,17 @@ async function bootstrap() {
     express.text({ type: () => true, limit: '256kb' }),
   )
   app.useBodyParser('json', { limit: '2mb' });
-  // The app runs behind a reverse proxy, so without this req.ip is the proxy's
-  // loopback address for every request. That makes rate limiting see one client
-  // and gives conversion reporting a single useless IP for everyone.
-  app.set('trust proxy', 1)
+  // Behind a reverse proxy req.ip is the proxy's address for every request,
+  // so the proxy's forwarded header has to be trusted for rate limiting to
+  // see real clients. Without a proxy that header is whatever the caller
+  // sends, and trusting it would let anyone pick a new IP per request and
+  // walk past the rate limit. So it is opt-in: TRUST_PROXY_HOPS is the number
+  // of proxies in front of the API (1 for Caddy, nginx or a NetBird reverse
+  // proxy). TRUSTED_PROXY=cloudflare implies one.
+  const proxyHops = trustedProxyHops(process.env)
+  if (proxyHops > 0) {
+    app.set('trust proxy', proxyHops)
+  }
   app.enableCors()
   await app.listen(PORT)
 }

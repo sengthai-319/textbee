@@ -10,3 +10,6 @@ api/tmp/
 
 # Redis snapshots from local runs
 *.rdb
+
+# Compose settings, including the database password
+.env

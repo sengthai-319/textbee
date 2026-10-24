@@ -17,7 +17,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any): Promise<User> {
     const userId = payload.sub
     const user = await this.usersService.findOne({ _id: userId })
-    if (!user) {
+    // Same rule as AuthGuard: a password change ends older sessions.
+    const changedAt = user?.passwordChangedAt
+      ? Math.floor(new Date(user.passwordChangedAt).getTime() / 1000)
+      : undefined
+    if (!user || (changedAt !== undefined && payload.iat < changedAt)) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
     }
     return user

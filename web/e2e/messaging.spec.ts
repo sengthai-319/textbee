@@ -82,6 +82,17 @@ test.describe('messaging (mocked API, no real backend)', () => {
         page.getByRole('navigation', { name: 'Section navigation' })
       ).toBeVisible()
 
+      // While a tab streams in, the slot holds the loading skeleton, which is
+      // form width (max-w-3xl). Measuring then reads 768px on every tab, so
+      // wait for the page itself.
+      await page.waitForFunction(() => {
+        const nav = document.querySelector(
+          'nav[aria-label="Section navigation"]'
+        )
+        const content = nav?.nextElementSibling
+        return !!content && content.getAttribute('role') !== 'status'
+      })
+
       // Measure the view rendered beneath the tabs, not the layout column.
       // The column is identical on every tab by construction, so measuring it
       // cannot detect a page that re-constrains its own content.

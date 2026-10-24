@@ -68,6 +68,16 @@ export class AuthService {
   async login(userData: any, requestContext?: RequestContext) {
     await this.turnstileService.verify(userData.turnstileToken)
 
+    // There is no global ValidationPipe, so a JSON object here would reach
+    // the query as a Mongo operator ({"$regex": "^a"}) and match accounts by
+    // pattern. Same answer as a wrong password, so nothing is revealed.
+    if (typeof userData?.email !== 'string' || typeof userData?.password !== 'string') {
+      throw new HttpException(
+        { error: 'Invalid credentials' },
+        HttpStatus.UNAUTHORIZED,
+      )
+    }
+
     const user = await this.usersService.findOneWithPassword({
       email: userData.email,
     })
@@ -197,6 +207,15 @@ export class AuthService {
 
   async register(userData: any, requestContext?: RequestContext) {
     await this.turnstileService.verify(userData.turnstileToken)
+
+    // Checked before the lookup: an operator object would otherwise match an
+    // existing account and answer "already exists", revealing that it does.
+    if (typeof userData?.email !== 'string' || typeof userData?.password !== 'string') {
+      throw new HttpException(
+        { error: 'Invalid email or password' },
+        HttpStatus.BAD_REQUEST,
+      )
+    }
 
     const existingUser = await this.usersService.findOne({
       email: userData.email,
@@ -356,6 +375,8 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
     user.password = hashedPassword
+    // Ends every session signed in before now (see AuthGuard).
+    user.passwordChangedAt = new Date()
     await user.save()
 
     passwordReset.expiresAt = new Date(Date.now())
@@ -398,7 +419,17 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(input.newPassword, 10)
     userToUpdate.password = hashedPassword
+    userToUpdate.passwordChangedAt = new Date()
     await userToUpdate.save()
+
+    // The other sessions are now signed out; give this one a fresh token so
+    // the person who just changed the password stays signed in.
+    return {
+      accessToken: this.jwtService.sign({
+        email: userToUpdate.email,
+        sub: userToUpdate._id,
+      }),
+    }
   }
 
   async sendEmailVerificationEmail(user: UserDocument) {
@@ -455,6 +486,13 @@ export class AuthService {
   }
 
   async verifyEmail({ userId, verificationCode }) {
+    if (
+      typeof userId !== 'string' ||
+      !Types.ObjectId.isValid(userId) ||
+      typeof verificationCode !== 'string'
+    ) {
+      throw new HttpException({ error: 'User not found' }, HttpStatus.NOT_FOUND)
+    }
     const user: UserDocument = await this.usersService.findOne({ _id: userId })
     if (!user) {
       throw new HttpException({ error: 'User not found' }, HttpStatus.NOT_FOUND)
