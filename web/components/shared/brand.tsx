@@ -9,11 +9,12 @@ export function BrandMark({ className }: { className?: string }) {
 
   return (
     <svg
-      viewBox='0 0 500 500'
+      // Cropped to the mark so it stays legible at icon sizes
+      viewBox='66 67 366 366'
       aria-hidden='true'
       className={cn('h-7 w-7 shrink-0', className)}
     >
-      <rect width='500' height='500' rx='110' fill='#2E2E2E' />
+      <rect x='66' y='67' width='366' height='366' rx='84' fill='#2E2E2E' />
       <mask id={maskId}>
         <rect width='500' height='500' fill='#fff' />
         <path d='M226 247 L473 0 H500 V247 Z' fill='#000' />

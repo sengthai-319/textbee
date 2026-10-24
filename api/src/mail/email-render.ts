@@ -20,7 +20,7 @@ const STYLE_PRE =
   'font-family:Menlo,Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;overflow-x:auto;'
 const STYLE_A = 'color:#1d4ed8;text-decoration:underline;'
 const STYLE_BTN =
-  'display:inline-block;background:#EA580C;color:#ffffff;text-decoration:none;' +
+  'display:inline-block;background:#876318;color:#ffffff;text-decoration:none;' +
   'font-weight:bold;padding:12px 20px;border-radius:6px;'
 const STYLE_USAGE_LABEL = 'font-size:13px;color:#6b7280;'
 const STYLE_USAGE_NUM = 'font-weight:bold;margin:2px 0 6px 0;'
@@ -194,7 +194,7 @@ const usageBlock = (vars: TemplateVars): [string, string] => {
     `<tr><td style="${STYLE_USAGE_LABEL}">${escapeHtml(label)}</td></tr>` +
     `<tr><td style="${STYLE_USAGE_NUM}">${escapeHtml(used)} of ${escapeHtml(limit)}</td></tr>` +
     `<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;border-radius:4px;">` +
-    `<tr><td width="${pct}%" style="background:#EA580C;height:8px;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td>` +
+    `<tr><td width="${pct}%" style="background:#876318;height:8px;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td>` +
     `<td style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr></table>`
   return [html, `${label}: ${used} of ${limit}`]
 }

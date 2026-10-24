@@ -123,7 +123,12 @@ export default function AppHeader({
   )
 
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/80'>
+    <header className='sticky top-0 z-50 w-full border-b bg-shell/90 backdrop-blur-md supports-[backdrop-filter]:bg-shell/80'>
+      {/* Gold hairline along the top edge, the one flourish in the chrome */}
+      <div
+        aria-hidden='true'
+        className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent'
+      />
       <div className='flex h-14 items-center gap-2 px-4'>
         <Link href={Routes.landingPage} aria-label='CrossHubSMS home'>
           <Brand markClassName='h-7 w-7' />

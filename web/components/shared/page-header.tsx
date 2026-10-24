@@ -23,16 +23,18 @@ export default function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between'>
-      <div className='space-y-1'>
-        <div className='flex items-center space-x-2'>
-          {Icon && <Icon className='h-5 w-5 text-primary' />}
-          <h2 className='text-2xl font-medium tracking-tight'>
-            {title}
-          </h2>
-        </div>
-        {description && (
-          <p className='text-sm text-muted-foreground'>{description}</p>
+      <div className='flex items-start gap-3'>
+        {Icon && (
+          <span className='mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary'>
+            <Icon className='h-5 w-5' />
+          </span>
         )}
+        <div className='space-y-1'>
+          <h2 className='text-2xl font-semibold tracking-tight'>{title}</h2>
+          {description && (
+            <p className='text-sm text-muted-foreground'>{description}</p>
+          )}
+        </div>
       </div>
       {actions}
     </div>

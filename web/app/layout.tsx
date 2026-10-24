@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
 import '@/styles/main.css'
 import { Metadata } from 'next'
-import { Geist_Mono, Inter } from 'next/font/google'
+import { Geist_Mono, Inter, Manrope } from 'next/font/google'
 import ThemeProvider from './theme-provider'
 import Analytics from '@/components/shared/analytics'
 import AttributionCapture from '@/components/shared/attribution-capture'
@@ -9,6 +9,12 @@ import AttributionCapture from '@/components/shared/attribution-capture'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
   display: 'swap',
 })
 
@@ -25,13 +31,13 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang='en' suppressHydrationWarning className={`${inter.variable} ${geistMono.variable}`}>
+    <html lang='en' suppressHydrationWarning className={`${inter.variable} ${manrope.variable} ${geistMono.variable}`}>
       {/* No <main> here: the (app) layout renders its own, and nesting
           <main> inside <main> is invalid HTML. */}
       <body className='font-sans antialiased'>
         <ThemeProvider
           attribute='class'
-          defaultTheme='system'
+          defaultTheme='dark'
           enableSystem
           disableTransitionOnChange
         >

@@ -9,7 +9,7 @@ const page = (title: string, body: string) =>
   '<style>body{margin:0;background:#f3f4f6;font:16px/1.6 Arial,Helvetica,sans-serif;color:#1f2937}' +
   'main{max-width:480px;margin:48px auto;padding:28px;background:#fff;border-radius:8px}' +
   'h1{font-size:21px;line-height:1.3;margin:0 0 16px;color:#111827}p{margin:0 0 16px}' +
-  'button{background:#EA580C;color:#fff;border:0;border-radius:6px;padding:12px 20px;font:bold 15px Arial,Helvetica,sans-serif;cursor:pointer}' +
+  'button{background:#876318;color:#fff;border:0;border-radius:6px;padding:12px 20px;font:bold 15px Arial,Helvetica,sans-serif;cursor:pointer}' +
   'a{color:#1d4ed8}</style></head>' +
   `<body><main><h1>${escapeHtml(title)}</h1>${body}</main></body></html>`
 
