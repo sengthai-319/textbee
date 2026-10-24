@@ -35,7 +35,7 @@ export default function ReviewStep({ bulk }: { bulk: BulkSendState }) {
         description='Nothing is sent until you confirm'
         locked={!composed}
       >
-        <div className='rounded-lg border border-border bg-muted/30 p-3 text-sm'>
+        <div className='rounded-2xl bg-surface-secondary p-3 text-sm'>
           <p>
             Sending{' '}
             <strong>{plan.valid.length.toLocaleString()} messages</strong> from{' '}

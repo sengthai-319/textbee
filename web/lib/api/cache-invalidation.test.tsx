@@ -102,10 +102,10 @@ describe('cache invalidation', () => {
       screen.getByRole('button', { name: /Generate API Key/i })
     )
     const confirmDialog = await screen.findByRole('dialog', {
-      name: /Create new API Key/i,
+      name: /Create an API key/i,
     })
     await userEvent.click(
-      within(confirmDialog).getByRole('button', { name: /Generate API Key/i })
+      within(confirmDialog).getByRole('button', { name: /Create key/i })
     )
 
     await waitFor(() => {

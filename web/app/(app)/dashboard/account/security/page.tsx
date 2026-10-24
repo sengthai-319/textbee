@@ -29,7 +29,7 @@ export default function SecurityPage() {
       </Card>
 
       <div className='space-y-3'>
-        <h3 className='text-sm font-semibold uppercase tracking-wide text-destructive'>
+        <h3 className='text-sm font-semibold text-destructive'>
           Danger zone
         </h3>
         <Card className='border-destructive/50'>

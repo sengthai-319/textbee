@@ -25,7 +25,7 @@ import { AUTH_CARD, AuthFrame } from '../(components)/auth-shell'
 const ErrorAlert = ({ message }: { message: string }) => (
   <Alert
     variant='destructive'
-    className='bg-destructive/10 text-destructive border-destructive/30'
+    className='bg-destructive/10 text-destructive border-transparent'
   >
     <XCircle className='h-5 w-5 text-destructive' />
     <AlertTitle className='text-lg font-semibold'>Error</AlertTitle>
@@ -34,7 +34,7 @@ const ErrorAlert = ({ message }: { message: string }) => (
 )
 
 const SuccessAlert = ({ title, message }: { title: string; message: string }) => (
-  <Alert className='bg-success/10 text-success border-success/30 [&>svg]:text-success'>
+  <Alert className='bg-success/10 text-success border-transparent [&>svg]:text-success'>
     <CheckCircle className='h-5 w-5 text-success' />
     <AlertTitle className='text-lg font-semibold'>{title}</AlertTitle>
     <AlertDescription>{message}</AlertDescription>
@@ -42,7 +42,7 @@ const SuccessAlert = ({ title, message }: { title: string; message: string }) =>
 )
 
 const InfoAlert = ({ title, message }: { title: string; message: string }) => (
-  <Alert className='border-primary/25 bg-primary/[0.06] text-foreground [&>svg]:text-primary'>
+  <Alert className='border-transparent bg-primary/[0.06] text-foreground [&>svg]:text-primary'>
     <Mail className='h-5 w-5 text-primary' />
     <AlertTitle className='text-lg font-semibold'>{title}</AlertTitle>
     <AlertDescription>{message}</AlertDescription>
@@ -282,7 +282,7 @@ export default function VerifyEmailPage() {
           {!isLoggedIn && (
             <Alert
               variant='destructive'
-              className='bg-destructive/10 text-destructive border-destructive/30'
+              className='bg-destructive/10 text-destructive border-transparent'
             >
               <XCircle className='h-5 w-5 text-destructive' />
               <AlertTitle className='text-lg font-semibold'>Not Logged In</AlertTitle>

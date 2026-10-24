@@ -21,7 +21,7 @@ type AuthShellProps = {
 // The card every sign-in page uses, so login, register, password reset and
 // email verification read as one flow.
 export const AUTH_CARD =
-  'w-full max-w-[420px] rounded-2xl shadow-[0_16px_40px_-20px_rgb(28_27_26/0.18)]'
+  'w-full max-w-[420px] p-2'
 
 // Page frame for every sign-in route: the logo, an optional prompt on the
 // right (below the card on phones), and the card centered on a dotted ground.
@@ -34,7 +34,7 @@ export function AuthFrame({
   children: React.ReactNode
 }) {
   return (
-    <div className='flex min-h-svh flex-col bg-background sm:bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] sm:[background-size:22px_22px]'>
+    <div className='flex min-h-svh flex-col bg-background sm:bg-[radial-gradient(var(--border)_1px,transparent_1px)] sm:[background-size:22px_22px]'>
       {/* Same column as the footer, so the logo and footer share a left edge */}
       <header className={cn(CONTENT_COLUMN, 'flex h-14 items-center justify-between gap-4 sm:h-auto sm:py-5')}>
         <Link href={Routes.landingPage} aria-label='CrossHub home'>
@@ -96,7 +96,7 @@ export default function AuthShell({
                 <LoginWithGoogle />
                 <div className='flex items-center gap-3'>
                   <span className='h-px flex-1 bg-border' />
-                  <span className='font-mono text-[11px] uppercase tracking-[0.04em] text-muted-foreground'>
+                  <span className='text-xs text-muted-foreground'>
                     or
                   </span>
                   <span className='h-px flex-1 bg-border' />

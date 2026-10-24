@@ -37,6 +37,9 @@ export async function mockApi(page: Page) {
     if (path === '/webhooks') return json(route, { data: mockWebhooks })
     if (path === '/webhooks/notifications')
       return json(route, mockWebhookNotifications)
+    // Creating a key answers with the new key, shown once
+    if (path === '/auth/api-keys' && route.request().method() === 'POST')
+      return json(route, { data: 'txb_mock_new_key_0123456789' })
     if (path === '/auth/api-keys') return json(route, { data: mockApiKeys })
     if (path === '/gateway/messages') return json(route, mockMessages)
 

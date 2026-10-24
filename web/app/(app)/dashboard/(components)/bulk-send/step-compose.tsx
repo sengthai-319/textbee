@@ -44,7 +44,7 @@ export default function ComposeStep({ bulk }: { bulk: BulkSendState }) {
                 key={c}
                 type='button'
                 onClick={() => insertVariable(c)}
-                className='rounded-md border border-border bg-muted/50 px-2 py-1 font-mono text-xs transition-colors hover:border-primary/50 hover:text-primary'
+                className='rounded-md border border-border bg-default/50 px-2 py-1 font-mono text-xs transition-colors hover:border-primary/50 hover:text-primary'
               >
                 {`{{ ${c} }}`}
               </button>
@@ -89,7 +89,7 @@ export default function ComposeStep({ bulk }: { bulk: BulkSendState }) {
         )}
 
         {previewRow && template && (
-          <div className='space-y-2 rounded-lg border border-border bg-muted/30 p-3'>
+          <div className='space-y-2 rounded-2xl bg-surface-secondary p-3'>
             <div className='flex items-center justify-between gap-2'>
               <p className='text-xs font-medium text-muted-foreground'>
                 Preview for {previewRow.raw}

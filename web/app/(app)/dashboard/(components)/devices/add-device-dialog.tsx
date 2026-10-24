@@ -11,12 +11,24 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Steps } from '@/components/shared/steps'
 import { Routes } from '@/config/routes'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import GenerateApiKey, { type GenerateApiKeyHandle } from '../api-keys/generate-api-key'
-import IphoneShortcutPanel from './iphone-shortcut-panel'
+import IphoneShortcutPanel, { useRegisterShortcutDevice } from './iphone-shortcut-panel'
 
 type DeviceKind = 'android' | 'mac' | 'shortcut'
+
+// One line under the tabs that says who each option is for, so nobody has
+// to guess which one fits an iPhone with a Windows PC.
+const SUMMARY: Record<DeviceKind, string> = {
+  android: "The CrossHub app sends from the phone's SIM.",
+  mac: 'A Mac on your Apple Account sends through Messages and your iPhone delivers. Runs around the clock while the Mac is on.',
+  shortcut:
+    'No Mac needed. An Apple Shortcut on your iPhone sends the waiting texts each time it runs.',
+}
+
+const linkClass = 'font-medium text-accent underline-offset-4 hover:underline'
 
 export type AddDeviceHandle = {
   open: () => void
@@ -30,6 +42,9 @@ export type AddDeviceHandle = {
  * confusing for a first-time user: it asks them to create an API key when
  * what they wanted was to connect a phone, with no mention of installing the
  * app or granting SMS permissions first.
+ *
+ * Every option keeps its main action in the footer, so the dialog reads the
+ * same whichever tab is open.
  */
 const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
   _props,
@@ -38,6 +53,7 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
   const [instructionsOpen, setInstructionsOpen] = useState(false)
   const [kind, setKind] = useState<DeviceKind>('android')
   const apiKeyRef = useRef<GenerateApiKeyHandle>(null)
+  const shortcut = useRegisterShortcutDevice()
 
   useImperativeHandle(ref, () => ({
     open: () => setInstructionsOpen(true),
@@ -51,7 +67,7 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
         <DialogContent className='sm:max-w-lg'>
           <DialogHeader>
             <DialogTitle>Add a device</DialogTitle>
-            <DialogDescription className='text-left'>
+            <DialogDescription>
               Choose the phone that will send your messages.
             </DialogDescription>
           </DialogHeader>
@@ -59,91 +75,113 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
             <TabsList className='grid w-full grid-cols-3'>
               <TabsTrigger value='android'>Android</TabsTrigger>
               <TabsTrigger value='mac'>iPhone + Mac</TabsTrigger>
-              <TabsTrigger value='shortcut'>iPhone only</TabsTrigger>
+              <TabsTrigger value='shortcut'>iPhone + Windows</TabsTrigger>
             </TabsList>
+            <p className='mt-3 text-sm text-muted'>{SUMMARY[kind]}</p>
 
             <TabsContent value='android' className='mt-4'>
-              <ol className='list-decimal space-y-3 pl-5 text-left text-sm text-muted-foreground'>
+              <Steps>
                 <li>
                   Install the CrossHub app on your Android phone (see the{' '}
                   <a
                     href={Routes.downloadAndroidApp}
                     target='_blank'
                     rel='noreferrer'
-                    className='font-medium text-primary underline-offset-4 hover:underline'
+                    className={linkClass}
                   >
                     Android setup guide
                   </a>
                   ).
                 </li>
                 <li>
-                  Tap Continue to create a new API key and get a QR code in the next
-                  dialog. If you already have an active API key, you can paste it in
-                  the app instead
+                  Create an API key below to get a QR code for the app. If you
+                  already have an active key, you can paste it in the app
+                  instead.
                 </li>
                 <li>
-                  Open the CrossHub app and scan the QR code or paste the key
-                  manually. Your device should appear in the list when the link
-                  succeeds.
+                  In the app, scan the QR code or paste the key. The phone
+                  appears in your device list once it links.
                 </li>
                 <li>
                   Allow the SMS permission when the app asks. On Android 15 and
-                  newer, Android blocks it at first: open App info, tap the menu
-                  (⋮), choose Allow restricted settings, then allow SMS.
+                  newer, open App info, tap the menu (⋮), choose Allow
+                  restricted settings, then allow SMS.
                 </li>
-              </ol>
+              </Steps>
             </TabsContent>
 
-            <TabsContent value='mac' className='mt-4 space-y-3 text-left text-sm text-muted-foreground'>
-              <p>
-                A Mac signed in to the same Apple Account as your iPhone sends
-                each message through the Messages app, and your iPhone
-                delivers it. It sends around the clock while the Mac is on.
-              </p>
-              <ol className='list-decimal space-y-2 pl-5'>
-                <li>Turn on Text Message Forwarding for that Mac on the iPhone.</li>
+            <TabsContent value='mac' className='mt-4'>
+              <Steps>
+                <li>
+                  On the iPhone, turn on Text Message Forwarding for your Mac
+                  (Settings › Apps › Messages).
+                </li>
                 <li>Download the Mac relay and run its setup with an API key.</li>
-              </ol>
-              <Button variant='outline' className='w-full' asChild>
-                <a href={Routes.setupIphone} target='_blank' rel='noreferrer'>
-                  Open the Mac relay guide
-                  <ExternalLink className='h-3.5 w-3.5' />
-                </a>
-              </Button>
+                <li>
+                  Start the relay. It sends each message through Messages on
+                  the Mac.
+                </li>
+              </Steps>
             </TabsContent>
 
             <TabsContent value='shortcut' className='mt-4'>
-              <IphoneShortcutPanel />
+              <IphoneShortcutPanel
+                device={shortcut.data}
+                failed={shortcut.isError}
+              />
             </TabsContent>
           </Tabs>
-          <DialogFooter className='flex-col gap-2 sm:flex-row sm:justify-between'>
-            <Button variant='outline' size='sm' asChild>
+          <DialogFooter className='sm:justify-between'>
+            <Button variant='ghost' size='sm' asChild>
               <a href={Routes.quickstart} target='_blank' rel='noreferrer'>
-                Full guide
-                <ExternalLink className='ml-1 h-3 w-3' />
+                Full setup guide
+                <ExternalLink />
               </a>
             </Button>
-            <div className='flex w-full gap-2 sm:w-auto'>
+            <div className='flex flex-col-reverse gap-2 sm:flex-row'>
               <Button
                 variant='outline'
                 size='sm'
-                className='flex-1 sm:flex-none'
                 onClick={() => setInstructionsOpen(false)}
               >
-                {kind === 'android' ? 'Cancel' : 'Close'}
+                {kind === 'shortcut' && shortcut.data ? 'Done' : 'Cancel'}
               </Button>
               {kind === 'android' && (
                 <Button
                   size='sm'
-                  className='flex-1 sm:flex-none'
                   onClick={() => {
                     setInstructionsOpen(false)
-                    apiKeyRef.current?.open()
+                    apiKeyRef.current?.generate()
                   }}
                 >
-                  Continue
+                  Create API key
                 </Button>
               )}
+              {kind === 'mac' && (
+                <Button size='sm' asChild>
+                  <a href={Routes.setupIphone} target='_blank' rel='noreferrer'>
+                    Open the Mac relay guide
+                    <ExternalLink />
+                  </a>
+                </Button>
+              )}
+              {kind === 'shortcut' &&
+                (shortcut.data ? (
+                  <Button size='sm' asChild>
+                    <a href={Routes.setupShortcut} target='_blank' rel='noreferrer'>
+                      Open the Shortcut guide
+                      <ExternalLink />
+                    </a>
+                  </Button>
+                ) : (
+                  <Button
+                    size='sm'
+                    onClick={() => shortcut.mutate()}
+                    disabled={shortcut.isPending}
+                  >
+                    {shortcut.isPending ? 'Registering…' : 'Register this iPhone'}
+                  </Button>
+                ))}
             </div>
           </DialogFooter>
         </DialogContent>

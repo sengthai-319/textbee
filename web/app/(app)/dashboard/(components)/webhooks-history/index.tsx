@@ -48,7 +48,7 @@ export default function WebhooksHistory() {
   const totalPages = webhookNotifications?.data?.meta?.totalPages ?? 1
   return (
     <div className='flex flex-col gap-y-4'>
-      <div className='frame bg-card rounded-lg border border-border p-4 mb-4'>
+      <div className='card card--default gap-0 p-4 mb-4'>
         <div className='flex flex-col gap-4'>
           <Filters
             filters={filters}

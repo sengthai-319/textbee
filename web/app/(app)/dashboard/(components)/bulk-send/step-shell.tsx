@@ -28,7 +28,7 @@ export default function StepShell({
       inert={locked || undefined}
       aria-labelledby={`bulk-step-${step}-title`}
       className={cn(
-        'frame rounded-lg border border-border bg-card p-4 transition-opacity sm:p-5',
+        'card card--default gap-0 p-4 transition-opacity sm:p-5',
         locked && 'opacity-55'
       )}
     >
@@ -39,7 +39,7 @@ export default function StepShell({
             complete
               ? 'bg-primary text-primary-foreground'
               : locked
-                ? 'bg-muted text-muted-foreground'
+                ? 'bg-default text-muted-foreground'
                 : 'border-2 border-primary bg-background text-primary'
           )}
         >

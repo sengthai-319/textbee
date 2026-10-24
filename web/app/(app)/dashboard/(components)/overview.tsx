@@ -1,7 +1,6 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { BarChart3, Clock, Smartphone, Key, MessageSquare } from 'lucide-react'
 import GetStartedCard from './get-started'
 import { useApiKeys, useDevices, useGatewayStats } from '@/lib/api'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -13,29 +12,20 @@ function Stat({
   label,
   value,
   caption,
-  icon: Icon,
   className,
 }: {
   label: string
   value: string | number | undefined
   caption: string
-  icon: typeof MessageSquare
   className?: string
 }) {
   return (
-    <div className={`min-w-0 bg-card px-4 py-4 ${className ?? ''}`}>
-      <div className='flex items-center justify-between gap-3'>
-        <p className='label-mono truncate'>{label}</p>
-        <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-          <Icon className='h-3.5 w-3.5' />
-        </span>
+    <div className={`min-w-0 bg-surface px-5 py-4 ${className ?? ''}`}>
+      <p className='truncate text-sm text-muted'>{label}</p>
+      <div className='num mt-1.5 text-2xl font-semibold leading-8 tracking-tight'>
+        {value !== undefined ? value : <Skeleton className='h-7 w-14' />}
       </div>
-      <div className='num mt-2.5 text-[1.75rem] font-semibold leading-none tracking-tight'>
-        {value !== undefined ? value : <Skeleton className='h-6 w-14' />}
-      </div>
-      {caption && (
-        <p className='mt-1.5 truncate text-xs text-muted-foreground'>{caption}</p>
-      )}
+      {caption && <p className='truncate text-xs text-muted'>{caption}</p>}
     </div>
   )
 }
@@ -56,20 +46,17 @@ export function Totals() {
         label='Sent today'
         caption='since midnight'
         value={stats?.todaySentSMSCount?.toLocaleString()}
-        icon={Clock}
         className='max-lg:col-span-2'
       />
       <Stat
         label='SMS sent'
         caption='all time'
         value={stats?.totalSentSMSCount?.toLocaleString()}
-        icon={MessageSquare}
       />
       <Stat
         label='SMS received'
         caption='all time'
         value={stats?.totalReceivedSMSCount?.toLocaleString()}
-        icon={BarChart3}
       />
       <Stat
         label='Devices'
@@ -77,13 +64,11 @@ export function Totals() {
           enabledDevices !== undefined ? `${enabledDevices} enabled` : ''
         }
         value={totalDevices}
-        icon={Smartphone}
       />
       <Stat
         label='API keys'
         caption='active'
         value={apiKeys?.length ?? stats?.totalApiKeyCount}
-        icon={Key}
       />
     </>
   )
@@ -94,10 +79,9 @@ export default function Overview() {
     <div className='space-y-6'>
       <GetStartedCard />
       {/* One row of totals from lg up; a 2-column grid below, with today's
-          count spanning the full width. Below md the outer shell is dropped
-          and the grid is the only surface. */}
-      <Card className='max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0'>
-        <CardContent className='grid grid-cols-2 gap-px overflow-hidden bg-border p-0 max-md:rounded-xl lg:grid-cols-5'>
+          count spanning the full width. Hairlines come from the 1px gaps. */}
+      <Card className='overflow-hidden'>
+        <CardContent className='grid grid-cols-2 gap-px bg-separator p-0 lg:grid-cols-5'>
           <Totals />
         </CardContent>
       </Card>

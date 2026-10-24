@@ -48,7 +48,7 @@ export function MessageRow({
     <button
       type='button'
       onClick={() => onSelect(message)}
-      className='flex w-full items-start gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:outline-none'
+      className='flex w-full items-start gap-3 px-3 py-3 text-left transition-colors hover:bg-default/60 focus-visible:bg-default/60 focus-visible:outline-none'
     >
       <span
         className={cn(

@@ -180,7 +180,7 @@ function SimSuggestion({
         'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors',
         selected
           ? 'border-primary bg-primary/10 text-foreground'
-          : 'border-border text-muted-foreground hover:bg-muted'
+          : 'border-border text-muted-foreground hover:bg-default'
       )}
     >
       <CardSim className='h-3 w-3 shrink-0' aria-hidden />

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { segmentedItem, segmentedList } from '@/components/ui/tabs'
 
 export type RouteTab = {
   href: string
@@ -50,7 +51,8 @@ export default function RouteTabs({
     <nav
       ref={navRef}
       className={cn(
-        'flex gap-1 overflow-x-auto rounded-xl border bg-shell p-1',
+        segmentedList,
+        'overflow-x-auto',
         'scrollbar-none w-full sm:w-fit',
         className
       )}
@@ -65,12 +67,7 @@ export default function RouteTabs({
             prefetch
             ref={active ? activeRef : undefined}
             aria-current={active ? 'page' : undefined}
-            className={cn(
-              'shrink-0 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors',
-              active
-                ? 'bg-card text-foreground shadow-[0_0_0_1px_hsl(var(--border)),0_1px_2px_rgb(0_0_0/0.08)]'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
+            className={segmentedItem(active)}
           >
             {tab.label}
           </Link>

@@ -14,7 +14,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-9 items-center justify-center rounded-full border bg-shell p-0.5 text-muted-foreground",
+      "inline-flex h-10 items-center justify-center rounded-[calc(var(--radius)*2.5)] bg-default p-1 text-muted",
       className
     )}
     {...props}
@@ -29,7 +29,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3.5 py-1 text-sm font-medium ring-offset-background transition-all hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[0_0_0_1px_hsl(var(--border)),0_1px_2px_rgb(0_0_0/0.08)]",
+      "inline-flex h-8 items-center justify-center whitespace-nowrap rounded-3xl px-4 text-sm font-medium transition-colors hover:text-foreground focus-visible:status-focused disabled:status-disabled data-[state=active]:bg-segment data-[state=active]:text-segment-foreground data-[state=active]:shadow-surface",
       className
     )}
     {...props}
@@ -44,7 +44,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      "mt-4 outline-none focus-visible:status-focused",
       className
     )}
     {...props}
@@ -52,4 +52,18 @@ const TabsContent = React.forwardRef<
 ))
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+/*
+ * The same segmented look for controls that are not Radix tabs (route links,
+ * the theme switch), so every pill switcher in the app is one design.
+ */
+const segmentedList =
+  "inline-flex items-center gap-0.5 rounded-[calc(var(--radius)*2.5)] bg-default p-1"
+const segmentedItem = (active: boolean) =>
+  cn(
+    "inline-flex h-8 shrink-0 items-center justify-center rounded-3xl px-4 text-sm font-medium transition-colors focus-visible:status-focused",
+    active
+      ? "bg-segment text-segment-foreground shadow-surface"
+      : "text-muted hover:text-foreground"
+  )
+
+export { Tabs, TabsList, TabsTrigger, TabsContent, segmentedList, segmentedItem }

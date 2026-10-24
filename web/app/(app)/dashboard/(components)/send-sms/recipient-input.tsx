@@ -83,7 +83,7 @@ export default function RecipientInput({
         <ul className='flex flex-wrap gap-1.5'>
           {recipients.map((recipient) => (
             <li key={recipient}>
-              <span className='inline-flex items-center gap-1 rounded-full bg-muted py-1 pl-2.5 pr-1 text-sm'>
+              <span className='inline-flex items-center gap-1 rounded-full bg-default py-1 pl-2.5 pr-1 text-sm'>
                 {recipient}
                 <button
                   type='button'

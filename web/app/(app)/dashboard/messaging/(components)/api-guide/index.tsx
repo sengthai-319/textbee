@@ -64,7 +64,7 @@ export default function ApiGuide() {
           <h3 className='text-lg font-semibold'>Before you start</h3>
           <p className='text-sm text-muted-foreground'>
             Every request needs an API key in the{' '}
-            <code className='rounded bg-muted px-1 py-0.5 font-mono text-xs'>
+            <code className='rounded bg-default px-1 py-0.5 font-mono text-xs'>
               x-api-key
             </code>{' '}
             header. A device id is optional when sending: leave it out and the
@@ -74,7 +74,7 @@ export default function ApiGuide() {
         </div>
 
         <div className='grid gap-3 sm:grid-cols-2'>
-          <div className='frame rounded-lg border border-border bg-card p-4'>
+          <div className='card card--default gap-0 p-4'>
             <div className='mb-2 flex items-center gap-2'>
               <KeyRound className='h-4 w-4 text-primary' />
               <p className='text-sm font-medium'>API key</p>
@@ -88,7 +88,7 @@ export default function ApiGuide() {
             </Button>
           </div>
 
-          <div className='frame rounded-lg border border-border bg-card p-4'>
+          <div className='card card--default gap-0 p-4'>
             <div className='mb-2 flex items-center gap-2'>
               <Smartphone className='h-4 w-4 text-primary' />
               <p className='text-sm font-medium'>Device</p>
@@ -154,7 +154,7 @@ export default function ApiGuide() {
       {/* Language picker, applies to every endpoint below. */}
       <div className='sticky top-14 z-10 -mx-1 bg-background/95 px-1 py-2 backdrop-blur md:top-0'>
         <div
-          className='flex gap-1 overflow-x-auto rounded-lg bg-muted p-1'
+          className='flex gap-1 overflow-x-auto rounded-lg bg-default p-1'
           role='tablist'
           aria-label='Code language'
         >
@@ -203,13 +203,13 @@ export default function ApiGuide() {
             <div className='flex flex-wrap items-center gap-2'>
               <span
                 className={cn(
-                  'rounded border bg-muted/70 px-1.5 py-0.5 font-mono text-[11px] font-semibold',
+                  'rounded border bg-default/70 px-1.5 py-0.5 font-mono text-[11px] font-semibold',
                   endpoint.method === 'POST' ? 'text-success' : 'text-foreground'
                 )}
               >
                 {endpoint.method}
               </span>
-              <code className='min-w-0 break-all rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground'>
+              <code className='min-w-0 break-all rounded bg-default px-1.5 py-0.5 font-mono text-xs text-muted-foreground'>
                 {endpoint.path}
               </code>
             </div>
@@ -232,7 +232,7 @@ export default function ApiGuide() {
       </div>
 
       {/* Where to go next */}
-      <section className='rounded-lg border border-border bg-muted/30 p-4'>
+      <section className='rounded-2xl bg-surface-secondary p-4'>
         <h3 className='text-sm font-semibold'>Next steps</h3>
         <div className='mt-3 flex flex-wrap gap-2'>
           <Button asChild variant='outline' size='sm'>

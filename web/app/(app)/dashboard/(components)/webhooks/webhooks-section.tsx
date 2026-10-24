@@ -128,7 +128,7 @@ export default function WebhooksSection() {
               ))}
             </div>
           ) : (
-            <div className='bg-muted/50 rounded-lg p-8 text-center'>
+            <div className='bg-default/50 rounded-lg p-8 text-center'>
               <h3 className='text-lg font-medium mb-2'>
                 No webhooks configured
               </h3>

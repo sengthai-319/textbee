@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // full-height 6-row skeleton did.
 export default function GetStartedCardSkeleton() {
   return (
-    <Card className='border-primary/15'>
+    <Card className='border-transparent'>
       <CardContent className='flex h-[90px] flex-col justify-center gap-3 py-4'>
         <div className='flex items-center justify-between'>
           <Skeleton className='h-4 w-36' />

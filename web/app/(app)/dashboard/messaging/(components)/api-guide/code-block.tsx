@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { Check, Copy } from 'lucide-react'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -44,11 +44,19 @@ export default function CodeBlock({
   const { resolvedTheme } = useTheme()
   const [copied, setCopied] = useState(false)
 
-  // resolvedTheme is undefined on the server and on the first client render,
-  // so both produce the light style and hydration matches. next-themes then
-  // updates it, which is an ordinary post-hydration state change. Verified
-  // against a console sweep, which catches hydration warnings.
-  const isDark = resolvedTheme === 'dark'
+  // Follows the class next-themes puts on <html>, the same signal the CSS
+  // uses, so the code colors can never disagree with the page around them.
+  // resolvedTheme alone was seen reporting light on a dark page. Starts
+  // light on the server and the first client render, so hydration matches.
+  const [isDark, setIsDark] = useState(false)
+  useEffect(() => {
+    const root = document.documentElement
+    const sync = () => setIsDark(root.classList.contains('dark'))
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [resolvedTheme])
 
   const copy = async () => {
     await navigator.clipboard.writeText(code)
@@ -78,7 +86,8 @@ export default function CodeBlock({
         style={isDark ? oneDark : oneLight}
         customStyle={{
           margin: 0,
-          borderRadius: '0.5rem',
+          borderRadius: '1rem',
+          background: 'var(--surface-secondary)',
           padding: '1rem',
           paddingRight: '2.75rem',
           fontSize: '0.8125rem',

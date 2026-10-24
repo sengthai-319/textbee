@@ -266,7 +266,7 @@ How it differs from the other routes: iPhones don't let anything run nonstop in 
 
 ### S1. Register the iPhone
 
-1. In the dashboard, click **Add device**, choose the **iPhone only** tab, and click **Register this iPhone**.
+1. In the dashboard, click **Add device**, choose the **iPhone + Windows** tab, and click **Register this iPhone**.
 2. It shows the **Server** address and the **Device ID**. Keep them handy, along with an API key (**New API key** on the dashboard).
 
 ### S2. Build the Shortcut
@@ -402,7 +402,7 @@ Nothing is exposed to the public internet. If you'd rather put it on a public do
 | iPhone relay: "Not authorized to send Apple events" | Turn on Terminal › Messages under System Settings › Privacy & Security › Automation. |
 | iPhone relay exits with 403 | The relay was registered against a different server. Run `setup` again. |
 | Shortcut: "Could not connect to the server" | The iPhone can't reach the server. Use the computer's network address (not `localhost`), keep the iPhone on the same Wi-Fi, and on Windows allow Docker through the firewall for private networks. |
-| Shortcut runs but nothing is sent | Check the three settings at the top of the Shortcut (Server ends with `/api/v1`, the API key, the Device ID from the **iPhone only** tab), and that **Send from** was the iPhone (Shortcut) device. |
+| Shortcut runs but nothing is sent | Check the three settings at the top of the Shortcut (Server ends with `/api/v1`, the API key, the Device ID from the **iPhone + Windows** tab), and that **Send from** was the iPhone (Shortcut) device. |
 | Shortcut asks before every message | Turn off **Show When Run** in the **Send Message** action. |
 
 Still stuck? [Open an issue](https://github.com/sengthai-319/textbee/issues) with what you ran and what it printed.

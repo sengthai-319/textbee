@@ -11,7 +11,7 @@ describe('Button', () => {
   it('applies the destructive variant classes', () => {
     render(<Button variant='destructive'>Delete</Button>)
     expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass(
-      'bg-destructive'
+      'button--danger'
     )
   })
 

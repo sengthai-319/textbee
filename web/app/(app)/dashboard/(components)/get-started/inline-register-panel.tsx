@@ -31,7 +31,7 @@ export default function InlineRegisterPanel() {
   }
 
   return (
-    <div className='w-full rounded-lg border border-border bg-card p-4'>
+    <div className='w-full rounded-2xl bg-surface-secondary p-4'>
       <div className='flex flex-col gap-4 sm:flex-row'>
         <ol className='flex-1 list-decimal space-y-2 pl-5 text-sm text-muted-foreground'>
           <li>
@@ -74,7 +74,7 @@ export default function InlineRegisterPanel() {
                 <QRCode value={apiKey} size={132} />
               </div>
               <div className='flex w-full items-center gap-2'>
-                <code className='min-w-0 flex-1 truncate rounded bg-muted px-2 py-1 font-mono text-xs'>
+                <code className='min-w-0 flex-1 truncate rounded bg-default px-2 py-1 font-mono text-xs'>
                   {apiKey}
                 </code>
                 <Button

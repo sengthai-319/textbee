@@ -41,7 +41,7 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
       >
         {hasFile ? (
           <div className='space-y-3'>
-            <div className='flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2'>
+            <div className='flex items-center gap-3 rounded-2xl bg-surface-secondary px-3 py-2'>
               <FileSpreadsheet className='h-4 w-4 shrink-0 text-primary' />
               <div className='min-w-0 flex-1'>
                 <p className='truncate text-sm font-medium'>{fileName}</p>
@@ -63,7 +63,7 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
                 obvious before anything is sent. */}
             <div className='overflow-x-auto rounded-lg border border-border'>
               <table className='w-full text-left text-xs'>
-                <thead className='bg-muted/50'>
+                <thead className='bg-default/50'>
                   <tr>
                     {columns.map((c) => (
                       <th key={c} className='whitespace-nowrap px-3 py-2 font-medium'>
@@ -103,7 +103,7 @@ export default function UploadStep({ bulk }: { bulk: BulkSendState }) {
                 'cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors sm:p-8',
                 isDragActive
                   ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-primary/50 hover:bg-muted/30'
+                  : 'border-border hover:border-primary/50 hover:bg-default/30'
               )}
             >
               <input {...getInputProps()} />

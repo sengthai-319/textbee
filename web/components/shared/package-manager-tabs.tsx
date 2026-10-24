@@ -84,7 +84,7 @@ export default function PackageManagerTabs({
       onValueChange={selectManager}
       className={cn('overflow-hidden rounded-lg border border-border', className)}
     >
-      <div className='flex items-center justify-between gap-2 border-b border-border bg-muted/50 px-2 py-1.5'>
+      <div className='flex items-center justify-between gap-2 border-b border-border bg-default/50 px-2 py-1.5'>
         <TabsList aria-label='Package manager' className='h-auto border-0 bg-transparent p-0'>
           {MANAGERS.map((m) => (
             <TabsTrigger key={m.id} value={m.id} className='px-2.5 py-1 text-xs'>
@@ -111,7 +111,7 @@ export default function PackageManagerTabs({
 
       {MANAGERS.map((m) => (
         <TabsContent key={m.id} value={m.id} className='mt-0'>
-          <pre className='overflow-x-auto bg-muted/20 px-3 py-2.5 text-sm'>
+          <pre className='overflow-x-auto bg-default/20 px-3 py-2.5 text-sm'>
             <code className='font-mono text-foreground'>{`${m.install} ${pkg}`}</code>
           </pre>
         </TabsContent>

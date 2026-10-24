@@ -33,7 +33,7 @@ export default function UpdateAppNotificationBar() {
   const verb = outdatedDevices.length > 1 ? 'are' : 'is'
 
   return (
-    <Alert className='sticky top-4 z-20 border-primary/30 bg-card/95 text-foreground shadow-sm backdrop-blur [&>svg]:text-primary'>
+    <Alert className='sticky top-4 z-20 border-transparent bg-card/95 text-foreground shadow-sm backdrop-blur [&>svg]:text-primary'>
       <BellRing className='h-4 w-4 text-primary' />
       <AlertDescription className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <div className='pr-2 text-sm'>
