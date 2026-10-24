@@ -220,6 +220,9 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+    // Matches the API token's lifetime (JWT_EXPIRATION, 7 days), so the
+    // dashboard session never outlives the token inside it.
+    maxAge: Number(process.env.SESSION_MAX_AGE_DAYS || 7) * 24 * 60 * 60,
   },
   callbacks: {
     // For single sign-on, exchange the provider's ID token for a CrossHub

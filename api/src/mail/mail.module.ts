@@ -1,4 +1,5 @@
-import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer'
+import { MailerModule } from '@nestjs-modules/mailer'
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter'
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { join } from 'path'
