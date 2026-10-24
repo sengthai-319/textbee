@@ -64,7 +64,7 @@ android {
             buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
             buildConfigField "String", "DASHBOARD_URL", "\"${dashboardUrl}\""
             buildConfigField "String", "ENVIRONMENT", '"development"'
-            resValue "string", "app_name", "CrossHubSMS (Dev)"
+            resValue "string", "app_name", "CrossHub (Dev)"
         }
         
         prod {
@@ -73,7 +73,7 @@ android {
             buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
             buildConfigField "String", "DASHBOARD_URL", "\"${dashboardUrl}\""
             buildConfigField "String", "ENVIRONMENT", '"production"'
-            resValue "string", "app_name", "CrossHubSMS"
+            resValue "string", "app_name", "CrossHub"
         }
     }
 

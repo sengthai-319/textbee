@@ -22,8 +22,8 @@ const NOTICES =
 
 export const unsubscribeConfirmPage = (token: string) =>
   page(
-    'Unsubscribe from CrossHubSMS product emails?',
-    '<p>You will stop getting product tips and offers from CrossHubSMS.</p>' +
+    'Unsubscribe from CrossHub product emails?',
+    '<p>You will stop getting product tips and offers from CrossHub.</p>' +
       NOTICES +
       form('unsubscribe', token, 'Unsubscribe'),
   )
@@ -31,7 +31,7 @@ export const unsubscribeConfirmPage = (token: string) =>
 export const unsubscribedPage = (token: string) =>
   page(
     'You are unsubscribed',
-    '<p>You will not get product emails from CrossHubSMS anymore.</p>' +
+    '<p>You will not get product emails from CrossHub anymore.</p>' +
       NOTICES +
       '<p>Changed your mind?</p>' +
       form('resubscribe', token, 'Subscribe again'),
@@ -40,7 +40,7 @@ export const unsubscribedPage = (token: string) =>
 export const resubscribedPage = () =>
   page(
     'You are subscribed again',
-    '<p>You will get CrossHubSMS product emails again. You can unsubscribe with the link at the bottom of any of them.</p>',
+    '<p>You will get CrossHub product emails again. You can unsubscribe with the link at the bottom of any of them.</p>',
   )
 
 // Read per call so a change to the environment applies without a rebuild

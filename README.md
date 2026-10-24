@@ -1,6 +1,10 @@
-<p align="center"><img src="docs/images/logo.svg" width="96" alt="CrossHubSMS logo" /></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.svg" />
+    <img src="docs/images/logo.svg" width="320" alt="CrossHub" />
+  </picture>
+</p>
 
-<h1 align="center">CrossHubSMS</h1>
 <p align="center">Your own SMS gateway. Send texts from an Android phone, or from an iPhone through a Mac, with a dashboard and an API you host yourself.</p>
 
 <p align="center"><a href="docs/SETUP.md"><b>Setup guide</b></a> · <a href="docs/SETUP.md#android-phones">Android</a> · <a href="docs/SETUP.md#iphone-through-a-mac">iPhone</a> · <a href="https://github.com/sengthai-319/textbee/issues">Issues</a></p>
@@ -23,7 +27,7 @@
  Dashboard / your code
           │
           ▼
- CrossHubSMS server  ──push──▶  Android app  ──SIM──▶  📱
+ CrossHub server  ──push──▶  Android app  ──SIM──▶  📱
   (Docker, your computer)
                      ◀─pull───  Mac relay ─▶ Messages ─▶ iPhone ──▶  📱
 ```
@@ -53,7 +57,7 @@ Open http://localhost:3000, create an account, then connect a phone. **[The setu
 curl -X POST "http://localhost:3001/api/v1/gateway/devices/YOUR_DEVICE_ID/send-sms" \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"recipients": ["+15551234567"], "message": "Hello from CrossHubSMS"}'
+  -d '{"recipients": ["+15551234567"], "message": "Hello from CrossHub"}'
 ```
 
 The dashboard's **Messaging › API** tab has ready-to-copy versions in several languages, already filled in with your server address and device ID.
@@ -64,4 +68,4 @@ Only text people who agreed to hear from you, and honor opt-outs. Personal phone
 
 ## Credits and license
 
-CrossHubSMS is a fork of [textbee](https://github.com/textbee/textbee) by textbee.dev, released under the MIT License. This fork adds the iPhone Mac relay, removes the hosted service's billing, and rebrands and redesigns the dashboard. See [LICENSE](LICENSE).
+CrossHub is a fork of [textbee](https://github.com/textbee/textbee) by textbee.dev, released under the MIT License. This fork adds the iPhone Mac relay, removes the hosted service's billing, and rebrands and redesigns the dashboard. See [LICENSE](LICENSE).

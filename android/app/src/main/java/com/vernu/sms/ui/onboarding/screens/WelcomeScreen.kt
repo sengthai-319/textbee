@@ -48,7 +48,7 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "CrossHubSMS",
+            text = "CrossHub",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
@@ -70,7 +70,7 @@ fun WelcomeScreen(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             listOf(
-                "Create an account on your CrossHubSMS server",
+                "Create an account on your CrossHub server",
                 "Connect this phone as your SMS gateway",
                 "Send SMS via API from any app or automation"
             ).forEachIndexed { i, step ->
@@ -141,7 +141,7 @@ fun WelcomeScreen(
             }
         ) {
             Text(
-                text = "CrossHubSMS",
+                text = "CrossHub",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

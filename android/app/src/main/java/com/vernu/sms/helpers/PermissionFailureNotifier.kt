@@ -44,7 +44,7 @@ object PermissionFailureNotifier {
             val phoneOnly = TextbeeUtils.isPermissionGranted(context, Manifest.permission.SEND_SMS)
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(if (phoneOnly) "CrossHubSMS cannot send from the chosen SIM" else "CrossHubSMS cannot send SMS")
+                .setContentTitle(if (phoneOnly) "CrossHub cannot send from the chosen SIM" else "CrossHub cannot send SMS")
                 .setContentText(
                     if (phoneOnly) "Android has not allowed the Phone permission. Tap to fix it."
                     else "Android has not allowed the SMS permission. Tap to fix it."

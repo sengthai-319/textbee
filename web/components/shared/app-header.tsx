@@ -130,8 +130,8 @@ export default function AppHeader({
         className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent'
       />
       <div className='flex h-14 items-center gap-2 px-4'>
-        <Link href={Routes.landingPage} aria-label='CrossHubSMS home'>
-          <Brand markClassName='h-7 w-7' />
+        <Link href={Routes.landingPage} aria-label='CrossHub home'>
+          <Brand className='h-8' />
         </Link>
 
         <div className='flex flex-1 items-center justify-end gap-2'>

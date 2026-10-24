@@ -23,7 +23,7 @@ export default function Footer() {
         <div className='flex items-center gap-2'>
           <BrandMark className='h-5 w-5' />
           <span className='text-sm text-muted-foreground'>
-            © {new Date().getFullYear()} CrossHubSMS
+            © {new Date().getFullYear()} CrossHub
           </span>
         </div>
 

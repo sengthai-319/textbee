@@ -1,8 +1,8 @@
-# CrossHubSMS Mac relay (iPhone)
+# CrossHub Mac relay (iPhone)
 
-Send CrossHubSMS messages from an **iPhone** instead of an Android phone.
+Send CrossHub messages from an **iPhone** instead of an Android phone.
 
-iOS does not let apps send SMS on their own, so the CrossHubSMS app can't run on an iPhone. This client runs on a Mac instead. It registers with your CrossHubSMS server as a device, collects the messages queued for it, and hands each one to the **Messages** app. Your iPhone then delivers it as a regular SMS through **Text Message Forwarding**.
+iOS does not let apps send SMS on their own, so the CrossHub app can't run on an iPhone. This client runs on a Mac instead. It registers with your CrossHub server as a device, collects the messages queued for it, and hands each one to the **Messages** app. Your iPhone then delivers it as a regular SMS through **Text Message Forwarding**.
 
 The dashboard, bulk sends, CSV uploads, scheduling and the REST API work as they do with an Android device.
 
@@ -17,19 +17,19 @@ The dashboard, bulk sends, CSV uploads, scheduling and the REST API work as they
 
 ## Requirements
 
-- A **CrossHubSMS server** (see [Run the server](#run-the-server)).
+- A **CrossHub server** (see [Run the server](#run-the-server)).
 - A Mac running macOS 12 or later, with `python3`. It ships with the Xcode Command Line Tools; run `xcode-select --install` if it's missing. No other packages are needed.
 - An iPhone signed in to the same Apple Account as the Mac.
 
 ## Run the server
 
-The relay needs a CrossHubSMS server. Follow [docs/SETUP.md](../docs/SETUP.md) steps 1–3 to run one with Docker and create an API key, then come back here.
+The relay needs a CrossHub server. Follow [docs/SETUP.md](../docs/SETUP.md) steps 1–3 to run one with Docker and create an API key, then come back here.
 
 ## Setup
 
 1. **Turn on Text Message Forwarding.** On the iPhone, go to `Settings` › `Apps` › `Messages` › `Text Message Forwarding` and switch on your Mac. On older iOS versions it's `Settings` › `Messages` › `Text Message Forwarding`. Then open Messages on the Mac and send one SMS by hand to check that it works.
 
-2. **Create an API key.** In the CrossHubSMS dashboard, create an API key.
+2. **Create an API key.** In the CrossHub dashboard, create an API key.
 
 3. **Register the Mac.**
    ```bash
@@ -58,7 +58,7 @@ The relay needs a CrossHubSMS server. Follow [docs/SETUP.md](../docs/SETUP.md) s
 
 | Command | What it does |
 |---|---|
-| `setup` | Registers this Mac with a CrossHubSMS server (`--server`, `--api-key`, `--name`, `--service sms\|imessage`) |
+| `setup` | Registers this Mac with a CrossHub server (`--server`, `--api-key`, `--name`, `--service sms\|imessage`) |
 | `test` | Sends one message through Messages without the server (`--to`, `--message`) |
 | `run` | Relays messages until stopped (`--once` polls one time and exits) |
 | `status` | Shows the server, the device ID and the sent and failed counts |

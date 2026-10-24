@@ -54,7 +54,7 @@ object UpdateNotifier {
         val versionName = DeviceConfig.latestVersionName(context) ?: "a newer version"
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("CrossHubSMS $versionName is available")
+            .setContentTitle("CrossHub $versionName is available")
             .setContentText("This update improves message sending in the background. Tap to download.")
             .setContentIntent(open)
             .setAutoCancel(true)

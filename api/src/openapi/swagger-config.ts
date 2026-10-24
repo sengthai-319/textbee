@@ -13,12 +13,12 @@ export const API_TAGS: ReadonlyArray<{ name: string; description: string }> = [
   {
     name: 'webhooks',
     description:
-      'Subscribe to SMS events and inspect the delivery attempts CrossHubSMS made for them.',
+      'Subscribe to SMS events and inspect the delivery attempts CrossHub made for them.',
   },
   {
     name: 'auth',
     description:
-      'Accounts, sessions, and API keys. Used by the CrossHubSMS dashboard.',
+      'Accounts, sessions, and API keys. Used by the CrossHub dashboard.',
   },
   {
     name: 'billing',
@@ -31,7 +31,7 @@ export const API_TAGS: ReadonlyArray<{ name: string; description: string }> = [
   {
     name: 'notifications',
     description:
-      'The messages the CrossHubSMS dashboard shows an account. Used by the dashboard only.',
+      'The messages the CrossHub dashboard shows an account. Used by the dashboard only.',
   },
 ]
 
@@ -76,7 +76,7 @@ export function buildSwaggerConfig({
         name: 'x-api-key',
         in: 'header',
         description:
-          'API key from your CrossHubSMS dashboard, sent on every request.',
+          'API key from your CrossHub dashboard, sent on every request.',
       },
       API_KEY_SECURITY_SCHEME,
     )

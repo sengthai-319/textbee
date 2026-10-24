@@ -125,7 +125,7 @@ export const searchEntries: SearchEntry[] = [
     label: 'API guide',
     group: 'Messaging',
     icon: Code2,
-    description: 'Integrate CrossHubSMS into your app',
+    description: 'Integrate CrossHub into your app',
     keywords: [
       'api',
       'docs',

@@ -37,7 +37,7 @@ class OnboardingActivity : ComponentActivity() {
                     viewModel = viewModel,
                     onScanQr = {
                         qrLauncher.launch(ScanOptions().apply {
-                            setPrompt("Scan the QR code from your CrossHubSMS dashboard")
+                            setPrompt("Scan the QR code from your CrossHub dashboard")
                             setBeepEnabled(true)
                             setOrientationLocked(false)
                         })

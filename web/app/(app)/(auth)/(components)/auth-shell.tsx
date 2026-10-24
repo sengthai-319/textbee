@@ -41,8 +41,8 @@ export default function AuthShell({
   return (
     <div className='flex min-h-svh flex-col bg-background sm:bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] sm:[background-size:22px_22px]'>
       <header className='flex h-14 items-center justify-between gap-4 px-4 sm:h-auto sm:px-8 sm:py-5'>
-        <Link href={Routes.landingPage} aria-label='CrossHubSMS home'>
-          <Brand markClassName='h-8 w-8' />
+        <Link href={Routes.landingPage} aria-label='CrossHub home'>
+          <Brand className='h-10' />
         </Link>
         <p className='hidden text-sm text-muted-foreground sm:block'>
           {switchPrompt} {switchLink}

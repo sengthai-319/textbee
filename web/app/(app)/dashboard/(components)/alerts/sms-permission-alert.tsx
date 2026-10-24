@@ -24,17 +24,17 @@ export default function SmsPermissionAlert() {
           {status.source === 'heartbeat' ? (
             <span>
               <span className='font-medium'>Your phone cannot send SMS yet.</span>{' '}
-              The CrossHubSMS app{phone} reports that the SMS permission is off, so
+              The CrossHub app{phone} reports that the SMS permission is off, so
               every message will fail until it is allowed. Open Settings &gt;
-              Apps &gt; CrossHubSMS &gt; Permissions and set SMS to Allow. On Android
+              Apps &gt; CrossHub &gt; Permissions and set SMS to Allow. On Android
               15 and newer, tap the menu (⋮) and choose Allow restricted settings
               first.
             </span>
           ) : (
             <span>
               <span className='font-medium'>Your phone cannot send SMS.</span>{' '}
-              The CrossHubSMS app{phone} does not have SMS permission, so your last
-              message failed. Open Settings &gt; Apps &gt; CrossHubSMS &gt;
+              The CrossHub app{phone} does not have SMS permission, so your last
+              message failed. Open Settings &gt; Apps &gt; CrossHub &gt;
               Permissions and set SMS to Allow. On Android 15 and newer, tap the
               menu (⋮) and choose Allow restricted settings first.
             </span>
