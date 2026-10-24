@@ -27,6 +27,7 @@ import { pickLocation } from '../common/client-address'
 import { RequestContext } from '../common/request-context'
 import { RequestResetPasswordInputDTO, ResetPasswordInputDTO } from './auth.dto'
 import { AccessFootprintService } from './access-footprint.service'
+import { LoginAttempts } from './login-attempts'
 import {
   OidcError,
   OidcVerifier,
@@ -72,6 +73,8 @@ export class AuthService {
     private readonly analyticsService: AnalyticsService,
   ) {}
 
+  private readonly loginAttempts = new LoginAttempts()
+
   // Built on first use from the environment, so tests and the running app
   // read the same settings.
   private oidc?: { settings: OidcSettings; verifier: OidcVerifier }
@@ -108,22 +111,40 @@ export class AuthService {
       )
     }
 
-    const user = await this.usersService.findOneWithPassword({
-      email: userData.email,
-    })
-    if (!user) {
+    const retryAfter = this.loginAttempts.retryAfterMs(userData.email)
+    if (retryAfter > 0) {
       throw new HttpException(
+        {
+          error: `Too many failed sign-in attempts for this account. Try again in ${Math.ceil(retryAfter / 60000)} minutes, or reset your password.`,
+          code: 'LOGIN_RATE_LIMITED',
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      )
+    }
+
+    const invalid = () => {
+      // Counted for unknown emails too, so the limit says nothing about
+      // which addresses have accounts.
+      this.loginAttempts.recordFailure(userData.email)
+      return new HttpException(
         { error: 'Invalid credentials' },
         HttpStatus.UNAUTHORIZED,
       )
     }
 
-    if (!(await bcrypt.compare(userData.password, user.password))) {
-      throw new HttpException(
-        { error: 'Invalid credentials' },
-        HttpStatus.UNAUTHORIZED,
-      )
+    const user = await this.usersService.findOneWithPassword({
+      email: userData.email,
+    })
+    // Accounts made through Google or single sign-on have no password, and
+    // bcrypt throws on a missing hash; answer like any wrong password.
+    if (!user || typeof user.password !== 'string') {
+      throw invalid()
     }
+
+    if (!(await bcrypt.compare(userData.password, user.password))) {
+      throw invalid()
+    }
+    this.loginAttempts.recordSuccess(userData.email)
 
     user.lastLoginAt = new Date()
     this.usersService.touchClient(user, requestContext?.userAgent)
@@ -148,10 +169,12 @@ export class AuthService {
       .filter(Boolean)
 
     if (!allowedAudiences.length) {
-      // Unset in this environment: log rather than reject, so a missing config
-      // value cannot take Google sign-in down. Set GOOGLE_CLIENT_ID to enable.
-      console.error(
-        'loginWithGoogle: GOOGLE_CLIENT_ID is not set, skipping audience check',
+      // Fail closed. Skipping the audience check would accept a Google token
+      // issued to any app, so whoever runs some other "Sign in with Google"
+      // site could replay a visitor's token here and sign in as them.
+      throw new HttpException(
+        { error: 'Google sign-in is not set up on this server.' },
+        HttpStatus.NOT_FOUND,
       )
     } else if (!allowedAudiences.includes(tokenInfo.aud)) {
       throw new HttpException(
@@ -175,6 +198,21 @@ export class AuthService {
     idToken: string,
     signupContext?: RequestContext & { attribution?: unknown },
   ) {
+    // Checked before calling Google, so an unconfigured server never makes
+    // the request at all.
+    if (!(process.env.GOOGLE_CLIENT_ID ?? '').trim()) {
+      throw new HttpException(
+        { error: 'Google sign-in is not set up on this server.' },
+        HttpStatus.NOT_FOUND,
+      )
+    }
+    // A provider-only server (PASSWORD_LOGIN=false) means Authentik is the
+    // way in; Google would be a second door around its group rules.
+    this.assertPasswordLogin()
+    if (typeof idToken !== 'string' || !idToken) {
+      throw new HttpException({ error: 'Unauthorized' }, HttpStatus.UNAUTHORIZED)
+    }
+
     const response = await axios.get(
       `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(
         idToken,
@@ -191,6 +229,13 @@ export class AuthService {
     const isNewUser = !user
 
     if (!user) {
+      // Same rule as the sign-up form: no new accounts when sign-up is closed.
+      if (!passwordAuthSettings(process.env).registration) {
+        throw new HttpException(
+          { error: 'Sign-up is closed on this server.' },
+          HttpStatus.FORBIDDEN,
+        )
+      }
       user = await this.usersService.create({
         name,
         email,

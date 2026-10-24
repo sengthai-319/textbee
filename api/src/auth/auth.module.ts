@@ -63,7 +63,9 @@ import { VerificationReminderTask } from './tasks/verification-reminder.task'
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: process.env.JWT_EXPIRATION || ('60d' as any),
+        // A week: a copied session token stops working within days, not
+        // months. An expired one sends the dashboard back to the login page.
+        expiresIn: process.env.JWT_EXPIRATION || ('7d' as any),
       },
     }),
     MailModule,

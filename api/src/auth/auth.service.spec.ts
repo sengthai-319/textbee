@@ -807,6 +807,24 @@ describe('AuthService', () => {
       expect(usersService.findOneWithPassword).not.toHaveBeenCalled()
     })
 
+    it('makes an account wait after repeated wrong passwords, even with the right one', async () => {
+      const { service } = setup()
+      for (let i = 0; i < 10; i++) {
+        await expect(
+          service.login({ ...credentials, password: 'wrong' }),
+        ).rejects.toMatchObject({ status: 401 })
+      }
+
+      await expect(service.login(credentials)).rejects.toMatchObject({ status: 429 })
+    })
+
+    it('answers a password attempt on a password-less (single sign-on) account as invalid', async () => {
+      const { service, stored } = setup()
+      ;(stored as any).password = undefined
+
+      await expect(service.login(credentials)).rejects.toMatchObject({ status: 401 })
+    })
+
     it('records the browser in the same write as the login time', async () => {
       const { service, usersService, stored } = setup()
 
@@ -858,6 +876,39 @@ describe('AuthService', () => {
     afterEach(() => {
       process.env.GOOGLE_CLIENT_ID = ORIGINAL_ENV
       jest.restoreAllMocks()
+    })
+
+    it('refuses every token when GOOGLE_CLIENT_ID is not set, without asking Google', async () => {
+      delete process.env.GOOGLE_CLIENT_ID
+      const ctx = build()
+      const get = jest.spyOn(axios, 'get')
+
+      await expect(ctx.service.loginWithGoogle('tok')).rejects.toMatchObject({ status: 404 })
+      expect(get).not.toHaveBeenCalled()
+      expect(ctx.usersService.findOne).not.toHaveBeenCalled()
+    })
+
+    it('does not create an account when sign-up is closed', async () => {
+      const previous = process.env.ALLOW_REGISTRATION
+      process.env.ALLOW_REGISTRATION = 'false'
+      const ctx = build()
+      stageTokenInfo({ aud: OURS, email: 'new@example.com', email_verified: 'true', sub: 'g9' })
+      ctx.usersService.findOne.mockResolvedValue(null)
+
+      await expect(ctx.service.loginWithGoogle('tok')).rejects.toMatchObject({ status: 403 })
+      expect(ctx.usersService.create).not.toHaveBeenCalled()
+      if (previous === undefined) delete process.env.ALLOW_REGISTRATION
+      else process.env.ALLOW_REGISTRATION = previous
+    })
+
+    it('is off on a provider-only server (PASSWORD_LOGIN=false)', async () => {
+      const previous = process.env.PASSWORD_LOGIN
+      process.env.PASSWORD_LOGIN = 'false'
+      const ctx = build()
+
+      await expect(ctx.service.loginWithGoogle('tok')).rejects.toMatchObject({ status: 403 })
+      if (previous === undefined) delete process.env.PASSWORD_LOGIN
+      else process.env.PASSWORD_LOGIN = previous
     })
 
     it('rejects a token minted for a different OAuth client', async () => {

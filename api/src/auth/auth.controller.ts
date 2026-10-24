@@ -44,6 +44,14 @@ import { AuthService } from './auth.service'
 import { resolveRequestContext } from '../common/request-context'
 import { UsersService } from '../users/users.service'
 import { CanModifyApiKey } from './guards/can-modify-api-key.guard'
+import { SessionOnly } from './guards/session-only.guard'
+import { Throttle } from '@nestjs/throttler'
+
+// Tighter than the global 500 a minute for the routes that check a secret.
+// Per address, so it slows a direct attacker; dashboard logins all arrive
+// from the dashboard's server, which is why it isn't lower, and why failed
+// passwords are also capped per account (see login-attempts.ts).
+const AUTH_THROTTLE = { default: { limit: 30, ttl: 60_000 } }
 
 const API_KEY_ID_PARAM = {
   name: 'id',
@@ -82,6 +90,7 @@ export class AuthController {
     description: 'Wrong email or password.',
   })
   @HttpCode(HttpStatus.OK)
+  @Throttle(AUTH_THROTTLE)
   @Post('/login')
   async login(@Body() input: LoginInputDTO, @Request() req) {
     const data = await this.authService.login(
@@ -107,6 +116,7 @@ export class AuthController {
       'The Google token is invalid, was issued for another app, or its email is unverified.',
   })
   @HttpCode(HttpStatus.OK)
+  @Throttle(AUTH_THROTTLE)
   @Post('/google-login')
   async googleLogin(@Body() input: GoogleLoginInputDTO, @Request() req) {
     const data = await this.authService.loginWithGoogle(input.idToken, {
@@ -127,6 +137,7 @@ export class AuthController {
   @ApiResponse({ status: 404, description: 'Single sign-on is not set up on this server.' })
   @ApiResponse({ status: 409, description: 'An account with this email exists and the provider did not confirm the email.' })
   @HttpCode(HttpStatus.OK)
+  @Throttle(AUTH_THROTTLE)
   @Post('/oidc-login')
   async oidcLogin(@Body() input: OidcLoginInputDTO, @Request() req) {
     const data = await this.authService.loginWithOidc(
@@ -150,6 +161,7 @@ export class AuthController {
     status: 400,
     description: 'The email is already in use, or the Turnstile check failed.',
   })
+  @Throttle(AUTH_THROTTLE)
   @Post('/register')
   async register(@Body() input: RegisterInputDTO, @Request() req) {
     const data = await this.authService.register(
@@ -223,7 +235,7 @@ export class AuthController {
     return await this.authService.changePassword(input, req.user)
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, SessionOnly)
   @ApiOperation({
     summary: 'Create an API key',
     description:
@@ -273,7 +285,7 @@ export class AuthController {
     return { data }
   }
 
-  @UseGuards(AuthGuard, CanModifyApiKey)
+  @UseGuards(AuthGuard, SessionOnly, CanModifyApiKey)
   @ApiOperation({
     summary: 'Delete an API key',
     description:
@@ -296,7 +308,7 @@ export class AuthController {
     return { message: 'API Key Deleted' }
   }
 
-  @UseGuards(AuthGuard, CanModifyApiKey)
+  @UseGuards(AuthGuard, SessionOnly, CanModifyApiKey)
   @ApiOperation({
     summary: 'Revoke an API key',
     description:
@@ -319,7 +331,7 @@ export class AuthController {
     return { message: 'API Key Revoked' }
   }
 
-  @UseGuards(AuthGuard, CanModifyApiKey)
+  @UseGuards(AuthGuard, SessionOnly, CanModifyApiKey)
   @ApiOperation({
     summary: 'Rename an API key',
     description: 'Changes the label only. The key itself is unchanged.',
@@ -375,6 +387,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'The Turnstile check failed.' })
   @HttpCode(HttpStatus.OK)
+  @Throttle(AUTH_THROTTLE)
   @Post('/request-password-reset')
   async requestPasswordReset(@Body() input: RequestResetPasswordInputDTO) {
     return await this.authService.requestResetPassword(input)
@@ -394,6 +407,7 @@ export class AuthController {
     description: 'The code is wrong or has expired.',
   })
   @HttpCode(HttpStatus.OK)
+  @Throttle(AUTH_THROTTLE)
   @Post('/reset-password')
   async resetPassword(@Body() input: ResetPasswordInputDTO) {
     return await this.authService.resetPassword(input)
@@ -436,6 +450,7 @@ export class AuthController {
   @ApiResponse({ status: 404, description: 'No such account.' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
+  @Throttle(AUTH_THROTTLE)
   @Post('/verify-email')
   async verifyEmail(@Body() input: VerifyEmailInputDTO) {
     return await this.authService.verifyEmail(input)

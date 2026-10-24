@@ -447,4 +447,6 @@ docker compose ps                # textbee-mongo-express is no longer started
 
 `docker compose up` stops with *"Set MONGO_ROOT_PASS in .env"* until this is done. Your data is kept: the script changes the password inside the existing database rather than creating a new one. If you had already changed the password from `adminPassword`, pass the old one: `OLD_MONGO_ROOT_PASS='…' scripts/secure-database.sh`.
 
+Sign-ins now last 7 days. An `api/.env` copied from an older example still says `JWT_EXPIRATION=60d`; change it to `7d` (and keep `SESSION_MAX_AGE_DAYS=7` in `web/.env`).
+
 The old `textbee-mongo-express` container stays around stopped; remove it with `docker rm -f textbee-mongo-express`. To open the database admin UI when you need it: `docker compose --profile tools up -d mongo-express`, then http://localhost:8081 on the server itself (user `admin`, password = `MONGO_ROOT_PASS` from `.env`).
