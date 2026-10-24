@@ -7,10 +7,11 @@ import { buildBreadcrumbs } from './breadcrumbs'
 
 export default function BreadcrumbNav() {
   const crumbs = buildBreadcrumbs(usePathname())
-  if (crumbs.length === 0) return null
+  // A lone crumb only repeats the page the sidebar already highlights
+  if (crumbs.length <= 1) return null
 
   return (
-    <nav aria-label='Breadcrumb' className='px-4 pt-4 sm:px-6 md:px-8'>
+    <nav aria-label='Breadcrumb' className='pt-6 sm:pt-8'>
       <ol className='flex min-w-0 items-center gap-1 text-sm text-muted-foreground'>
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1

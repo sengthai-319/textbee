@@ -19,7 +19,7 @@ export default function Footer() {
     <footer className='border-t border-border bg-shell/60'>
       {/* Left-aligned on mobile: centred links in a single column read as a
           ragged stack with no common edge to scan down. */}
-      <div className='mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-6 sm:items-center sm:px-6 md:flex-row md:justify-between lg:px-8'>
+      <div className='mx-auto flex w-full max-w-[76rem] flex-col items-start gap-4 px-4 py-5 sm:items-center sm:px-6 md:flex-row md:justify-between lg:px-10'>
         <div className='flex items-center gap-2'>
           <BrandMark className='h-5 w-5' />
           <span className='text-sm text-muted-foreground'>

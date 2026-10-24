@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // mounted during tab switches.
 export default function Loading() {
   return (
-    <div role='status' className='flex-1 space-y-6 p-4 sm:p-6 md:p-8'>
+    <div role='status' className='flex-1 space-y-8 py-6 sm:py-8'>
       <span className='sr-only'>Loading</span>
       <div className='space-y-2'>
         <Skeleton className='h-8 w-56' />

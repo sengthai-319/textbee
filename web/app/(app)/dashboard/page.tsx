@@ -57,7 +57,7 @@ export default function DashboardPage() {
   const addDeviceRef = useRef<AddDeviceHandle>(null)
 
   return (
-    <div className='flex-1 space-y-6 p-4 sm:p-6 md:p-8'>
+    <div className='flex-1 space-y-8 py-6 sm:py-8'>
       {/* Two separate flows on purpose. "Add device" walks through installing
           the app and granting permissions before it ever mentions an API key,
           matching the button in the Registered Devices card. "New API key"
@@ -69,7 +69,7 @@ export default function DashboardPage() {
 
       <div className='flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-4'>
         <div className='space-y-1'>
-          <h2 className='text-xl font-medium tracking-tight md:text-2xl'>
+          <h2 className='text-xl font-semibold tracking-tight md:text-2xl'>
             Welcome back, {session?.user?.name?.split(' ')[0] || 'there'}
           </h2>
           <p className='hidden text-sm text-muted-foreground md:block'>

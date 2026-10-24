@@ -7,7 +7,7 @@ import PageHeader from '@/components/shared/page-header'
 // interaction grammar as messaging/webhooks).
 export default function AccountLayout({ children }: PropsWithChildren) {
   return (
-    <div className='flex-1 p-4 sm:p-6 md:p-8'>
+    <div className='flex-1 py-6 sm:py-8'>
       <PageHeader
         icon={UserIcon}
         title='Account'
