@@ -27,6 +27,7 @@ import {
   AuthSessionResponseDTO,
   ChangePasswordInputDTO,
   GoogleLoginInputDTO,
+  OidcLoginInputDTO,
   LoginInputDTO,
   MessageResponseDTO,
   RegisterInputDTO,
@@ -112,6 +113,26 @@ export class AuthController {
       attribution: input.attribution,
       ...resolveRequestContext(input.client, req),
     })
+    return { data }
+  }
+
+  @ApiOperation({
+    summary: 'Sign in with single sign-on',
+    description:
+      'Exchanges an ID token from the configured OpenID Connect provider (such as Authentik) for a CrossHub session. The dashboard calls this after the provider redirects back. Links or creates the account on first sign in.',
+  })
+  @ApiResponse({ status: 200, description: 'Signed in.', type: AuthSessionResponseDTO })
+  @ApiResponse({ status: 401, description: 'The ID token is invalid, expired, or for another client.' })
+  @ApiResponse({ status: 403, description: 'Not in an allowed group, or sign-up through the provider is closed.' })
+  @ApiResponse({ status: 404, description: 'Single sign-on is not set up on this server.' })
+  @ApiResponse({ status: 409, description: 'An account with this email exists and the provider did not confirm the email.' })
+  @HttpCode(HttpStatus.OK)
+  @Post('/oidc-login')
+  async oidcLogin(@Body() input: OidcLoginInputDTO, @Request() req) {
+    const data = await this.authService.loginWithOidc(
+      input?.idToken,
+      resolveRequestContext(input?.client, req),
+    )
     return { data }
   }
 

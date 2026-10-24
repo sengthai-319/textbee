@@ -247,6 +247,15 @@ export class User {
   @Prop({ type: String, unique: true, sparse: true })
   googleId?: string
 
+  // The OpenID Connect account (Authentik, ...) this user signs in with:
+  // the provider's issuer URL and its stable user id. Matched on these, not
+  // on email, so changing an email at the provider can't take over an account.
+  @Prop({ type: String })
+  oidcIssuer?: string
+
+  @Prop({ type: String })
+  oidcSubject?: string
+
   @Prop({ type: String })
   avatar?: string
 
@@ -363,6 +372,10 @@ UserSchema.index({ signupDevice: 1, createdAt: -1 })
 
 // Scheduled emails find accounts verified in a recent window.
 UserSchema.index({ emailVerifiedAt: 1 })
+UserSchema.index(
+  { oidcIssuer: 1, oidcSubject: 1 },
+  { unique: true, partialFilterExpression: { oidcSubject: { $type: 'string' } } },
+)
 
 // Scheduled emails find accounts that connected their first phone recently.
 UserSchema.index({ 'milestones.firstDeviceAt': 1 })

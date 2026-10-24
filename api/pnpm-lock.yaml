@@ -83,6 +83,9 @@ importers:
       ioredis:
         specifier: ^5.8.2
         version: 5.8.2
+      jose:
+        specifier: 5.10.0
+        version: 5.10.0
       mongoose:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3356,6 +3359,9 @@ packages:
 
   jose@4.15.9:
     resolution: {integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==}
+
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
   js-stringify@1.0.2:
     resolution: {integrity: sha512-rtS5ATOo2Q5k1G+DADISilDA6lv79zIiwFd6CcjuIxGKLFm5C+RLImRscVap9k55i+MOZwgliw+NejvkLuGD5g==}
@@ -9131,6 +9137,8 @@ snapshots:
     optional: true
 
   jose@4.15.9: {}
+
+  jose@5.10.0: {}
 
   js-stringify@1.0.2:
     optional: true

@@ -326,6 +326,23 @@ export class GoogleLoginInputDTO {
   client?: ClientContextDTO
 }
 
+export class OidcLoginInputDTO {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description:
+      'ID token from the single sign-on provider (Authentik or another OpenID Connect provider), issued for this server\'s client ID.',
+  })
+  idToken: string
+
+  @ApiProperty({
+    type: ClientContextDTO,
+    required: false,
+    description: "The visitor's browser details, when the caller is a proxy.",
+  })
+  client?: ClientContextDTO
+}
+
 export class RequestResetPasswordInputDTO {
   @ApiProperty({
     type: String,

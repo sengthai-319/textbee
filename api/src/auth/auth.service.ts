@@ -28,6 +28,13 @@ import { RequestContext } from '../common/request-context'
 import { RequestResetPasswordInputDTO, ResetPasswordInputDTO } from './auth.dto'
 import { AccessFootprintService } from './access-footprint.service'
 import {
+  OidcError,
+  OidcVerifier,
+  oidcSettings,
+  passwordAuthSettings,
+  type OidcSettings,
+} from './oidc'
+import {
   EmailVerification,
   EmailVerificationDocument,
 } from './schemas/email-verification.schema'
@@ -65,7 +72,30 @@ export class AuthService {
     private readonly analyticsService: AnalyticsService,
   ) {}
 
+  // Built on first use from the environment, so tests and the running app
+  // read the same settings.
+  private oidc?: { settings: OidcSettings; verifier: OidcVerifier }
+
+  private oidcVerifier() {
+    if (!this.oidc) {
+      const settings = oidcSettings(process.env)
+      this.oidc = { settings, verifier: new OidcVerifier(settings) }
+    }
+    return this.oidc
+  }
+
+  /** Refuses email and password sign-in when the server is provider-only. */
+  private assertPasswordLogin() {
+    if (!passwordAuthSettings(process.env).passwordLogin) {
+      throw new HttpException(
+        { error: 'Password sign-in is turned off on this server. Use single sign-on.' },
+        HttpStatus.FORBIDDEN,
+      )
+    }
+  }
+
   async login(userData: any, requestContext?: RequestContext) {
+    this.assertPasswordLogin()
     await this.turnstileService.verify(userData.turnstileToken)
 
     // There is no global ValidationPipe, so a JSON object here would reach
@@ -205,7 +235,114 @@ export class AuthService {
     }
   }
 
+  /**
+   * Signs in with an ID token from the configured OpenID Connect provider.
+   * The account is found by the provider's user id; on first sign-in it is
+   * linked to an existing account with the same email (only when the
+   * provider confirms that email) or created.
+   */
+  async loginWithOidc(idToken: unknown, requestContext?: RequestContext) {
+    const { settings, verifier } = this.oidcVerifier()
+    const fail = (status: HttpStatus, code: string, error: string) =>
+      new HttpException({ error, code }, status)
+
+    if (!settings.enabled) {
+      throw fail(HttpStatus.NOT_FOUND, 'not_configured', 'Single sign-on is not set up on this server.')
+    }
+
+    let identity: Awaited<ReturnType<OidcVerifier['verify']>>
+    try {
+      identity = await verifier.verify(idToken)
+    } catch (e) {
+      if (e instanceof OidcError) {
+        const status =
+          e.code === 'discovery_failed' ? HttpStatus.BAD_GATEWAY : HttpStatus.UNAUTHORIZED
+        throw fail(status, e.code, e.message)
+      }
+      throw e
+    }
+
+    if (
+      settings.allowedGroups.length &&
+      !identity.groups.some((g) => settings.allowedGroups.includes(g))
+    ) {
+      throw fail(HttpStatus.FORBIDDEN, 'group_denied', 'Your account is not in a group allowed to use CrossHub.')
+    }
+
+    const emailConfirmed = identity.emailVerified || settings.trustEmail
+    let user = await this.usersService.findOne({
+      oidcIssuer: identity.issuer,
+      oidcSubject: identity.subject,
+    })
+    let isNewUser = false
+
+    if (!user) {
+      if (!identity.email) {
+        throw fail(HttpStatus.BAD_REQUEST, 'no_email', 'The identity provider did not share an email address. Add the email scope.')
+      }
+      const existing = await this.usersService.findOne({ email: identity.email })
+      if (existing) {
+        // Linking on an unconfirmed email would let anyone who can set that
+        // email at the provider take over the account.
+        if (!emailConfirmed) {
+          throw fail(
+            HttpStatus.CONFLICT,
+            'email_unconfirmed',
+            'An account with this email already exists, and the identity provider did not confirm the email, so it was not linked.',
+          )
+        }
+        user = existing
+      } else {
+        if (!settings.allowSignup) {
+          throw fail(HttpStatus.FORBIDDEN, 'signup_closed', 'There is no CrossHub account for you yet. Ask the administrator to create one.')
+        }
+        user = await this.usersService.create({
+          name: identity.name ?? identity.email.split('@')[0],
+          email: identity.email,
+          userAgent: requestContext?.userAgent,
+          country: requestContext?.country,
+          location: pickLocation(requestContext),
+        })
+        isNewUser = true
+      }
+      user.oidcIssuer = identity.issuer
+      user.oidcSubject = identity.subject
+    }
+
+    // A new account was vouched for by the provider just now, and there is
+    // no older account its email could take over, so it can send right away.
+    // (Authentik's default mapping always says email_verified: false.)
+    if ((emailConfirmed || isNewUser) && !user.emailVerifiedAt) {
+      user.emailVerifiedAt = new Date()
+    }
+    if (identity.name && user.name !== identity.name) user.name = identity.name
+    if (identity.picture && user.avatar !== identity.picture) user.avatar = identity.picture
+    user.lastLoginAt = new Date()
+    if (!isNewUser) {
+      this.usersService.touchClient(user, requestContext?.userAgent)
+    }
+    await user.save()
+
+    if (isNewUser) {
+      this.analyticsService.userRegistered(user as any, requestContext)
+    }
+
+    const payload = { email: user.email, sub: user._id }
+    return {
+      accessToken: this.jwtService.sign(payload),
+      user: withoutPassword(user),
+      isNewUser,
+    }
+  }
+
   async register(userData: any, requestContext?: RequestContext) {
+    this.assertPasswordLogin()
+    if (!passwordAuthSettings(process.env).registration) {
+      throw new HttpException(
+        { error: 'Sign-up is closed on this server.' },
+        HttpStatus.FORBIDDEN,
+      )
+    }
     await this.turnstileService.verify(userData.turnstileToken)
 
     // Checked before the lookup: an operator object would otherwise match an
@@ -268,6 +405,7 @@ export class AuthService {
     email,
     turnstileToken,
   }: RequestResetPasswordInputDTO) {
+    this.assertPasswordLogin()
     await this.turnstileService.verify(turnstileToken)
 
     // Both branches below return this, so the response says nothing about
@@ -325,6 +463,7 @@ export class AuthService {
   }
 
   async resetPassword({ email, otp, newPassword }: ResetPasswordInputDTO) {
+    this.assertPasswordLogin()
     // Matches the other failure paths below so an unknown address is not
     // distinguishable from a bad code.
     const invalidOtp = new HttpException(

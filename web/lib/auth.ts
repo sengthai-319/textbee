@@ -1,5 +1,8 @@
+import axios from 'axios'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { httpServerClient } from './httpServerClient'
+import type { OAuthConfig } from 'next-auth/providers/oauth'
+import { getServerSideBaseUrl, httpServerClient } from './httpServerClient'
+import { oidcClientConfig } from './auth-methods'
 import type { DefaultSession, NextAuthOptions } from 'next-auth'
 import { ApiEndpoints } from '@/config/api'
 import { Routes } from '@/config/routes'
@@ -56,8 +59,42 @@ function parseAttribution(raw: unknown) {
   }
 }
 
+// Single sign-on (Authentik or any OpenID Connect provider), when the server
+// is configured for it. Authorization code flow with PKCE and state; the ID
+// token it returns is checked again by the API before anyone is signed in.
+function oidcProvider(): OAuthConfig<Record<string, any>>[] {
+  const config = oidcClientConfig()
+  if (!config) return []
+  return [
+    {
+      id: 'oidc',
+      name: config.name,
+      type: 'oauth',
+      wellKnown: `${config.issuer.replace(/\/+$/, '')}/.well-known/openid-configuration`,
+      clientId: config.clientId,
+      clientSecret: config.clientSecret,
+      authorization: { params: { scope: 'openid email profile' } },
+      idToken: true,
+      checks: ['pkce', 'state'],
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name ?? profile.preferred_username,
+          email: profile.email,
+          image: profile.picture,
+        }
+      },
+    },
+  ]
+}
+
+// Without the session interceptor: this runs inside the sign-in callback,
+// before there is a session to attach.
+const apiClient = () => axios.create({ baseURL: getServerSideBaseUrl() })
+
 export const authOptions: NextAuthOptions = {
   providers: [
+    ...oidcProvider(),
     CredentialsProvider({
       id: 'email-password-login',
       name: 'email-password-login',
@@ -178,11 +215,34 @@ export const authOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: Routes.login,
+    // Provider errors come back to the login page, which explains them.
+    error: Routes.login,
   },
   session: {
     strategy: 'jwt',
   },
   callbacks: {
+    // For single sign-on, exchange the provider's ID token for a CrossHub
+    // session. The API verifies the token and decides which account it is;
+    // its answer becomes the user the jwt callback below stores.
+    async signIn({ user, account }) {
+      if (account?.provider !== 'oidc') return true
+      try {
+        const res = await apiClient().post(ApiEndpoints.auth.oidcLogin(), {
+          idToken: account.id_token,
+        })
+        const data = res.data.data
+        Object.assign(user, data.user, {
+          accessToken: data.accessToken,
+          isNewUser: data.isNewUser === true,
+        })
+        return true
+      } catch (e: any) {
+        const code = e?.response?.data?.code ?? 'failed'
+        console.log('Single sign-on refused by the API:', code, e?.response?.data?.error)
+        return `${Routes.login}?error=oidc_${encodeURIComponent(code)}`
+      }
+    },
     async jwt({ token, user, trigger, session }) {
       if (trigger === 'update') {
         if (session.name !== token.name) {

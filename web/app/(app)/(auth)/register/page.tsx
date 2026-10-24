@@ -1,30 +1,8 @@
-'use client'
+import { getAuthMethods } from '@/lib/auth-methods'
+import RegisterView from './register-view'
 
-import { useSearchParams } from 'next/navigation'
-
-import AuthShell from '../(components)/auth-shell'
-import RegisterForm from '../(components)/register-form'
-import { Routes } from '@/config/routes'
+export const dynamic = 'force-dynamic'
 
 export default function RegisterPage() {
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect')
-
-  return (
-    <AuthShell
-      title='Create your account'
-      description='Send SMS from your own Android phone or iPhone, on your own server.'
-      switchPrompt='Already have an account?'
-      switchLabel='Log in'
-      switchHref={{
-        pathname: Routes.login,
-        query: {
-          redirect: redirect ? decodeURIComponent(redirect) : undefined,
-        },
-      }}
-      className='max-w-[440px]'
-    >
-      <RegisterForm />
-    </AuthShell>
-  )
+  return <RegisterView methods={getAuthMethods()} />
 }
