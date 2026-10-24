@@ -14,7 +14,7 @@ export default function LoginPage() {
     <AuthShell
       title='Welcome back'
       description='Log in to manage your devices and messages.'
-      switchPrompt='New to CrossHubSMS?'
+      switchPrompt='New to CrossHub?'
       switchLabel='Create an account'
       switchHref={{
         pathname: Routes.register,

@@ -20,6 +20,10 @@ import {
 import { cn } from '@/lib/utils'
 import { Routes } from '@/config/routes'
 
+// The dashboard's content column: centered, capped for readable line lengths,
+// with the page gutter. The footer uses the same value.
+export const contentColumn = 'mx-auto w-full max-w-[76rem] px-4 sm:px-6 lg:px-10'
+
 export default function DashboardLayout({
   children,
 }: {
@@ -47,7 +51,7 @@ export default function DashboardLayout({
 
       {/* Desktop sidebar, sits below the sticky app header (h-14). */}
       <aside className='fixed inset-y-0 left-0 top-14 z-30 hidden w-60 flex-col border-r border-border bg-shell md:flex'>
-        <div className='flex-1 overflow-y-auto px-3 py-4'>
+        <div className='flex-1 overflow-y-auto px-4 py-5'>
           <div className='mb-5'>
             <SearchTrigger onOpen={() => setSearchOpen(true)} />
           </div>
@@ -64,7 +68,7 @@ export default function DashboardLayout({
             ))}
           </nav>
         </div>
-        <div className='space-y-3 border-t border-border px-4 py-3'>
+        <div className='space-y-3 border-t border-border px-4 py-4'>
           <p className='text-xs text-muted-foreground'>
             Need help?{' '}
             <a
@@ -80,16 +84,21 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main content, offset for the fixed sidebar on desktop. */}
-      <div className='md:pl-60'>
-        <BreadcrumbNav />
-        <NotificationTileStack />
-        <main id='main-content' tabIndex={-1}>
-          {children}
-        </main>
+      {/* Main content, offset for the fixed sidebar on desktop. It fills the
+          viewport so the footer sits at the bottom of short pages. */}
+      <div className='flex min-h-[calc(100svh-3.5rem)] flex-col md:pl-60'>
+        {/* One centered column with one gutter, so the breadcrumb, banners,
+            page content and footer all share a left edge. */}
+        <div className={cn(contentColumn, 'flex-1')}>
+          <BreadcrumbNav />
+          <NotificationTileStack />
+          <main id='main-content' tabIndex={-1}>
+            {children}
+          </main>
+        </div>
         {/* Inside the sidebar-offset column so the fixed sidebar cannot paint
             over it, and padded clear of the fixed mobile tab bar. */}
-        <div className='pb-20 pt-8 md:pb-0'>
+        <div className='pb-16 md:pb-0'>
           <Footer />
         </div>
       </div>

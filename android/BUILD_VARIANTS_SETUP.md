@@ -1,6 +1,6 @@
 # Android Build Variants Setup (Dev vs Prod)
 
-This document explains how to use the dev and prod build variants for the CrossHubSMS Android app. For a first setup, follow [docs/SETUP.md](../docs/SETUP.md#android-phones) instead.
+This document explains how to use the dev and prod build variants for the CrossHub Android app. For a first setup, follow [docs/SETUP.md](../docs/SETUP.md#android-phones) instead.
 
 ## Overview
 
@@ -13,7 +13,7 @@ The app now supports two build variants:
 | Feature | Dev | Prod |
 |---------|-----|------|
 | Package Name | `com.vernu.sms.dev` | `com.vernu.sms` |
-| App Name | "CrossHubSMS (Dev)" | "CrossHubSMS" |
+| App Name | "CrossHub (Dev)" | "CrossHub" |
 | API Base URL | `-PapiBaseUrl` (both) | `-PapiBaseUrl` (both) |
 | Firebase Config | `app/src/dev/google-services.json` | `app/src/prod/google-services.json` |
 | Version Suffix | `-dev` appended | No suffix |
@@ -72,8 +72,8 @@ Both variants use your own server. Pass its address as a Gradle property, or set
 ## Installation
 
 Both variants can be installed simultaneously on the same device since they have different package names:
-- Dev app will show as "CrossHubSMS (Dev)"
-- Prod app will show as "CrossHubSMS"
+- Dev app will show as "CrossHub (Dev)"
+- Prod app will show as "CrossHub"
 
 ## Environment Detection
 

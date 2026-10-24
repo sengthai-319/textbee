@@ -138,7 +138,7 @@ export const SimIdInput = forwardRef<HTMLInputElement, SimIdInputProps>(
                 <p className='text-xs text-warning'>
                   No SIM with subscription ID {value} in the phone&apos;s last
                   report. If the phone has no SIM with this ID, it sends from
-                  the SIM set as default in the CrossHubSMS app, or the
+                  the SIM set as default in the CrossHub app, or the
                   phone&apos;s default SIM.
                 </p>
               )}
@@ -150,7 +150,7 @@ export const SimIdInput = forwardRef<HTMLInputElement, SimIdInputProps>(
                   {sims.length > 0 && age
                     ? `The IDs above were reported ${age} and can change after a SIM swap,`
                     : 'Subscription IDs can change after a SIM swap,'}{' '}
-                  so confirm the ID in the SIM Cards section of the CrossHubSMS
+                  so confirm the ID in the SIM Cards section of the CrossHub
                   app.
                 </span>
               </p>

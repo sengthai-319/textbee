@@ -76,7 +76,7 @@ export class WebhookController {
   @ApiOperation({
     summary: 'List webhook delivery attempts',
     description:
-      'Delivery history across your subscriptions, newest first. Use it to see what CrossHubSMS sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.',
+      'Delivery history across your subscriptions, newest first. Use it to see what CrossHub sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.',
   })
   @ApiQuery({
     name: 'page',
@@ -192,7 +192,7 @@ export class WebhookController {
   @ApiOperation({
     summary: 'Create a webhook subscription',
     description:
-      'CrossHubSMS POSTs the events you pick to your delivery URL and signs each request with your signing secret, sent as the X-Signature header. Failed deliveries are retried up to 10 times, and a subscription that keeps failing is paused.',
+      'CrossHub POSTs the events you pick to your delivery URL and signs each request with your signing secret, sent as the X-Signature header. Failed deliveries are retried up to 10 times, and a subscription that keeps failing is paused.',
   })
   @ApiResponse({
     status: 201,
@@ -221,7 +221,7 @@ export class WebhookController {
   @ApiOperation({
     summary: 'Update a webhook subscription',
     description:
-      'Changes only the fields you send. Use isActive to re-enable a subscription CrossHubSMS paused after repeated failures.',
+      'Changes only the fields you send. Use isActive to re-enable a subscription CrossHub paused after repeated failures.',
   })
   @ApiParam(WEBHOOK_ID_PARAM)
   @ApiResponse({

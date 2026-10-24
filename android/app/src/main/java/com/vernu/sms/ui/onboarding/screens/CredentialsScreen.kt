@@ -68,7 +68,7 @@ fun CredentialsScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Enter your API key from your CrossHubSMS dashboard",
+                text = "Enter your API key from your CrossHub dashboard",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -152,7 +152,7 @@ private fun QrTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "1. Go to your CrossHubSMS dashboard",
+                    text = "1. Go to your CrossHub dashboard",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
@@ -278,7 +278,7 @@ private fun ManualTab(
         contentPadding = PaddingValues(0.dp)
     ) {
         Text(
-            text = "Get your API key from your CrossHubSMS dashboard",
+            text = "Get your API key from your CrossHub dashboard",
             style = MaterialTheme.typography.bodySmall
         )
     }

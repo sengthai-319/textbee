@@ -1,10 +1,10 @@
-# CrossHubSMS setup guide
+# CrossHub setup guide
 
-CrossHubSMS turns a phone you own into your own SMS gateway. You run the server on your computer, and texts go out from a phone you own. Then you send texts from the dashboard, upload a contact list for a newsletter, or call the API from your own code.
+CrossHub turns a phone you own into your own SMS gateway. You run the server on your computer, and texts go out from a phone you own. Then you send texts from the dashboard, upload a contact list for a newsletter, or call the API from your own code.
 
 It works with both kinds of phone:
 
-- **[Android phones](#android-phones)**: the CrossHubSMS app runs on the phone and sends texts from its SIM. It can also receive texts and forward them to you.
+- **[Android phones](#android-phones)**: the CrossHub app runs on the phone and sends texts from its SIM. It can also receive texts and forward them to you.
 - **[iPhone (through a Mac)](#iphone-through-a-mac)**: iPhones don't let apps send texts by themselves. Instead, a Mac sends each text through the Messages app, and your iPhone delivers it as a regular SMS.
 
 You can connect several phones of either kind to the same server.
@@ -13,7 +13,7 @@ You can connect several phones of either kind to the same server.
  Dashboard / your code
           │  (send a message)
           ▼
- CrossHubSMS server  ──push──▶  Android app  ──SIM──▶  📱 recipient
+ CrossHub server  ──push──▶  Android app  ──SIM──▶  📱 recipient
   (your computer)    ◀─pull───  Mac relay ─▶ Messages ─▶ iPhone ──▶  📱 recipient
 ```
 
@@ -177,7 +177,7 @@ The APK is written to `android/app/build/outputs/apk/prod/release/`.
 ### A3. Install and connect the phone
 
 1. Copy the APK to the phone and open it. Android asks you to allow installing apps from this source; allow it.
-2. Open **CrossHubSMS** on the phone.
+2. Open **CrossHub** on the phone.
 3. In the dashboard, click **Add device**, and scan the QR code with the app. You can also paste your API key into the app.
 4. **Allow the SMS permission** when the app asks. On Android 15 and later, Android blocks it at first: open **App info**, tap the **⋮** menu, choose **Allow restricted settings**, then allow SMS.
 5. The phone appears under **Registered Devices** in the dashboard.
@@ -204,7 +204,7 @@ A Mac sends each text through the **Messages** app, and your iPhone delivers it 
 
 On the Mac that will send, in Terminal:
 ```bash
-mkdir -p ~/crosshubsms-mac && cd ~/crosshubsms-mac
+mkdir -p ~/crosshub-mac && cd ~/crosshub-mac
 curl -fsSLO https://raw.githubusercontent.com/sengthai-319/textbee/main/macos/textbee_mac.py
 python3 --version     # 3.9 or newer; if macOS offers to install developer tools, click Install
 ```
@@ -240,7 +240,7 @@ python3 textbee_mac.py install-agent
 
 **Limits of the iPhone route:**
 - **Delivery:** "sent" means Messages accepted the text; delivery reports aren't available.
-- **Receiving:** incoming texts don't reach CrossHubSMS.
+- **Receiving:** incoming texts don't reach CrossHub.
 - **Uptime:** the Mac must stay on and online, and the iPhone needs signal.
 
 ---
@@ -254,7 +254,7 @@ python3 textbee_mac.py install-agent
 curl -X POST "http://localhost:3001/api/v1/gateway/devices/YOUR_DEVICE_ID/send-sms" \
   -H "x-api-key: YOUR_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"recipients": ["+15551234567"], "message": "Hello from CrossHubSMS"}'
+  -d '{"recipients": ["+15551234567"], "message": "Hello from CrossHub"}'
 ```
 Each device's ID is shown on its card in the dashboard. The full API reference is at **http://localhost:3001/** on your server.
 

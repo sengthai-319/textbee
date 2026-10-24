@@ -12,7 +12,7 @@ import PageHeader from '@/components/shared/page-header'
 // than the content beneath them.
 export default function MessagingLayout({ children }: PropsWithChildren) {
   return (
-    <div className='flex-1 p-4 sm:p-6 md:p-8'>
+    <div className='flex-1 py-6 sm:py-8'>
       <div className='w-full max-w-3xl'>
         <PageHeader
           icon={MessageSquareTextIcon}

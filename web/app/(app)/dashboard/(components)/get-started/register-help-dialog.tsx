@@ -34,7 +34,7 @@ export default function RegisterHelpDialog({
         <ol className='mt-2 list-decimal space-y-3 pl-5 text-sm text-muted-foreground'>
           <li>Generate an API key in the step above (if you have not already).</li>
           <li>
-            Install the CrossHubSMS Android app (see the{' '}
+            Install the CrossHub Android app (see the{' '}
             <a
               href={Routes.downloadAndroidApp}
               target='_blank'

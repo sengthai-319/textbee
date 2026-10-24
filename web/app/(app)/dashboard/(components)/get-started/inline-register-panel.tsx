@@ -35,7 +35,7 @@ export default function InlineRegisterPanel() {
       <div className='flex flex-col gap-4 sm:flex-row'>
         <ol className='flex-1 list-decimal space-y-2 pl-5 text-sm text-muted-foreground'>
           <li>
-            Install the CrossHubSMS app on your Android phone (see the{' '}
+            Install the CrossHub app on your Android phone (see the{' '}
             <a
               href={Routes.downloadAndroidApp}
               target='_blank'

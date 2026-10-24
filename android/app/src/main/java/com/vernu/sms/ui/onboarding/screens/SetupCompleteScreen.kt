@@ -200,7 +200,7 @@ fun SetupCompleteScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "SMS you receive on this phone will appear in your CrossHubSMS dashboard and be accessible via API",
+                        text = "SMS you receive on this phone will appear in your CrossHub dashboard and be accessible via API",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -269,7 +269,7 @@ fun SetupCompleteScreen(
             }
         ) {
             Text(
-                text = "New to CrossHubSMS? Read the quickstart guide",
+                text = "New to CrossHub? Read the quickstart guide",
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -282,7 +282,7 @@ fun SetupCompleteScreen(
             }
         ) {
             Text(
-                text = "CrossHubSMS is open source. Star it on GitHub.",
+                text = "CrossHub is open source. Star it on GitHub.",
                 style = MaterialTheme.typography.bodySmall
             )
         }

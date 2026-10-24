@@ -25,7 +25,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'CrossHubSMS',
+  title: 'CrossHub',
   description: 'Your own SMS gateway for Android phones and iPhones.',
 }
 

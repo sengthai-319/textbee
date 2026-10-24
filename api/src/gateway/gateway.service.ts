@@ -555,7 +555,7 @@ export class GatewayService {
       ? {
           code: 'SMS_PERMISSION_MISSING',
           message:
-            'The CrossHubSMS app on this phone last reported the SMS permission as off. The message fails if it is still off.',
+            'The CrossHub app on this phone last reported the SMS permission as off. The message fails if it is still off.',
         }
       : undefined
 

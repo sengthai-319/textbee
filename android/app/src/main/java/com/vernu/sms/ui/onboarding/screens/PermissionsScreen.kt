@@ -66,7 +66,7 @@ fun PermissionsScreen(
             PermissionItem(
                 permission = "android.permission.POST_NOTIFICATIONS",
                 label = "Notifications",
-                rationale = "Lets CrossHubSMS show that it is running and sending in the background",
+                rationale = "Lets CrossHub show that it is running and sending in the background",
                 icon = Icons.Default.Notifications
             )
         ) else emptyList()
@@ -161,7 +161,7 @@ fun PermissionsScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "CrossHubSMS needs the SMS permission to send messages. The others are optional.",
+                text = "CrossHub needs the SMS permission to send messages. The others are optional.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -207,7 +207,7 @@ fun PermissionsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "These permissions are only used to send and receive SMS on your behalf. CrossHubSMS never accesses your existing message history.",
+                text = "These permissions are only used to send and receive SMS on your behalf. CrossHub never accesses your existing message history.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

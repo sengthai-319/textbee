@@ -51,7 +51,7 @@ fun ComposeScreen(
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(upgradeUrl)))
                 } catch (e: ActivityNotFoundException) {
-                    snackbarHostState.showSnackbar("No browser found. Open your CrossHubSMS dashboard on another device.")
+                    snackbarHostState.showSnackbar("No browser found. Open your CrossHub dashboard on another device.")
                 }
             }
             viewModel.clearError()

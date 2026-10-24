@@ -230,7 +230,7 @@ fun SettingsScreen(
             SettingsRow(
                 icon = Icons.Default.AutoAwesome,
                 title = "About",
-                subtitle = "CrossHubSMS",
+                subtitle = "CrossHub",
                 onClick = { showAboutDialog = true },
                 trailing = {
                     Icon(Icons.Default.ChevronRight, contentDescription = null,
@@ -281,10 +281,10 @@ fun SettingsScreen(
 
             SettingsRow(
                 icon = Icons.Default.Share,
-                title = "Share CrossHubSMS",
+                title = "Share CrossHub",
                 subtitle = "Help spread the word",
                 onClick = {
-                    val shareText = "i've been using CrossHubSMS to send SMS via API from my own phone, " +
+                    val shareText = "i've been using CrossHub to send SMS via API from my own phone, " +
                         "no Twilio or paid services needed. works great for automations, alerts, " +
                         "notifications, or anything that needs programmatic SMS. open source and free to start\n\n" +
                         "https://github.com/sengthai-319/textbee"
@@ -294,7 +294,7 @@ fun SettingsScreen(
                                 type = "text/plain"
                                 putExtra(Intent.EXTRA_TEXT, shareText)
                             },
-                            "Share CrossHubSMS"
+                            "Share CrossHub"
                         )
                     )
                 }
@@ -391,7 +391,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showAboutDialog = false },
             title = {
-                Text("CrossHubSMS", fontWeight = FontWeight.Bold)
+                Text("CrossHub", fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -93,7 +93,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Sign in with Google',
     description:
-      'Exchanges a Google ID token for a CrossHubSMS session. Creates the account on first sign in.',
+      'Exchanges a Google ID token for a CrossHub session. Creates the account on first sign in.',
   })
   @ApiResponse({
     status: 200,

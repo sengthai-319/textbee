@@ -1076,7 +1076,7 @@ export class WebhookService {
       try {
         await this.mailService.sendEmailFromTemplate({
           to: user.email,
-          subject: 'Your webhook was paused – CrossHubSMS',
+          subject: 'Your webhook was paused – CrossHub',
           template: 'webhook-subscription-disabled',
           context: {
             name: firstName(user.name),

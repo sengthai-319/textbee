@@ -137,7 +137,7 @@ export default function ApiKeys() {
       <GenerateApiKey ref={addApiKeyRef} showTrigger={false} />
       {/* Below md the shell is dropped: a compact header row sits above one
           bordered list surface. */}
-      <Card className='min-w-0 max-w-full max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0'>
+      <Card className='flex min-w-0 max-w-full flex-col max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0'>
         <CardHeader className='flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2 max-md:min-h-11 max-md:flex-nowrap max-md:px-1 max-md:py-0'>
           <CardTitle className='whitespace-nowrap text-lg max-md:label-mono'>
             API Keys
@@ -170,7 +170,7 @@ export default function ApiKeys() {
             </Button>
           </div>
         </CardHeader>
-      <CardContent className='max-md:overflow-hidden max-md:rounded-xl max-md:p-0 max-md:shadow-none'>
+      <CardContent className='flex-1 max-md:overflow-hidden max-md:rounded-xl max-md:p-0 max-md:shadow-none'>
           <div className='space-y-2 max-md:space-y-0 max-md:divide-y'>
             {isPending && (
               <>

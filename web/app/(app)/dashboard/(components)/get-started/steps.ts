@@ -48,7 +48,7 @@ export const STEPS: StepDef[] = [
     id: 'download_app',
     label: 'Set up your phone',
     description:
-      'Android: install the CrossHubSMS app on the phone that will send your SMS. iPhone: set up the Mac relay, which sends through your iPhone.',
+      'Android: install the CrossHub app on the phone that will send your SMS. iPhone: set up the Mac relay, which sends through your iPhone.',
     doneDescription: 'Your phone is set up. Follow the same guide to add another.',
     optional: true,
     timeEstimate: '~1 min',
@@ -69,7 +69,7 @@ export const STEPS: StepDef[] = [
     id: 'register_device',
     label: 'Register your device',
     description:
-      'Turn your phone into your SMS gateway: scan the QR code below with the CrossHubSMS app, then allow the SMS permission when the app asks.',
+      'Turn your phone into your SMS gateway: scan the QR code below with the CrossHub app, then allow the SMS permission when the app asks.',
     doneDescription: 'Device registered. Register another the same way.',
     optional: false,
     timeEstimate: '~1 min',

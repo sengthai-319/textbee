@@ -7,7 +7,7 @@ import PageHeader from '@/components/shared/page-header'
 // route-based tabs, so the active view survives refresh.
 export default function WebhooksLayout({ children }: PropsWithChildren) {
   return (
-    <div className='flex-1 p-4 sm:p-6 md:p-8'>
+    <div className='flex-1 py-6 sm:py-8'>
       <PageHeader
         icon={Webhook}
         title='Webhooks'

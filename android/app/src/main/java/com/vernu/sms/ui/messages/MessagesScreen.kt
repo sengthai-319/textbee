@@ -269,7 +269,7 @@ private suspend fun shareDiagnostics(context: android.content.Context) {
     val deviceId = SharedPreferenceHelper.getSharedPreferenceString(
         context, AppConstants.SHARED_PREFS_DEVICE_ID_KEY, ""
     ) ?: ""
-    val header = "CrossHubSMS ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+    val header = "CrossHub ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
         "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}\n" +
         "device $deviceId\n" +
         "exported ${eventTimeFormat.format(java.util.Date())}"
@@ -287,7 +287,7 @@ private suspend fun shareDiagnostics(context: android.content.Context) {
         Intent.createChooser(
             Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "CrossHubSMS diagnostics")
+                putExtra(Intent.EXTRA_SUBJECT, "CrossHub diagnostics")
                 putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             },
