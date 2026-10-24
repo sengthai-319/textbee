@@ -13,7 +13,7 @@ export default function RegisterPage() {
   return (
     <AuthShell
       title='Create your account'
-      description='Send SMS from your own Android phone. Free plan, no credit card required.'
+      description='Send SMS from your own Android phone or iPhone, on your own server.'
       switchPrompt='Already have an account?'
       switchLabel='Log in'
       switchHref={{

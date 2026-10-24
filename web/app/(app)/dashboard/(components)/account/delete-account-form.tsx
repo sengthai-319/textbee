@@ -96,7 +96,7 @@ export default function DeleteAccountForm() {
     <>
       <p className='text-sm text-muted-foreground mb-6'>
         Once you delete your account, there is no going back. This action
-        permanently removes all your data, cancels subscriptions, and revokes
+        permanently removes all your data and revokes
         access to all services.
       </p>
 

@@ -8,12 +8,14 @@ import {
 } from '@/components/ui/card'
 import ChangePasswordForm from '../../(components)/account/change-password-form'
 import DeleteAccountForm from '../../(components)/account/delete-account-form'
+import { FORM_WIDTH } from '@/lib/layout'
+import { cn } from '@/lib/utils'
 
 // Security: password management, with account deletion in a clearly separated
 // destructive card so the two actions can never be confused.
 export default function SecurityPage() {
   return (
-    <div className='max-w-2xl space-y-8'>
+    <div className={cn(FORM_WIDTH, 'space-y-8')}>
       <Card>
         <CardHeader>
           <CardTitle>Password</CardTitle>

@@ -7,10 +7,12 @@ import {
 } from '@/components/ui/card'
 import SupportForm from '../../(components)/account/support-form'
 import CommunitySupportCard from '../../(components)/account/community-support-card'
+import { FORM_WIDTH } from '@/lib/layout'
+import { cn } from '@/lib/utils'
 
 export default function SupportPage() {
   return (
-    <div className='max-w-2xl space-y-4'>
+    <div className={cn(FORM_WIDTH, 'space-y-4')}>
       <CommunitySupportCard />
       <Card>
         <CardHeader>

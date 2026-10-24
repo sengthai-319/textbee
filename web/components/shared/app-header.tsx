@@ -50,7 +50,13 @@ export default function AppHeader({
   const isAuthenticated = useMemo(() => session?.user, [session?.user])
 
   // These pages render their own brand bar.
-  if (pathname === Routes.login || pathname === Routes.register) return null
+  const ownFrame = [
+    Routes.login,
+    Routes.register,
+    Routes.resetPassword,
+    Routes.verifyEmail,
+  ]
+  if (pathname && ownFrame.includes(pathname)) return null
 
   const AuthenticatedMenu = () => (
     <DropdownMenu>

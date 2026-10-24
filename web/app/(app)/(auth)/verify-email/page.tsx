@@ -19,6 +19,7 @@ import httpBrowserClient from '@/lib/httpBrowserClient'
 import { ApiEndpoints } from '@/config/api'
 import { queryKeys } from '@/lib/api/query-keys'
 import { Routes } from '@/config/routes'
+import { AUTH_CARD, AuthFrame } from '../(components)/auth-shell'
 
 // Reusable components
 const ErrorAlert = ({ message }: { message: string }) => (
@@ -318,10 +319,8 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-background p-4'>
-      <Card className='w-full max-w-md'>
-        {renderContent()}
-      </Card>
-    </div>
+    <AuthFrame>
+      <Card className={AUTH_CARD}>{renderContent()}</Card>
+    </AuthFrame>
   )
 }

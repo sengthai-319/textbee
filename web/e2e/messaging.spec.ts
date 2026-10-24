@@ -58,7 +58,7 @@ test.describe('messaging (mocked API, no real backend)', () => {
     await expect(page.getByText('This page couldn')).toHaveCount(0)
   })
 
-  test('every tab renders in the same content column', async ({
+  test('form tabs share one width and history spans the column', async ({
     page,
     context,
   }) => {
@@ -67,7 +67,8 @@ test.describe('messaging (mocked API, no real backend)', () => {
     await mockApi(page)
 
     // Each subroute used to set its own width (Send xl, Bulk 3xl, API 4xl,
-    // History none), so the layout jumped on every tab change.
+    // History none), so the layout jumped on every tab change. Now the form
+    // tabs share one width and the History list takes the whole column.
     const columns: Record<string, number> = {}
     let available = 0
     for (const path of [
@@ -107,19 +108,21 @@ test.describe('messaging (mocked API, no real backend)', () => {
       available = measured.available
     }
 
-    const widths = Object.values(columns)
+    const { '/dashboard/messaging/history': history, ...forms } = columns
+    const formWidths = Object.values(forms)
     expect(
-      new Set(widths).size,
-      `tabs should share one column width, got ${JSON.stringify(columns)}`
+      new Set(formWidths).size,
+      `form tabs should share one width, got ${JSON.stringify(columns)}`
     ).toBe(1)
 
     // Compared against the space actually available, not the viewport:
     // dropping the constraint makes every tab equally full-bleed, which would
     // otherwise satisfy the equality check above.
     expect(
-      widths[0],
-      'the column should be constrained, not stretched to fill'
+      formWidths[0],
+      'form tabs should be constrained, not stretched to fill'
     ).toBeLessThan(available)
+    expect(history, 'the history list should span the column').toBe(available)
   })
 
   test('breadcrumbs name the page and link back up', async ({

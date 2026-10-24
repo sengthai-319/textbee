@@ -1,6 +1,10 @@
+import { FORM_WIDTH } from '@/lib/layout'
 import SendSms from '../(components)/send-sms'
 
-// Width comes from the messaging layout, so every tab shares one column.
 export default function SendPage() {
-  return <SendSms />
+  return (
+    <div className={FORM_WIDTH}>
+      <SendSms />
+    </div>
+  )
 }
