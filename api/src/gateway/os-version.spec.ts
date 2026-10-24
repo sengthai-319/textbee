@@ -288,4 +288,8 @@ describe('normalizeOsFields', () => {
       osVersion: '15.1',
     })
   })
+
+  it('keeps the iOS label from the iPhone Shortcut', () => {
+    expect(normalizeOsFields({ os: 'iOS' })).toMatchObject({ os: 'iOS' })
+  })
 })

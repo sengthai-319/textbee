@@ -26,6 +26,7 @@ export const ApiEndpoints = {
   },
   gateway: {
     listDevices: () => '/gateway/devices',
+    registerDevice: () => '/gateway/devices',
     deleteDevice: (id: string) => `/gateway/devices/${id}`,
     setDefaultDevice: (id: string) => `/gateway/devices/${id}/set-default`,
     // Device-agnostic: the id now travels in the body, optionally, and the API
