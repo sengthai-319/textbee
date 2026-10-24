@@ -3,28 +3,27 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import Brand from './brand'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, LogOut, LayoutDashboard, LifeBuoy } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import { Menu } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { Routes } from '@/config/routes'
 import { Session } from 'next-auth'
 import SearchTrigger from '@/app/(app)/dashboard/(components)/search/search-trigger'
 import { OPEN_SEARCH_EVENT } from '@/lib/constants'
-import { isSupportChatEnabled, openSupportChat } from './support-hq-widget'
+import { AccountMenuItems, UserAvatar } from './account-menu'
+import { cn } from '@/lib/utils'
 
 // Deliberately minimal: identity and brand only. Navigation lives in the
 // sidebar (desktop) and the bottom tab bar (mobile), search in the command
-// palette (opened from here on mobile), and the theme control in the sidebar footer.
+// palette (opened from here on mobile), and the theme and help in the account
+// menu. In the dashboard this bar is phone-only.
 // Nullable: the root layout renders this for signed-out visitors too, and the
 // body already guards with session?.user throughout.
 export default function AppHeader({
@@ -32,20 +31,15 @@ export default function AppHeader({
 }: {
   session: Session | null
 }) {
-  const router = useRouter()
   const pathname = usePathname()
   // The palette is mounted by the dashboard layout, so only offer search there.
-  const showMobileSearch = pathname?.startsWith(Routes.dashboard) ?? false
+  const inDashboard = pathname?.startsWith(Routes.dashboard) ?? false
+  const showMobileSearch = inDashboard
   // The (app) layout that renders this header stays mounted across client
   // navigation, so the server session prop goes stale after an in-app sign in
   // or sign out. The client session follows signIn/signOut immediately.
   const { data: clientSession, status } = useSession()
   const session = status === 'loading' ? serverSession : clientSession
-
-  const handleLogout = () => {
-    signOut()
-    router.push(Routes.login)
-  }
 
   const isAuthenticated = useMemo(() => session?.user, [session?.user])
 
@@ -61,43 +55,20 @@ export default function AppHeader({
   const AuthenticatedMenu = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='relative h-11 gap-2 px-1.5 md:h-8'>
-          <Avatar className='h-8 w-8'>
-            <AvatarImage
-              src={session?.user?.avatar ?? undefined}
-              alt={session?.user?.name ?? undefined}
-            />
-            <AvatarFallback>{session?.user?.name?.charAt(0)}</AvatarFallback>
-          </Avatar>
+        <Button
+          variant='ghost'
+          aria-label='Account menu'
+          className='relative h-11 gap-2 px-1.5 md:h-9'
+        >
+          <UserAvatar user={session?.user} />
           <span className='hidden text-sm font-medium md:block'>
             {session?.user?.name?.split(' ')[0]}
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className='w-56' align='end' forceMount>
-        <DropdownMenuItem className='flex flex-col items-start'>
-          <div className='font-medium'>{session?.user?.name}</div>
-          <div className='text-xs text-muted-foreground'>
-            {session?.user?.email}
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href={Routes.dashboard} className='flex w-full items-center'>
-            <LayoutDashboard className='mr-2 h-4 w-4' />
-            <span>Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
-        {isSupportChatEnabled() && (
-          <DropdownMenuItem onClick={openSupportChat}>
-            <LifeBuoy className='mr-2 h-4 w-4' />
-            <span>Help & support</span>
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={handleLogout} className='text-destructive'>
-          <LogOut className='mr-2 h-4 w-4' />
-          <span>Log out</span>
-        </DropdownMenuItem>
+      <DropdownMenuContent className='w-60' align='end' forceMount>
+        {/* Phones have no sidebar, so the help links ride along here. */}
+        <AccountMenuItems user={session?.user} withHelp />
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -129,7 +100,14 @@ export default function AppHeader({
   )
 
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-shell/90 backdrop-blur-md supports-[backdrop-filter]:bg-shell/80'>
+    <header
+      className={cn(
+        'sticky top-0 z-50 w-full border-b bg-shell/90 backdrop-blur-md supports-[backdrop-filter]:bg-shell/80',
+        // On desktop the dashboard's sidebar carries the brand and the
+        // account, so this bar is only for phones there.
+        inDashboard && 'md:hidden'
+      )}
+    >
       {/* Gold hairline along the top edge, the one flourish in the chrome */}
       <div
         aria-hidden='true'

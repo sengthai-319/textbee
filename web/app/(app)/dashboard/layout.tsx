@@ -1,25 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { NotificationProvider } from '@/components/notifications/notification-provider'
 import { NotificationTileStack } from '@/components/notifications/notification-tile-stack'
 import { NotificationModalHost } from '@/components/notifications/notification-modal-host'
-import Footer from '@/components/shared/footer'
-import ThemeToggle from '@/components/shared/theme-toggle'
 import BreadcrumbNav from './(components)/breadcrumb-nav'
+import { buildBreadcrumbs } from './(components)/breadcrumbs'
+import Sidebar from './(components)/sidebar'
 import CommandMenu from './(components)/search/command-menu'
 import SearchTrigger from './(components)/search/search-trigger'
 import {
   isNavItemActive,
   mobileNavItems,
-  navItems,
   type NavItem,
 } from './(components)/nav-items'
 import { cn } from '@/lib/utils'
 import { CONTENT_COLUMN } from '@/lib/layout'
-import { Routes } from '@/config/routes'
 
 export default function DashboardLayout({
   children,
@@ -30,12 +29,14 @@ export default function DashboardLayout({
   // Owned here, not inside the palette, so both the sidebar trigger (desktop)
   // and the app header search button (mobile) open the same dialog.
   const [searchOpen, setSearchOpen] = useState(false)
+  const hasTrail = buildBreadcrumbs(pathname).length > 1
+  const [collapsed, toggleCollapsed] = useSidebarCollapsed()
 
   return (
     // One feed query, shared by the tile slot and the modal host, so they cannot
     // disagree about which implementation is live.
     <NotificationProvider>
-    <div className='min-h-[calc(100vh-3.5rem)]'>
+    <div className='min-h-svh'>
       {/* Visible only on focus. Without it, keyboard users tab through the
           whole sidebar on every page before reaching the content. */}
       <a
@@ -46,57 +47,53 @@ export default function DashboardLayout({
       </a>
       <CommandMenu open={searchOpen} onOpenChange={setSearchOpen} />
 
-      {/* Desktop sidebar, sits below the sticky app header (h-14). */}
-      <aside className='fixed inset-y-0 left-0 top-14 z-30 hidden w-60 flex-col border-r border-border bg-shell md:flex'>
-        <div className='flex-1 overflow-y-auto px-4 py-5'>
-          <div className='mb-5'>
-            <SearchTrigger onOpen={() => setSearchOpen(true)} />
-          </div>
-          <p className='label-mono mb-2 px-3'>Workspace</p>
-          {/* Distinct labels: several nav landmarks on one page are otherwise
-              indistinguishable in a screen reader's landmark list. */}
-          <nav className='flex flex-col gap-1' aria-label='Main'>
-            {navItems.map((item) => (
-              <SidebarLink
-                key={item.href}
-                item={item}
-                isActive={isNavItemActive(item, pathname)}
-              />
-            ))}
-          </nav>
-        </div>
-        <div className='space-y-3 border-t border-border px-4 py-4'>
-          <p className='text-xs text-muted-foreground'>
-            Need help?{' '}
-            <a
-              href={Routes.quickstart}
-              target='_blank'
-              rel='noreferrer'
-              className='font-medium text-primary hover:underline'
-            >
-              Setup guide
-            </a>
-          </p>
-          <ThemeToggle />
-        </div>
-      </aside>
+      <Sidebar
+        collapsed={collapsed}
+        pathname={pathname}
+        onOpenSearch={() => setSearchOpen(true)}
+      />
 
-      {/* Main content, offset for the fixed sidebar on desktop. It fills the
-          viewport so the footer sits at the bottom of short pages. */}
-      <div className='flex min-h-[calc(100svh-3.5rem)] flex-col md:pl-60'>
-        {/* One centered column with one gutter, so the breadcrumb, banners,
-            page content and footer all share a left edge. */}
-        <div className={cn(CONTENT_COLUMN, 'flex-1')}>
-          <BreadcrumbNav />
+      {/* Main content, offset for the fixed sidebar on desktop. */}
+      <div
+        className={cn(
+          'min-h-svh pb-16 transition-[padding] duration-200 md:pb-0',
+          collapsed ? 'md:pl-[4.5rem]' : 'md:pl-60'
+        )}
+      >
+        {/* One centered column with one gutter, so the breadcrumb, banners
+            and page content all share a left edge. */}
+        <div className={CONTENT_COLUMN}>
+          {/* The sidebar toggle sits beside the breadcrumb, where the page
+              starts. On phones there is no sidebar, so the row only shows
+              when there is a trail to show. */}
+          <div
+            className={cn(
+              'items-center gap-2 md:flex md:h-14',
+              hasTrail ? 'flex pt-6 sm:pt-8 md:pt-0' : 'hidden'
+            )}
+          >
+            <button
+              type='button'
+              onClick={toggleCollapsed}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-expanded={!collapsed}
+              className='-ml-2 hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted transition-colors hover:bg-default hover:text-foreground focus-visible:status-focused md:inline-flex'
+            >
+              {collapsed ? (
+                <PanelLeftOpen className='h-[18px] w-[18px] stroke-[1.75]' />
+              ) : (
+                <PanelLeftClose className='h-[18px] w-[18px] stroke-[1.75]' />
+              )}
+            </button>
+            {hasTrail && (
+              <span aria-hidden className='hidden h-4 w-px bg-separator md:block' />
+            )}
+            <BreadcrumbNav className='pt-0 sm:pt-0' />
+          </div>
           <NotificationTileStack />
           <main id='main-content' tabIndex={-1}>
             {children}
           </main>
-        </div>
-        {/* Inside the sidebar-offset column so the fixed sidebar cannot paint
-            over it, and padded clear of the fixed mobile tab bar. */}
-        <div className='pb-16 md:pb-0'>
-          <Footer />
         </div>
       </div>
 
@@ -122,36 +119,42 @@ export default function DashboardLayout({
   )
 }
 
-function SidebarLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
-  const Icon = item.icon
-  return (
-    <Link
-      href={item.href}
-      prefetch
-      aria-current={isActive ? 'page' : undefined}
-      className={cn(
-        'group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-        isActive
-          ? 'bg-primary/10 text-foreground'
-          : 'text-muted-foreground hover:bg-default hover:text-foreground'
-      )}
-    >
-      {/* Gold rail marks the current section */}
-      {isActive && (
-        <span
-          aria-hidden='true'
-          className='absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary'
-        />
-      )}
-      <Icon
-        className={cn(
-          'h-[18px] w-[18px] shrink-0 stroke-[1.75]',
-          isActive ? 'text-primary' : 'group-hover:text-foreground'
-        )}
-      />
-      <span>{item.label}</span>
-    </Link>
+const COLLAPSED_KEY = 'crosshub:sidebar-collapsed'
+const COLLAPSED_EVENT = 'crosshub:sidebar-collapsed-change'
+
+function readCollapsed(): boolean {
+  try {
+    return window.localStorage.getItem(COLLAPSED_KEY) === '1'
+  } catch {
+    // Storage can be blocked (private mode); the sidebar just starts open.
+    return false
+  }
+}
+
+function subscribeCollapsed(onChange: () => void) {
+  window.addEventListener(COLLAPSED_EVENT, onChange)
+  window.addEventListener('storage', onChange)
+  return () => {
+    window.removeEventListener(COLLAPSED_EVENT, onChange)
+    window.removeEventListener('storage', onChange)
+  }
+}
+
+// Remembered per browser. The server render (and so hydration) is always
+// expanded; the saved choice applies right after.
+function useSidebarCollapsed(): [boolean, () => void] {
+  const collapsed = useSyncExternalStore(
+    subscribeCollapsed,
+    readCollapsed,
+    () => false
   )
+  const toggle = useCallback(() => {
+    try {
+      window.localStorage.setItem(COLLAPSED_KEY, readCollapsed() ? '0' : '1')
+    } catch {}
+    window.dispatchEvent(new Event(COLLAPSED_EVENT))
+  }, [])
+  return [collapsed, toggle]
 }
 
 function MobileNavLink({

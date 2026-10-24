@@ -21,7 +21,7 @@ const session: Session = {
   expires: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
 } as Session
 
-const accountMenu = () => screen.queryByRole('button', { name: /T/ })
+const accountMenu = () => screen.queryByRole('button', { name: 'Account menu' })
 const logInLink = () => screen.queryAllByRole('link', { name: 'Log in' })
 
 describe('AppHeader session state', () => {
