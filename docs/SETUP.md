@@ -62,11 +62,25 @@ You can connect several phones of any kind to the same server.
 ```bash
 git clone https://github.com/sengthai-319/textbee.git
 cd textbee
+cp .env.example .env
 cp api/.env.example api/.env
 cp web/.env.example web/.env
 ```
 
-**2.2 Set two secrets.** Each one should be a long random string.
+**2.2 Set the secrets.** Each one should be a long random string. The API refuses to start with a short or example `JWT_SECRET`.
+
+First the database password. On a Mac or Linux:
+```bash
+scripts/secure-database.sh
+```
+It writes a random `MONGO_ROOT_PASS` into `.env`. On **Windows**, in PowerShell:
+```powershell
+$db = -join ((48..57) + (97..102) | Get-Random -Count 48 | ForEach-Object { [char]$_ })
+(Get-Content .env) -replace '^MONGO_ROOT_PASS=.*', "MONGO_ROOT_PASS=$db" | Set-Content .env
+```
+The database and Redis aren't reachable from the network, only by the other containers, so this password never has to leave the computer.
+
+Then the two app secrets.
 
 On a Mac:
 ```bash
@@ -127,8 +141,8 @@ If the build fails, see [Troubleshooting](#10-troubleshooting). Two problems com
 1. Open **http://localhost:3000**, or your `NEXT_PUBLIC_SITE_URL`, and click **Create an account**.
 2. **Verify your email.** A local server can't send email unless you configure SMTP (the `MAIL_*` settings in `api/.env`), and sending stays blocked until the email is verified. Mark it as verified directly instead, using your exact address. It's case-sensitive:
    ```bash
-   docker exec textbee-db mongosh -u adminUser -p adminPassword --authenticationDatabase admin textbee --quiet \
-     --eval 'printjson(db.users.updateOne({email:"you@example.com"},{$set:{emailVerifiedAt:new Date()}}))'
+   docker exec textbee-db sh -c 'mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin textbee --quiet \
+     --eval "printjson(db.users.updateOne({email:\"you@example.com\"},{\$set:{emailVerifiedAt:new Date()}}))"'
    ```
    It should print `modifiedCount: 1`. Refresh the dashboard.
 3. **Create an API key.** On the dashboard, click **New API key** and copy it somewhere safe; it's only shown once. Phones use it to connect, and your own code uses it to call the API.
@@ -368,7 +382,7 @@ By default the dashboard only works on your home network. To use it securely fro
 1. Install **[Tailscale](https://tailscale.com)** (free) on the server computer and on each device you'll use, signed in to the same account.
 2. Use the server's Tailscale name, such as `your-imac.tailnet-name.ts.net`, in place of `Your-iMac.local` in [step 2.3](#2-run-the-server), and rebuild.
 
-Nothing is exposed to the public internet. If you'd rather put it on a public domain, put it behind HTTPS (for example with Caddy or Cloudflare Tunnel), and use `https://` addresses everywhere.
+Nothing is exposed to the public internet. If you'd rather put it on a public domain, put it behind HTTPS (for example with Caddy or Cloudflare Tunnel), and use `https://` addresses everywhere. Then set `TRUST_PROXY_HOPS=1` in `api/.env` so rate limiting sees each visitor's real address. Leave it unset when nothing sits in front of the API: otherwise any visitor could claim a fresh address per request and skip the limit.
 
 ---
 
@@ -417,3 +431,20 @@ git pull
 docker compose up -d --build
 ```
 Your data stays in the Docker volumes. Rebuild the Android app only when its code changed. To update the Mac relay, download `textbee_mac.py` again; its settings and history are kept.
+
+### Updating from a version before the security update
+
+Earlier versions published the database, its admin UI and Redis to your whole network, with the database password `adminPassword`. The current version keeps them private and requires a real password. Once, before `docker compose up`:
+
+```bash
+cd textbee
+git pull
+cp -n .env.example .env          # skip if you already have .env
+scripts/secure-database.sh       # sets a new password and changes it in the running database
+docker compose up -d --build
+docker compose ps                # textbee-mongo-express is no longer started
+```
+
+`docker compose up` stops with *"Set MONGO_ROOT_PASS in .env"* until this is done. Your data is kept: the script changes the password inside the existing database rather than creating a new one. If you had already changed the password from `adminPassword`, pass the old one: `OLD_MONGO_ROOT_PASS='…' scripts/secure-database.sh`.
+
+The old `textbee-mongo-express` container stays around stopped; remove it with `docker rm -f textbee-mongo-express`. To open the database admin UI when you need it: `docker compose --profile tools up -d mongo-express`, then http://localhost:8081 on the server itself (user `admin`, password = `MONGO_ROOT_PASS` from `.env`).

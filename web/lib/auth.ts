@@ -191,6 +191,11 @@ export const authOptions: NextAuthOptions = {
         if (session.phone !== token.phone) {
           token.phone = session.phone
         }
+        // A password change ends every older session, so the API hands the
+        // changing browser a new token to carry on with.
+        if (typeof session.accessToken === 'string' && session.accessToken) {
+          token.accessToken = session.accessToken
+        }
         return token
       }
 

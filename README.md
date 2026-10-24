@@ -46,8 +46,9 @@
 ```bash
 git clone https://github.com/sengthai-319/textbee.git
 cd textbee
-cp api/.env.example api/.env && cp web/.env.example web/.env
-# set JWT_SECRET in api/.env and NEXTAUTH_SECRET in web/.env to long random strings
+cp .env.example .env && cp api/.env.example api/.env && cp web/.env.example web/.env
+scripts/secure-database.sh   # generates the database password in .env
+# set JWT_SECRET in api/.env and NEXTAUTH_SECRET in web/.env (openssl rand -hex 32)
 docker compose up -d --build
 ```
 

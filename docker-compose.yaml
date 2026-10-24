@@ -1,3 +1,6 @@
+# Settings come from .env next to this file (copy .env.example). Only the
+# dashboard and the API are published; the database and Redis are reachable
+# only by the other containers, never from the network.
 services:
   # MongoDB service
   textbee-db:
@@ -6,13 +9,13 @@ services:
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-adminUser}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS:-adminPassword}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS:?Set MONGO_ROOT_PASS in .env (see .env.example)}
       - MONGO_INITDB_DATABASE=textbee
     volumes:
       # - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodb_data:/data/db
-    ports:
-      - "${MONGO_PORT:-27018}:27017"
+    # No published port. To reach it from this computer for maintenance, use
+    # docker exec (see docs/SETUP.md) or start mongo-express below.
     networks:
       - textbee-network
     healthcheck:
@@ -22,17 +25,25 @@ services:
       retries: 3
       start_period: 20s
 
-  # MongoDB Express (optional admin UI)
+  # MongoDB Express, a database admin UI. Off by default; start it only when
+  # you need it with: docker compose --profile tools up -d mongo-express
+  # It listens on this computer only (http://localhost:8081) and asks for a
+  # login: user MONGO_EXPRESS_USER (default admin), password MONGO_EXPRESS_PASS
+  # (defaults to MONGO_ROOT_PASS).
   mongo-express:
     container_name: textbee-mongo-express
     image: mongo-express:latest
-    restart: always
+    profiles: ["tools"]
+    restart: "no"
     ports:
-      - "${MONGO_EXPRESS_PORT:-8081}:8081"
+      - "127.0.0.1:${MONGO_EXPRESS_PORT:-8081}:8081"
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_ROOT_USER:-adminUser}
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_ROOT_PASS:-adminPassword}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_ROOT_PASS}
       - ME_CONFIG_MONGODB_SERVER=textbee-db
+      - ME_CONFIG_BASICAUTH_ENABLED=true
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USER:-admin}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASS:-${MONGO_ROOT_PASS}}
     depends_on:
       textbee-db:
         condition: service_healthy
@@ -47,13 +58,18 @@ services:
       context: ./api
       dockerfile: Dockerfile
     restart: always
+    # BIND_ADDRESS limits which network can reach it: 0.0.0.0 is every
+    # network, a NetBird or Tailscale address is only that private network.
     ports:
-      - "${PORT:-3001}:3001"
+      - "${BIND_ADDRESS:-0.0.0.0}:${API_PORT:-3001}:3001"
     env_file:
       - ./api/.env
     environment:
-      - PORT=${PORT:-3001}
-      - REDIS_URL=${REDIS_URL:-redis://textbee-redis:6379}
+      - PORT=3001
+      - REDIS_URL=redis://textbee-redis:6379
+      # Built from .env so the API always uses the database's real password,
+      # whatever an older api/.env says.
+      - MONGO_URI=mongodb://${MONGO_ROOT_USER:-adminUser}:${MONGO_ROOT_PASS}@textbee-db:27017/textbee?authSource=admin
 
     depends_on:
       textbee-db:
@@ -70,11 +86,11 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "${PORT:-3000}:3000"
+      - "${BIND_ADDRESS:-0.0.0.0}:${WEB_PORT:-3000}:3000"
     env_file:
       - ./web/.env
     environment:
-      - PORT=${PORT:-3000}
+      - PORT=3000
       - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:3001/api/v1}
 
     depends_on:
@@ -87,8 +103,7 @@ services:
     container_name: textbee-redis
     image: redis:alpine
     restart: always
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
+    # No published port: only the API talks to Redis.
     volumes:
       - redis_data:/data
     networks:

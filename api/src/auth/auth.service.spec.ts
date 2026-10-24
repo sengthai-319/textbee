@@ -528,6 +528,19 @@ describe('AuthService', () => {
       expect(stored.password).not.toBe(before)
       expect(bcrypt.compareSync('a-brand-new-password', stored.password)).toBe(true)
     })
+
+    it('records the change, which signs out older sessions, and returns a fresh token', async () => {
+      const { service, stored } = await withOldPassword('correct-old')
+      const before = Date.now()
+
+      const result = await service.changePassword(
+        { oldPassword: 'correct-old', newPassword: 'a-brand-new-password' },
+        { _id: 'user_1' } as any,
+      )
+
+      expect((stored as any).passwordChangedAt.getTime()).toBeGreaterThanOrEqual(before)
+      expect(typeof result.accessToken).toBe('string')
+    })
   })
 
   describe('register input validation', () => {
@@ -545,6 +558,19 @@ describe('AuthService', () => {
       })
       return ctx
     }
+
+    it('refuses a non-string email before looking anyone up', async () => {
+      const { service, usersService } = registerSetup()
+
+      await expect(
+        service.register({
+          email: { $ne: null },
+          password: 'a-valid-password',
+          turnstileToken: 'token',
+        }),
+      ).rejects.toMatchObject({ status: 400 })
+      expect(usersService.findOne).not.toHaveBeenCalled()
+    })
 
     it('rejects a malformed email and does not create the user', async () => {
       const { service, usersService } = registerSetup()
@@ -771,6 +797,15 @@ describe('AuthService', () => {
       ctx.usersService.findOneWithPassword.mockResolvedValue(stored)
       return { ...ctx, stored }
     }
+
+    it('refuses a non-string email before it can reach the query as an operator', async () => {
+      const { service, usersService } = setup()
+
+      await expect(
+        service.login({ ...credentials, email: { $regex: '^a' } }),
+      ).rejects.toMatchObject({ status: 401 })
+      expect(usersService.findOneWithPassword).not.toHaveBeenCalled()
+    })
 
     it('records the browser in the same write as the login time', async () => {
       const { service, usersService, stored } = setup()

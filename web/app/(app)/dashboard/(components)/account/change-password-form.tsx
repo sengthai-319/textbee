@@ -9,6 +9,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@/hooks/use-toast'
 import { useChangePassword } from '@/lib/api'
+import { useSession } from 'next-auth/react'
+import { setSessionToken } from '@/lib/httpBrowserClient'
 import Link from 'next/link'
 import { Routes } from '@/config/routes'
 
@@ -38,6 +40,7 @@ type ChangePasswordFormData = z.infer<typeof changePasswordSchema>
 
 export default function ChangePasswordForm() {
   const { toast } = useToast()
+  const { update: updateSession } = useSession()
 
   const changePasswordForm = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
@@ -49,7 +52,14 @@ export default function ChangePasswordForm() {
     error: changePasswordError,
     isSuccess: isChangePasswordSuccess,
   } = useChangePassword({
-    onSuccess: () => {
+    onSuccess: async (res: any) => {
+      // The API signs out every other session and returns a token for this
+      // one; without swapping it in, this tab would be signed out too.
+      const accessToken = res?.data?.data?.accessToken ?? res?.data?.accessToken
+      if (accessToken) {
+        setSessionToken(accessToken)
+        await updateSession({ accessToken })
+      }
       toast({
         title: 'Password changed successfully!',
       })
