@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, SchemaTypes, Types } from 'mongoose'
 import { User } from '../../users/schemas/user.schema'
+import { DEVICE_TRANSPORTS } from '../pull-transport'
 
 export type DeviceDocument = Device & Document
 
@@ -22,6 +23,10 @@ export class Device {
 
   @Prop({ type: String })
   fcmToken: string
+
+  // 'pull' devices are never pushed to; they claim their messages instead
+  @Prop({ type: String, enum: DEVICE_TRANSPORTS, default: 'fcm' })
+  transport?: string
 
   @Prop({ type: Date })
   fcmTokenUpdatedAt?: Date

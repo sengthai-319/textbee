@@ -66,6 +66,13 @@ import {
   shouldSkipFcmSend,
   skippedBatchResponse,
 } from './fcm-send-skip'
+import {
+  PULL_QUEUED_MESSAGE_ID,
+  isPullDevice,
+  pullClaimLimit,
+  pullPendingFilter,
+  pullPollCooldownMs,
+} from './pull-transport'
 import { DispatchPlan } from './queue/dispatch-pacing'
 import { Job } from 'bull'
 import { SmsBatchStatusService } from './sms-batch-status.service'
@@ -743,10 +750,14 @@ export class GatewayService {
     }
 
     try {
-      const skipped = shouldSkipFcmSend(device.user, deviceId)
-      const response = skipped
-        ? skippedBatchResponse(fcmMessages.length)
-        : await firebaseAdmin.messaging().sendEach(fcmMessages)
+      // A pull device collects its messages itself, so they stay pending
+      const pull = isPullDevice(device)
+      const skipped = !pull && shouldSkipFcmSend(device.user, deviceId)
+      const response = pull
+        ? skippedBatchResponse(fcmMessages.length, PULL_QUEUED_MESSAGE_ID)
+        : skipped
+          ? skippedBatchResponse(fcmMessages.length)
+          : await firebaseAdmin.messaging().sendEach(fcmMessages)
 
       console.log(response)
 
@@ -1099,7 +1110,8 @@ export class GatewayService {
     const fcmMessages = fcmMessagesWithDelays.map(({ message }) => message)
     const fcmMessagesBatches = fcmMessages.map((m) => [m])
     const fcmResponses: BatchResponse[] = []
-    const skipped = shouldSkipFcmSend(device.user, deviceId)
+    const pull = isPullDevice(device)
+    const skipped = !pull && shouldSkipFcmSend(device.user, deviceId)
 
     if (skipped) {
       await this.smsModel.updateMany(
@@ -1114,9 +1126,11 @@ export class GatewayService {
 
     for (const batch of fcmMessagesBatches) {
       try {
-        const response = skipped
-          ? skippedBatchResponse(batch.length)
-          : await firebaseAdmin.messaging().sendEach(batch)
+        const response = pull
+          ? skippedBatchResponse(batch.length, PULL_QUEUED_MESSAGE_ID)
+          : skipped
+            ? skippedBatchResponse(batch.length)
+            : await firebaseAdmin.messaging().sendEach(batch)
 
         console.log(response)
         fcmResponses.push(response)
@@ -1854,17 +1868,21 @@ const updatedSms = await this.smsModel.findByIdAndUpdate(
       )
     }
 
+    // Polling is a pull device's only way to get work, so the recovery gates
+    // below (Android build, fleet switch, five minute cooldown) do not apply
+    const pull = isPullDevice(device)
+
     // Heartbeats write appVersionInfo; registration writes appVersionCode
     const versionCode =
       device.appVersionInfo?.versionCode ?? device.appVersionCode ?? 0
-    if (versionCode < RECOVERY_MIN_VERSION_CODE) {
+    if (!pull && versionCode < RECOVERY_MIN_VERSION_CODE) {
       throw new HttpException(
         { success: false, error: 'This app version cannot recover messages' },
         HttpStatus.FORBIDDEN,
       )
     }
     // The app caches the switch until its next heartbeat; turning it off must not wait for that
-    if (!deviceConfigFor(device).recoveryPollEnabled) {
+    if (!pull && !deviceConfigFor(device).recoveryPollEnabled) {
       throw new HttpException(
         { success: false, error: 'Message recovery is switched off' },
         HttpStatus.FORBIDDEN,
@@ -1874,12 +1892,13 @@ const updatedSms = await this.smsModel.findByIdAndUpdate(
     // One conditional update both checks and takes the cooldown, so two
     // polls arriving together cannot both pass it
     const now = new Date()
+    const cooldownMs = pull ? pullPollCooldownMs() : POLL_COOLDOWN_MS
     const admitted = await this.deviceModel.findOneAndUpdate(
       {
         _id: deviceId,
         $or: [
           { lastPendingPollAt: { $exists: false } },
-          { lastPendingPollAt: { $lt: new Date(now.getTime() - POLL_COOLDOWN_MS) } },
+          { lastPendingPollAt: { $lt: new Date(now.getTime() - cooldownMs) } },
         ],
       },
       { $set: { lastPendingPollAt: now } },
@@ -1893,15 +1912,20 @@ const updatedSms = await this.smsModel.findByIdAndUpdate(
 
     const claimed: any[] = []
     const firstDispatches: any[] = []
-    while (claimed.length < CLAIM_LIMIT) {
+    const limit = pull ? pullClaimLimit() : CLAIM_LIMIT
+    const filter = pull
+      ? pullPendingFilter(deviceId, now)
+      : pendingRecoveryFilter(deviceId, now)
+    while (claimed.length < limit) {
       // The pre-claim row, so the push time this overwrites can be kept
       const sms = await this.smsModel.findOneAndUpdate(
-        pendingRecoveryFilter(deviceId, now),
+        filter,
         {
           $set: {
             status: 'dispatched',
             dispatchedAt: now,
-            'metadata.recoveredAt': now,
+            // A pull device's claim is its normal delivery, not a recovery
+            ...(!pull && { 'metadata.recoveredAt': now }),
           },
           $inc: { dispatchAttempts: 1 },
         },
@@ -1910,7 +1934,7 @@ const updatedSms = await this.smsModel.findByIdAndUpdate(
       if (!sms) break
       claimed.push(toRecoveryPayload(sms))
       // After a first recovery, dispatchedAt holds a poll time, not a push time
-      if (sms.dispatchedAt && !sms.metadata?.recoveredAt) {
+      if (!pull && sms.dispatchedAt && !sms.metadata?.recoveredAt) {
         firstDispatches.push({
           updateOne: {
             filter: { _id: sms._id, 'metadata.firstDispatchedAt': { $exists: false } },
@@ -1931,8 +1955,15 @@ const updatedSms = await this.smsModel.findByIdAndUpdate(
     return claimed
   }
 
-  async countPendingMessages(deviceId: string, now = new Date()): Promise<number> {
-    return this.smsModel.countDocuments(pendingRecoveryFilter(deviceId, now))
+  async countPendingMessages(
+    deviceId: string,
+    now = new Date(),
+    device?: { transport?: string | null } | null,
+  ): Promise<number> {
+    const filter = isPullDevice(device)
+      ? pullPendingFilter(deviceId, now)
+      : pendingRecoveryFilter(deviceId, now)
+    return this.smsModel.countDocuments(filter)
   }
 
   async heartbeat(
@@ -2151,7 +2182,7 @@ const updatedSms = await this.smsModel.findByIdAndUpdate(
       fcmTokenUpdated,
       lastHeartbeat: now,
       name: updatedDevice?.name,
-      pendingCount: await this.countPendingMessages(deviceId, now),
+      pendingCount: await this.countPendingMessages(deviceId, now, updatedDevice),
       config: deviceConfigFor(updatedDevice),
     }
   }

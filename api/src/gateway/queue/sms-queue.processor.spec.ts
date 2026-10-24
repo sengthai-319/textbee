@@ -67,6 +67,24 @@ describe('SmsQueueProcessor.handleSendSms', () => {
 
   const job = { id: 1, data: { deviceId, fcmMessages, smsBatchId } } as any
 
+  it('leaves messages for a pull device to be claimed', async () => {
+    mockDeviceModel.findById.mockReturnValue({
+      populate: () => ({
+        exec: jest
+          .fn()
+          .mockResolvedValue({ _id: deviceId, user: { _id: userId }, transport: 'pull' }),
+      }),
+    })
+    const sendEach = jest.spyOn(firebaseAdmin.messaging(), 'sendEach')
+
+    const response = await processor.handleSendSms(job)
+
+    expect(sendEach).not.toHaveBeenCalled()
+    expect(mockSmsModel.bulkWrite).not.toHaveBeenCalled()
+    expect(response.successCount).toBe(1)
+    expect(mockBatchStatus.refresh).toHaveBeenCalledWith([smsBatchId])
+  })
+
   it('pushes normally when nothing is listed for skipping', async () => {
     const sendEach = jest
       .spyOn(firebaseAdmin.messaging(), 'sendEach')

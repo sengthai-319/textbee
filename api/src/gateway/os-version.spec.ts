@@ -281,4 +281,11 @@ describe('normalizeOsFields', () => {
       expect(patch).not.toHaveProperty('osApiLevel')
     })
   })
+
+  it('keeps the macOS label from the macOS client', () => {
+    expect(normalizeOsFields({ os: 'macOS', osVersion: '15.1' })).toMatchObject({
+      os: 'macOS',
+      osVersion: '15.1',
+    })
+  })
 })

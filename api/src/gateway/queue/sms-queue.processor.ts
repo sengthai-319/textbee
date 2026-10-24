@@ -14,6 +14,7 @@ import {
   shouldSkipFcmSend,
   skippedBatchResponse,
 } from '../fcm-send-skip'
+import { PULL_QUEUED_MESSAGE_ID, isPullDevice } from '../pull-transport'
 import { errorHistoryPush } from '../error-history'
 import { SmsBatchStatusService } from '../sms-batch-status.service'
 import {
@@ -80,6 +81,13 @@ export class SmsQueueProcessor {
       this.logger.warn(
         `Device or user not found for deviceId ${deviceId}, webhooks will be skipped`,
       )
+    }
+
+    // A pull device claims its messages once they are due, so there is
+    // nothing to push and nothing to mark dispatched
+    if (isPullDevice(device)) {
+      await this.batchStatus.refresh([smsBatchId])
+      return skippedBatchResponse(fcmMessages.length, PULL_QUEUED_MESSAGE_ID)
     }
 
     try {

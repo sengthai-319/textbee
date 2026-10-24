@@ -57,4 +57,11 @@ describe('pickDeviceWritableFields', () => {
     expect(pickDeviceWritableFields({} as any)).toEqual({})
     expect(pickDeviceWritableFields(undefined as any)).toEqual({})
   })
+
+  it('keeps a valid transport and drops an unknown one', () => {
+    expect(pickDeviceWritableFields({ transport: 'pull' } as any)).toEqual({
+      transport: 'pull',
+    })
+    expect(pickDeviceWritableFields({ transport: 'carrier-pigeon' } as any)).toEqual({})
+  })
 })

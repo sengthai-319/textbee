@@ -1307,6 +1307,24 @@ describe('GatewayService', () => {
         delete process.env.FCM_SEND_SKIP_DEVICE_IDS
       }
     })
+
+    it('leaves messages for a pull device pending without pushing', async () => {
+      mockDeviceModel.findById.mockResolvedValue({ ...mockDevice, transport: 'pull' })
+
+      const result = await service.sendSMS(mockDeviceId, mockSmsInput)
+
+      expect(firebaseAdmin.messaging().sendEach).not.toHaveBeenCalled()
+      expect(result.successCount).toBe(1)
+      expect(result.responses[0].messageId).toBe('PULL_QUEUED')
+      expect(mockSmsModel.updateMany).not.toHaveBeenCalledWith(
+        expect.anything(),
+        { $set: { errorCode: 'FCM_SEND_SKIPPED' } },
+      )
+      expect(mockSmsModel.updateMany).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ $set: expect.objectContaining({ status: 'failed' }) }),
+      )
+    })
   })
 
   describe('sendBulkSMS', () => {
@@ -1385,6 +1403,19 @@ describe('GatewayService', () => {
       expect(mockSmsModel.create).toHaveBeenCalled()
       expect(firebaseAdmin.messaging().sendEach).toHaveBeenCalled()
       expect(result).toHaveProperty('success', true)
+    })
+
+    it('leaves bulk messages for a pull device pending without pushing', async () => {
+      mockDeviceModel.findById.mockResolvedValue({ ...mockDevice, transport: 'pull' })
+
+      const result = await service.sendBulkSMS(mockDeviceId, mockBulkSmsInput)
+
+      expect(firebaseAdmin.messaging().sendEach).not.toHaveBeenCalled()
+      expect(result).toHaveProperty('success', true)
+      expect(mockSmsModel.updateMany).not.toHaveBeenCalledWith(
+        expect.anything(),
+        { $set: { errorCode: 'FCM_SEND_SKIPPED' } },
+      )
     })
 
     it('should queue bulk SMS if queue is enabled', async () => {
@@ -2757,6 +2788,78 @@ describe('GatewayService', () => {
       mockSmsModel.findOneAndUpdate.mockResolvedValue(null)
 
       expect(await service.claimPendingMessages(deviceId)).toEqual([])
+    })
+
+    describe('for a pull device', () => {
+      const pullDevice = { _id: deviceId, transport: 'pull' }
+
+      beforeEach(() => {
+        mockDeviceModel.findById.mockResolvedValue(pullDevice)
+        mockDeviceModel.findOneAndUpdate.mockResolvedValue(pullDevice)
+      })
+
+      it('claims without an Android build or the fleet switch', async () => {
+        process.env.RECOVERY_POLL_ENABLED = 'false'
+        mockSmsModel.findOneAndUpdate.mockResolvedValue(null)
+
+        expect(await service.claimPendingMessages(deviceId)).toEqual([])
+        expect(mockSmsModel.findOneAndUpdate).toHaveBeenCalledTimes(1)
+      })
+
+      it('uses the pull filter, which offers fresh messages straight away', async () => {
+        mockSmsModel.findOneAndUpdate.mockResolvedValue(null)
+
+        await service.claimPendingMessages(deviceId)
+
+        const [filter] = mockSmsModel.findOneAndUpdate.mock.calls[0]
+        expect(filter.status).toEqual({ $in: ['pending', 'unknown'] })
+        expect(JSON.stringify(filter)).not.toContain('dispatchedAt')
+      })
+
+      it('does not label its claims as recoveries', async () => {
+        mockSmsModel.findOneAndUpdate
+          .mockResolvedValueOnce({
+            _id: new Types.ObjectId(),
+            message: 'hi',
+            recipient: '+15550100',
+            dispatchedAt: new Date(),
+          })
+          .mockResolvedValueOnce(null)
+
+        await service.claimPendingMessages(deviceId)
+
+        const [, update] = mockSmsModel.findOneAndUpdate.mock.calls[0]
+        expect(update.$set['metadata.recoveredAt']).toBeUndefined()
+        expect(mockSmsModel.bulkWrite).not.toHaveBeenCalled()
+      })
+
+      it('applies the short pull cooldown', async () => {
+        process.env.PULL_POLL_COOLDOWN_MS = '2000'
+        mockSmsModel.findOneAndUpdate.mockResolvedValue(null)
+        const before = Date.now()
+
+        await service.claimPendingMessages(deviceId)
+
+        const [filter] = mockDeviceModel.findOneAndUpdate.mock.calls[0]
+        const cutoff = filter.$or[1].lastPendingPollAt.$lt.getTime()
+        expect(cutoff).toBeGreaterThanOrEqual(before - 2000)
+        expect(cutoff).toBeLessThanOrEqual(Date.now() - 2000)
+        delete process.env.PULL_POLL_COOLDOWN_MS
+      })
+
+      it('stops at the pull claim limit', async () => {
+        process.env.PULL_CLAIM_LIMIT = '2'
+        mockSmsModel.findOneAndUpdate.mockImplementation(async () => ({
+          _id: new Types.ObjectId(),
+          message: 'hi',
+          recipient: '+15550100',
+        }))
+
+        const claimed = await service.claimPendingMessages(deviceId)
+
+        expect(claimed).toHaveLength(2)
+        delete process.env.PULL_CLAIM_LIMIT
+      })
     })
 
     it('keeps the first push time that the claim overwrites, once', async () => {
