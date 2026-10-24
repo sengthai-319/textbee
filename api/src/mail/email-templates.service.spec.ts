@@ -24,9 +24,9 @@ describe('EmailTemplatesService', () => {
 
     expect(r.enabled).toBe(true)
     expect(r.version).toBe(0)
-    expect(r.document.subject).toBe('Your textbee password was changed')
+    expect(r.document.subject).toBe('Your CrossHub password was changed')
     expect(r.document.text).toContain('Hi Ada,')
-    expect(r.document.text).toContain('This is a notice about your textbee account.')
+    expect(r.document.text).toContain('This is a notice about your CrossHub account.')
   })
 
   it('uses override fields that are present and keeps the rest', async () => {
@@ -38,7 +38,7 @@ describe('EmailTemplatesService', () => {
 
     expect(r.version).toBe(4)
     expect(r.document.subject).toBe('Password updated, Ada')
-    expect(r.document.text).toContain('The password on your textbee account was changed.')
+    expect(r.document.text).toContain('The password on your CrossHub account was changed.')
   })
 
   it('falls back to the default when an override uses an unknown placeholder', async () => {
@@ -149,7 +149,7 @@ describe('EmailTemplatesService', () => {
 
     const bad = build([{ key: 'footer_notice', body: 'Footer {{firstName}}', version: 2 }])
     const r = await bad.service.render('T3', T3_VARS)
-    expect(r.document.text).toContain('This is a notice about your textbee account.')
+    expect(r.document.text).toContain('This is a notice about your CrossHub account.')
     expect(bad.warn).toHaveBeenCalled()
   })
 
@@ -218,7 +218,7 @@ describe('EmailTemplatesService', () => {
 
     const r = await service.render('T3', T3_VARS)
 
-    expect(r.document.subject).toBe('Your textbee password was changed')
+    expect(r.document.subject).toBe('Your CrossHub password was changed')
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('base placeholder nickname'))
   })
 
@@ -241,7 +241,7 @@ describe('EmailTemplatesService', () => {
     const r = await service.render('T3', T3_VARS)
     await service.render('T3', T3_VARS)
 
-    expect(r.document.subject).toBe('Your textbee password was changed')
+    expect(r.document.subject).toBe('Your CrossHub password was changed')
     expect(warn.mock.calls.filter(([m]) => m === 'email_template_base_missing key=T3')).toHaveLength(1)
   })
 
