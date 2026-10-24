@@ -69,6 +69,17 @@ if git grep -nE '(^|[^a-z-])(bg|border|ring)-muted([^a-z-]|$)|hsl\(var\(--' -- '
   status=1
 fi
 
+# The abandoned mailer package textbee still uses; we moved to its successor.
+if git grep -n "@nest-modules/mailer" -- api/src api/package.json; then
+  echo "^ @nest-modules/mailer is back: use @nestjs-modules/mailer (see MAINTAINING.md)."
+  status=1
+fi
+# Google sign-in must refuse tokens when GOOGLE_CLIENT_ID is unset.
+if git grep -n "skipping audience check" -- api/src; then
+  echo "^ upstream's Google audience skip is back: it must fail closed (MAINTAINING.md › Security hardening)."
+  status=1
+fi
+
 # The old brand name in user-facing text.
 if git grep -nIi 'textbee\.dev' -- web/app web/components android/app/src/main/res api/src/mail \
     ':!*.spec.ts' ':!*.test.ts' ':!*.test.tsx' ':!api/src/mail/email-templates/defaults.json'; then

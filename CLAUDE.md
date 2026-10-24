@@ -9,4 +9,6 @@ Key rules:
 - Don't reintroduce billing (`api/src/billing/` is deleted apart from two schemas).
 - Dashboard: use `web/components/ui/*`, color by role (`bg-surface`, `bg-default`, `bg-accent`, `text-muted`), never `bg-muted` or `hsl(var(--x))`.
 - Keep bundled email senders in `api/src/mail/email-templates/defaults.json` empty.
+- Security rules this fork adds (keep them on upstream merges): Google sign-in fails closed without `GOOGLE_CLIENT_ID`; API keys can't manage API keys (`SessionOnly`); failed logins capped per account; DB/Redis never published in `docker-compose.yaml`. See docs/MAINTAINING.md › Security hardening.
+- Single sign-on: docs/SSO.md. Settings live in the top-level `.env` and reach both containers.
 - Before merging: `cd api && pnpm test`; `cd web && pnpm typecheck && pnpm lint && pnpm test && pnpm test:e2e`.

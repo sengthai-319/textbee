@@ -67,6 +67,28 @@ textbee.dev is a paid hosted service; this server is self-hosted, so plans, limi
 
 The dashboard uses HeroUI's design system with our charcoal + gold palette. See [section 4](#4-dashboard-design-system). Upstream dashboard changes still work after a merge, but their class names may need translating.
 
+The shell is ours too: a full-height, collapsible sidebar (`web/app/(app)/dashboard/(components)/sidebar.tsx`) with Help & guides and the account menu at its foot, and no page footer in the dashboard. Theme lives in the account menu (`components/shared/account-menu.tsx`). If upstream changes `dashboard/layout.tsx` or `app-header.tsx`, keep our structure and take their logic.
+
+### Security hardening (edited code, conflicts sometimes)
+
+These go further than textbee does. Keep them when merging, even if upstream's version of the same file looks simpler:
+
+| What | Where |
+|---|---|
+| Database, Redis and mongo-express not published; required DB password in the top-level `.env` | `docker-compose.yaml`, `.env.example`, `scripts/secure-database.sh` |
+| Forwarded IPs trusted only with `TRUST_PROXY_HOPS`; refuses a weak `JWT_SECRET` | `api/src/main.ts`, `api/src/common/startup-checks.ts` |
+| Non-string login fields rejected; failed passwords capped per account | `api/src/auth/auth.service.ts`, `api/src/auth/login-attempts.ts` |
+| A password change ends older sessions (`passwordChangedAt`) | `auth.guard.ts`, `jwt.strategy.ts` |
+| Google sign-in off unless `GOOGLE_CLIENT_ID` is set (textbee skips the audience check when it's empty) | `assertGoogleTokenIsForThisApp` in `auth.service.ts` |
+| API keys can't manage API keys | `api/src/auth/guards/session-only.guard.ts` on the `/auth/api-keys` routes |
+| Tighter rate limit on sign-in routes | `AUTH_THROTTLE` in `auth.controller.ts` |
+| 7-day sessions | `auth.module.ts`, `web/lib/auth.ts` |
+| Mail through `@nestjs-modules/mailer` (textbee still uses the abandoned `@nest-modules/mailer`) | `api/src/mail/` |
+
+### Single sign-on (new code, rarely conflicts)
+
+OpenID Connect sign-in (Authentik): `api/src/auth/oidc.ts`, `loginWithOidc` in `auth.service.ts`, the `oidc` provider and `signIn` callback in `web/lib/auth.ts`, and `web/lib/auth-methods.ts`. The login and register pages are thin server components (`page.tsx`) around client views, so the sign-in options follow the server's settings at request time. See [SSO.md](SSO.md).
+
 ## 3. Pulling new textbee features
 
 **Short answer:** when textbee releases something, we merge their `main` into a new branch, fix the few places where our changes overlap theirs, run the tests, and merge it like any other PR. Our iPhone support, branding and design stay; their new features come in. Nothing happens automatically: until we merge, CrossHub simply doesn't have the new feature.
@@ -114,6 +136,8 @@ Check textbee's [releases](https://github.com/textbee/textbee/releases) about on
 | `pnpm-lock.yaml` | Don't fix it by hand. Take either side, then run `pnpm install` in `api/` or `web/` to regenerate it. |
 | `android/app/build.gradle` | Take their version bump. Keep our `apiBaseUrl` and `dashboardUrl` properties and the `CrossHub` app name. |
 | `README.md` | Keep ours. |
+| `@nest-modules/mailer` imports or `package.json` | We use `@nestjs-modules/mailer` (and `@nestjs-modules/mailer/adapters/handlebars.adapter`). Keep ours and point their new code at it. |
+| `login/page.tsx` or `register/page.tsx` | Ours are server wrappers; put their changes into `login-view.tsx` / `register-view.tsx`. |
 
 If you can't tell which side to keep, keep both and let the tests decide.
 
